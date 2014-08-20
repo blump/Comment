@@ -44,7 +44,9 @@ class CommentEvent extends ActionEvent
     protected $ref;
     protected $refId;
     protected $visible;
-    
+    protected $comment;
+
+
     /**
      * Constructor
      * @param type $username
@@ -133,4 +135,15 @@ class CommentEvent extends ActionEvent
         return $this;
     }
     
+    public function getComment() {
+        return $this->comment;
+    }
+
+    public function setComment($comment) {
+        $this->comment = $comment;
+        
+        return $this;
+    }
+
+
 }

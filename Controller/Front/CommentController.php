@@ -37,7 +37,6 @@ use Thelia\Log\Tlog;
 class CommentController extends BaseFrontController
 {
     const DEFAULT_VISIBLE = 0;
-    const DEFAULT_CUSTOMER_ID = null;
     
     public function createAction() {                
                 
@@ -49,7 +48,6 @@ class CommentController extends BaseFrontController
             $form = $this->validateForm($commentForm);
 
             $event = new CommentEvent(
-                self::DEFAULT_CUSTOMER_ID,
                 $form->get('username')->getData(),
                 $form->get('email')->getData(),
                 $form->get('content')->getData(),
@@ -70,15 +68,18 @@ class CommentController extends BaseFrontController
             $error_message = $e->getMessage();
         }
         
-        Tlog::getInstance()->error(sprintf('Error during send comment : %s', $error_message));
-        
-        $commentForm->setErrorMessage($error_message);
+        if ($error_message !== false) {
+            \Thelia\Log\Tlog::getInstance()->error(sprintf('Error during comment send : %s', $error_message));
 
-        $this->getParserContext()
-            ->addForm($commentForm)
-            ->setGeneralError($error_message)
-        ;        
-        
+            $commentForm->setErrorMessage($error_message);
+
+            $this->getParserContext()
+                ->addForm($commentForm)
+                ->setGeneralError($error_message)
+            ;
+        } else {
+            $this->redirectSuccess($commentForm);
+        }
     }
 
 }

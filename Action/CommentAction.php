@@ -51,6 +51,8 @@ class CommentAction implements EventSubscriberInterface
                 ->setRefId($event->getRefId())
                 ->setVisible($event->getVisible())
                 ->save();
+        
+        $event->setComment($comment);
     }
 
     /**
