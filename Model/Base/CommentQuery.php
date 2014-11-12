@@ -24,23 +24,31 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildCommentQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildCommentQuery orderByUsername($order = Criteria::ASC) Order by the username column
- * @method     ChildCommentQuery orderByEmail($order = Criteria::ASC) Order by the email column
- * @method     ChildCommentQuery orderByContent($order = Criteria::ASC) Order by the content column
+ * @method     ChildCommentQuery orderByCustomerId($order = Criteria::ASC) Order by the customer_id column
  * @method     ChildCommentQuery orderByRef($order = Criteria::ASC) Order by the ref column
  * @method     ChildCommentQuery orderByRefId($order = Criteria::ASC) Order by the ref_id column
- * @method     ChildCommentQuery orderByCustomerId($order = Criteria::ASC) Order by the customer_id column
+ * @method     ChildCommentQuery orderByEmail($order = Criteria::ASC) Order by the email column
+ * @method     ChildCommentQuery orderByTitle($order = Criteria::ASC) Order by the title column
+ * @method     ChildCommentQuery orderByContent($order = Criteria::ASC) Order by the content column
+ * @method     ChildCommentQuery orderByRating($order = Criteria::ASC) Order by the rating column
  * @method     ChildCommentQuery orderByVisible($order = Criteria::ASC) Order by the visible column
+ * @method     ChildCommentQuery orderByVerified($order = Criteria::ASC) Order by the verified column
+ * @method     ChildCommentQuery orderByAbuse($order = Criteria::ASC) Order by the abuse column
  * @method     ChildCommentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildCommentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildCommentQuery groupById() Group by the id column
  * @method     ChildCommentQuery groupByUsername() Group by the username column
- * @method     ChildCommentQuery groupByEmail() Group by the email column
- * @method     ChildCommentQuery groupByContent() Group by the content column
+ * @method     ChildCommentQuery groupByCustomerId() Group by the customer_id column
  * @method     ChildCommentQuery groupByRef() Group by the ref column
  * @method     ChildCommentQuery groupByRefId() Group by the ref_id column
- * @method     ChildCommentQuery groupByCustomerId() Group by the customer_id column
+ * @method     ChildCommentQuery groupByEmail() Group by the email column
+ * @method     ChildCommentQuery groupByTitle() Group by the title column
+ * @method     ChildCommentQuery groupByContent() Group by the content column
+ * @method     ChildCommentQuery groupByRating() Group by the rating column
  * @method     ChildCommentQuery groupByVisible() Group by the visible column
+ * @method     ChildCommentQuery groupByVerified() Group by the verified column
+ * @method     ChildCommentQuery groupByAbuse() Group by the abuse column
  * @method     ChildCommentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildCommentQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -57,23 +65,31 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildComment findOneById(int $id) Return the first ChildComment filtered by the id column
  * @method     ChildComment findOneByUsername(string $username) Return the first ChildComment filtered by the username column
- * @method     ChildComment findOneByEmail(string $email) Return the first ChildComment filtered by the email column
- * @method     ChildComment findOneByContent(string $content) Return the first ChildComment filtered by the content column
+ * @method     ChildComment findOneByCustomerId(int $customer_id) Return the first ChildComment filtered by the customer_id column
  * @method     ChildComment findOneByRef(string $ref) Return the first ChildComment filtered by the ref column
  * @method     ChildComment findOneByRefId(int $ref_id) Return the first ChildComment filtered by the ref_id column
- * @method     ChildComment findOneByCustomerId(int $customer_id) Return the first ChildComment filtered by the customer_id column
+ * @method     ChildComment findOneByEmail(string $email) Return the first ChildComment filtered by the email column
+ * @method     ChildComment findOneByTitle(string $title) Return the first ChildComment filtered by the title column
+ * @method     ChildComment findOneByContent(string $content) Return the first ChildComment filtered by the content column
+ * @method     ChildComment findOneByRating(int $rating) Return the first ChildComment filtered by the rating column
  * @method     ChildComment findOneByVisible(int $visible) Return the first ChildComment filtered by the visible column
+ * @method     ChildComment findOneByVerified(int $verified) Return the first ChildComment filtered by the verified column
+ * @method     ChildComment findOneByAbuse(int $abuse) Return the first ChildComment filtered by the abuse column
  * @method     ChildComment findOneByCreatedAt(string $created_at) Return the first ChildComment filtered by the created_at column
  * @method     ChildComment findOneByUpdatedAt(string $updated_at) Return the first ChildComment filtered by the updated_at column
  *
  * @method     array findById(int $id) Return ChildComment objects filtered by the id column
  * @method     array findByUsername(string $username) Return ChildComment objects filtered by the username column
- * @method     array findByEmail(string $email) Return ChildComment objects filtered by the email column
- * @method     array findByContent(string $content) Return ChildComment objects filtered by the content column
+ * @method     array findByCustomerId(int $customer_id) Return ChildComment objects filtered by the customer_id column
  * @method     array findByRef(string $ref) Return ChildComment objects filtered by the ref column
  * @method     array findByRefId(int $ref_id) Return ChildComment objects filtered by the ref_id column
- * @method     array findByCustomerId(int $customer_id) Return ChildComment objects filtered by the customer_id column
+ * @method     array findByEmail(string $email) Return ChildComment objects filtered by the email column
+ * @method     array findByTitle(string $title) Return ChildComment objects filtered by the title column
+ * @method     array findByContent(string $content) Return ChildComment objects filtered by the content column
+ * @method     array findByRating(int $rating) Return ChildComment objects filtered by the rating column
  * @method     array findByVisible(int $visible) Return ChildComment objects filtered by the visible column
+ * @method     array findByVerified(int $verified) Return ChildComment objects filtered by the verified column
+ * @method     array findByAbuse(int $abuse) Return ChildComment objects filtered by the abuse column
  * @method     array findByCreatedAt(string $created_at) Return ChildComment objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildComment objects filtered by the updated_at column
  *
@@ -164,7 +180,7 @@ abstract class CommentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, USERNAME, EMAIL, CONTENT, REF, REF_ID, CUSTOMER_ID, VISIBLE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
+        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, VISIBLE, VERIFIED, ABUSE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -324,61 +340,46 @@ abstract class CommentQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the email column
+     * Filter the query on the customer_id column
      *
      * Example usage:
      * <code>
-     * $query->filterByEmail('fooValue');   // WHERE email = 'fooValue'
-     * $query->filterByEmail('%fooValue%'); // WHERE email LIKE '%fooValue%'
+     * $query->filterByCustomerId(1234); // WHERE customer_id = 1234
+     * $query->filterByCustomerId(array(12, 34)); // WHERE customer_id IN (12, 34)
+     * $query->filterByCustomerId(array('min' => 12)); // WHERE customer_id > 12
      * </code>
      *
-     * @param     string $email The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
+     * @see       filterByCustomer()
+     *
+     * @param     mixed $customerId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildCommentQuery The current query, for fluid interface
      */
-    public function filterByEmail($email = null, $comparison = null)
+    public function filterByCustomerId($customerId = null, $comparison = null)
     {
-        if (null === $comparison) {
-            if (is_array($email)) {
+        if (is_array($customerId)) {
+            $useMinMax = false;
+            if (isset($customerId['min'])) {
+                $this->addUsingAlias(CommentTableMap::CUSTOMER_ID, $customerId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($customerId['max'])) {
+                $this->addUsingAlias(CommentTableMap::CUSTOMER_ID, $customerId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $email)) {
-                $email = str_replace('*', '%', $email);
-                $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(CommentTableMap::EMAIL, $email, $comparison);
-    }
-
-    /**
-     * Filter the query on the content column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByContent('fooValue');   // WHERE content = 'fooValue'
-     * $query->filterByContent('%fooValue%'); // WHERE content LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $content The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildCommentQuery The current query, for fluid interface
-     */
-    public function filterByContent($content = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($content)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $content)) {
-                $content = str_replace('*', '%', $content);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(CommentTableMap::CONTENT, $content, $comparison);
+        return $this->addUsingAlias(CommentTableMap::CUSTOMER_ID, $customerId, $comparison);
     }
 
     /**
@@ -452,18 +453,103 @@ abstract class CommentQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the customer_id column
+     * Filter the query on the email column
      *
      * Example usage:
      * <code>
-     * $query->filterByCustomerId(1234); // WHERE customer_id = 1234
-     * $query->filterByCustomerId(array(12, 34)); // WHERE customer_id IN (12, 34)
-     * $query->filterByCustomerId(array('min' => 12)); // WHERE customer_id > 12
+     * $query->filterByEmail('fooValue');   // WHERE email = 'fooValue'
+     * $query->filterByEmail('%fooValue%'); // WHERE email LIKE '%fooValue%'
      * </code>
      *
-     * @see       filterByCustomer()
+     * @param     string $email The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @param     mixed $customerId The value to use as filter.
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByEmail($email = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($email)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $email)) {
+                $email = str_replace('*', '%', $email);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::EMAIL, $email, $comparison);
+    }
+
+    /**
+     * Filter the query on the title column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByTitle('fooValue');   // WHERE title = 'fooValue'
+     * $query->filterByTitle('%fooValue%'); // WHERE title LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $title The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByTitle($title = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($title)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $title)) {
+                $title = str_replace('*', '%', $title);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::TITLE, $title, $comparison);
+    }
+
+    /**
+     * Filter the query on the content column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByContent('fooValue');   // WHERE content = 'fooValue'
+     * $query->filterByContent('%fooValue%'); // WHERE content LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $content The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByContent($content = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($content)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $content)) {
+                $content = str_replace('*', '%', $content);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::CONTENT, $content, $comparison);
+    }
+
+    /**
+     * Filter the query on the rating column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByRating(1234); // WHERE rating = 1234
+     * $query->filterByRating(array(12, 34)); // WHERE rating IN (12, 34)
+     * $query->filterByRating(array('min' => 12)); // WHERE rating > 12
+     * </code>
+     *
+     * @param     mixed $rating The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -471,16 +557,16 @@ abstract class CommentQuery extends ModelCriteria
      *
      * @return ChildCommentQuery The current query, for fluid interface
      */
-    public function filterByCustomerId($customerId = null, $comparison = null)
+    public function filterByRating($rating = null, $comparison = null)
     {
-        if (is_array($customerId)) {
+        if (is_array($rating)) {
             $useMinMax = false;
-            if (isset($customerId['min'])) {
-                $this->addUsingAlias(CommentTableMap::CUSTOMER_ID, $customerId['min'], Criteria::GREATER_EQUAL);
+            if (isset($rating['min'])) {
+                $this->addUsingAlias(CommentTableMap::RATING, $rating['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($customerId['max'])) {
-                $this->addUsingAlias(CommentTableMap::CUSTOMER_ID, $customerId['max'], Criteria::LESS_EQUAL);
+            if (isset($rating['max'])) {
+                $this->addUsingAlias(CommentTableMap::RATING, $rating['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -491,7 +577,7 @@ abstract class CommentQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(CommentTableMap::CUSTOMER_ID, $customerId, $comparison);
+        return $this->addUsingAlias(CommentTableMap::RATING, $rating, $comparison);
     }
 
     /**
@@ -533,6 +619,88 @@ abstract class CommentQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(CommentTableMap::VISIBLE, $visible, $comparison);
+    }
+
+    /**
+     * Filter the query on the verified column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByVerified(1234); // WHERE verified = 1234
+     * $query->filterByVerified(array(12, 34)); // WHERE verified IN (12, 34)
+     * $query->filterByVerified(array('min' => 12)); // WHERE verified > 12
+     * </code>
+     *
+     * @param     mixed $verified The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByVerified($verified = null, $comparison = null)
+    {
+        if (is_array($verified)) {
+            $useMinMax = false;
+            if (isset($verified['min'])) {
+                $this->addUsingAlias(CommentTableMap::VERIFIED, $verified['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($verified['max'])) {
+                $this->addUsingAlias(CommentTableMap::VERIFIED, $verified['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::VERIFIED, $verified, $comparison);
+    }
+
+    /**
+     * Filter the query on the abuse column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByAbuse(1234); // WHERE abuse = 1234
+     * $query->filterByAbuse(array(12, 34)); // WHERE abuse IN (12, 34)
+     * $query->filterByAbuse(array('min' => 12)); // WHERE abuse > 12
+     * </code>
+     *
+     * @param     mixed $abuse The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByAbuse($abuse = null, $comparison = null)
+    {
+        if (is_array($abuse)) {
+            $useMinMax = false;
+            if (isset($abuse['min'])) {
+                $this->addUsingAlias(CommentTableMap::ABUSE, $abuse['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($abuse['max'])) {
+                $this->addUsingAlias(CommentTableMap::ABUSE, $abuse['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::ABUSE, $abuse, $comparison);
     }
 
     /**

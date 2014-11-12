@@ -14,7 +14,6 @@
         <column name="visible" type="TINYINT" />
         <column name="verified" type="TINYINT" />
         <column name="abuse" type="INTEGER" />
-
         <behavior name="timestampable" />
         <foreign-key foreignTable="customer" name="fk_comment_customer_id" onDelete="CASCADE" onUpdate="RESTRICT">
             <reference foreign="id" local="customer_id" />

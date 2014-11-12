@@ -58,7 +58,7 @@ class CommentTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 10;
+    const NUM_COLUMNS = 14;
 
     /**
      * The number of lazy-loaded columns
@@ -68,7 +68,7 @@ class CommentTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 10;
+    const NUM_HYDRATE_COLUMNS = 14;
 
     /**
      * the column name for the ID field
@@ -81,14 +81,9 @@ class CommentTableMap extends TableMap
     const USERNAME = 'comment.USERNAME';
 
     /**
-     * the column name for the EMAIL field
+     * the column name for the CUSTOMER_ID field
      */
-    const EMAIL = 'comment.EMAIL';
-
-    /**
-     * the column name for the CONTENT field
-     */
-    const CONTENT = 'comment.CONTENT';
+    const CUSTOMER_ID = 'comment.CUSTOMER_ID';
 
     /**
      * the column name for the REF field
@@ -101,14 +96,39 @@ class CommentTableMap extends TableMap
     const REF_ID = 'comment.REF_ID';
 
     /**
-     * the column name for the CUSTOMER_ID field
+     * the column name for the EMAIL field
      */
-    const CUSTOMER_ID = 'comment.CUSTOMER_ID';
+    const EMAIL = 'comment.EMAIL';
+
+    /**
+     * the column name for the TITLE field
+     */
+    const TITLE = 'comment.TITLE';
+
+    /**
+     * the column name for the CONTENT field
+     */
+    const CONTENT = 'comment.CONTENT';
+
+    /**
+     * the column name for the RATING field
+     */
+    const RATING = 'comment.RATING';
 
     /**
      * the column name for the VISIBLE field
      */
     const VISIBLE = 'comment.VISIBLE';
+
+    /**
+     * the column name for the VERIFIED field
+     */
+    const VERIFIED = 'comment.VERIFIED';
+
+    /**
+     * the column name for the ABUSE field
+     */
+    const ABUSE = 'comment.ABUSE';
 
     /**
      * the column name for the CREATED_AT field
@@ -132,12 +152,12 @@ class CommentTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'Email', 'Content', 'Ref', 'RefId', 'CustomerId', 'Visible', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'username', 'email', 'content', 'ref', 'refId', 'customerId', 'visible', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(CommentTableMap::ID, CommentTableMap::USERNAME, CommentTableMap::EMAIL, CommentTableMap::CONTENT, CommentTableMap::REF, CommentTableMap::REF_ID, CommentTableMap::CUSTOMER_ID, CommentTableMap::VISIBLE, CommentTableMap::CREATED_AT, CommentTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('ID', 'USERNAME', 'EMAIL', 'CONTENT', 'REF', 'REF_ID', 'CUSTOMER_ID', 'VISIBLE', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('id', 'username', 'email', 'content', 'ref', 'ref_id', 'customer_id', 'visible', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id', 'Username', 'CustomerId', 'Ref', 'RefId', 'Email', 'Title', 'Content', 'Rating', 'Visible', 'Verified', 'Abuse', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'username', 'customerId', 'ref', 'refId', 'email', 'title', 'content', 'rating', 'visible', 'verified', 'abuse', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(CommentTableMap::ID, CommentTableMap::USERNAME, CommentTableMap::CUSTOMER_ID, CommentTableMap::REF, CommentTableMap::REF_ID, CommentTableMap::EMAIL, CommentTableMap::TITLE, CommentTableMap::CONTENT, CommentTableMap::RATING, CommentTableMap::VISIBLE, CommentTableMap::VERIFIED, CommentTableMap::ABUSE, CommentTableMap::CREATED_AT, CommentTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('ID', 'USERNAME', 'CUSTOMER_ID', 'REF', 'REF_ID', 'EMAIL', 'TITLE', 'CONTENT', 'RATING', 'VISIBLE', 'VERIFIED', 'ABUSE', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('id', 'username', 'customer_id', 'ref', 'ref_id', 'email', 'title', 'content', 'rating', 'visible', 'verified', 'abuse', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -147,12 +167,12 @@ class CommentTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Email' => 2, 'Content' => 3, 'Ref' => 4, 'RefId' => 5, 'CustomerId' => 6, 'Visible' => 7, 'CreatedAt' => 8, 'UpdatedAt' => 9, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'username' => 1, 'email' => 2, 'content' => 3, 'ref' => 4, 'refId' => 5, 'customerId' => 6, 'visible' => 7, 'createdAt' => 8, 'updatedAt' => 9, ),
-        self::TYPE_COLNAME       => array(CommentTableMap::ID => 0, CommentTableMap::USERNAME => 1, CommentTableMap::EMAIL => 2, CommentTableMap::CONTENT => 3, CommentTableMap::REF => 4, CommentTableMap::REF_ID => 5, CommentTableMap::CUSTOMER_ID => 6, CommentTableMap::VISIBLE => 7, CommentTableMap::CREATED_AT => 8, CommentTableMap::UPDATED_AT => 9, ),
-        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'USERNAME' => 1, 'EMAIL' => 2, 'CONTENT' => 3, 'REF' => 4, 'REF_ID' => 5, 'CUSTOMER_ID' => 6, 'VISIBLE' => 7, 'CREATED_AT' => 8, 'UPDATED_AT' => 9, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'email' => 2, 'content' => 3, 'ref' => 4, 'ref_id' => 5, 'customer_id' => 6, 'visible' => 7, 'created_at' => 8, 'updated_at' => 9, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'CustomerId' => 2, 'Ref' => 3, 'RefId' => 4, 'Email' => 5, 'Title' => 6, 'Content' => 7, 'Rating' => 8, 'Visible' => 9, 'Verified' => 10, 'Abuse' => 11, 'CreatedAt' => 12, 'UpdatedAt' => 13, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'username' => 1, 'customerId' => 2, 'ref' => 3, 'refId' => 4, 'email' => 5, 'title' => 6, 'content' => 7, 'rating' => 8, 'visible' => 9, 'verified' => 10, 'abuse' => 11, 'createdAt' => 12, 'updatedAt' => 13, ),
+        self::TYPE_COLNAME       => array(CommentTableMap::ID => 0, CommentTableMap::USERNAME => 1, CommentTableMap::CUSTOMER_ID => 2, CommentTableMap::REF => 3, CommentTableMap::REF_ID => 4, CommentTableMap::EMAIL => 5, CommentTableMap::TITLE => 6, CommentTableMap::CONTENT => 7, CommentTableMap::RATING => 8, CommentTableMap::VISIBLE => 9, CommentTableMap::VERIFIED => 10, CommentTableMap::ABUSE => 11, CommentTableMap::CREATED_AT => 12, CommentTableMap::UPDATED_AT => 13, ),
+        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'USERNAME' => 1, 'CUSTOMER_ID' => 2, 'REF' => 3, 'REF_ID' => 4, 'EMAIL' => 5, 'TITLE' => 6, 'CONTENT' => 7, 'RATING' => 8, 'VISIBLE' => 9, 'VERIFIED' => 10, 'ABUSE' => 11, 'CREATED_AT' => 12, 'UPDATED_AT' => 13, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'customer_id' => 2, 'ref' => 3, 'ref_id' => 4, 'email' => 5, 'title' => 6, 'content' => 7, 'rating' => 8, 'visible' => 9, 'verified' => 10, 'abuse' => 11, 'created_at' => 12, 'updated_at' => 13, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -173,12 +193,16 @@ class CommentTableMap extends TableMap
         // columns
         $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('USERNAME', 'Username', 'VARCHAR', false, 255, null);
-        $this->addColumn('EMAIL', 'Email', 'VARCHAR', false, 255, null);
-        $this->addColumn('CONTENT', 'Content', 'CLOB', false, null, null);
+        $this->addForeignKey('CUSTOMER_ID', 'CustomerId', 'INTEGER', 'customer', 'ID', false, null, null);
         $this->addColumn('REF', 'Ref', 'VARCHAR', false, 255, null);
         $this->addColumn('REF_ID', 'RefId', 'INTEGER', false, null, null);
-        $this->addForeignKey('CUSTOMER_ID', 'CustomerId', 'INTEGER', 'customer', 'ID', false, null, null);
+        $this->addColumn('EMAIL', 'Email', 'VARCHAR', false, 255, null);
+        $this->addColumn('TITLE', 'Title', 'VARCHAR', false, 255, null);
+        $this->addColumn('CONTENT', 'Content', 'CLOB', false, null, null);
+        $this->addColumn('RATING', 'Rating', 'TINYINT', false, null, null);
         $this->addColumn('VISIBLE', 'Visible', 'TINYINT', false, null, null);
+        $this->addColumn('VERIFIED', 'Verified', 'TINYINT', false, null, null);
+        $this->addColumn('ABUSE', 'Abuse', 'INTEGER', false, null, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -344,23 +368,31 @@ class CommentTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(CommentTableMap::ID);
             $criteria->addSelectColumn(CommentTableMap::USERNAME);
-            $criteria->addSelectColumn(CommentTableMap::EMAIL);
-            $criteria->addSelectColumn(CommentTableMap::CONTENT);
+            $criteria->addSelectColumn(CommentTableMap::CUSTOMER_ID);
             $criteria->addSelectColumn(CommentTableMap::REF);
             $criteria->addSelectColumn(CommentTableMap::REF_ID);
-            $criteria->addSelectColumn(CommentTableMap::CUSTOMER_ID);
+            $criteria->addSelectColumn(CommentTableMap::EMAIL);
+            $criteria->addSelectColumn(CommentTableMap::TITLE);
+            $criteria->addSelectColumn(CommentTableMap::CONTENT);
+            $criteria->addSelectColumn(CommentTableMap::RATING);
             $criteria->addSelectColumn(CommentTableMap::VISIBLE);
+            $criteria->addSelectColumn(CommentTableMap::VERIFIED);
+            $criteria->addSelectColumn(CommentTableMap::ABUSE);
             $criteria->addSelectColumn(CommentTableMap::CREATED_AT);
             $criteria->addSelectColumn(CommentTableMap::UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
             $criteria->addSelectColumn($alias . '.USERNAME');
-            $criteria->addSelectColumn($alias . '.EMAIL');
-            $criteria->addSelectColumn($alias . '.CONTENT');
+            $criteria->addSelectColumn($alias . '.CUSTOMER_ID');
             $criteria->addSelectColumn($alias . '.REF');
             $criteria->addSelectColumn($alias . '.REF_ID');
-            $criteria->addSelectColumn($alias . '.CUSTOMER_ID');
+            $criteria->addSelectColumn($alias . '.EMAIL');
+            $criteria->addSelectColumn($alias . '.TITLE');
+            $criteria->addSelectColumn($alias . '.CONTENT');
+            $criteria->addSelectColumn($alias . '.RATING');
             $criteria->addSelectColumn($alias . '.VISIBLE');
+            $criteria->addSelectColumn($alias . '.VERIFIED');
+            $criteria->addSelectColumn($alias . '.ABUSE');
             $criteria->addSelectColumn($alias . '.CREATED_AT');
             $criteria->addSelectColumn($alias . '.UPDATED_AT');
         }

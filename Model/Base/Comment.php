@@ -69,16 +69,10 @@ abstract class Comment implements ActiveRecordInterface
     protected $username;
 
     /**
-     * The value for the email field.
-     * @var        string
+     * The value for the customer_id field.
+     * @var        int
      */
-    protected $email;
-
-    /**
-     * The value for the content field.
-     * @var        string
-     */
-    protected $content;
+    protected $customer_id;
 
     /**
      * The value for the ref field.
@@ -93,16 +87,46 @@ abstract class Comment implements ActiveRecordInterface
     protected $ref_id;
 
     /**
-     * The value for the customer_id field.
+     * The value for the email field.
+     * @var        string
+     */
+    protected $email;
+
+    /**
+     * The value for the title field.
+     * @var        string
+     */
+    protected $title;
+
+    /**
+     * The value for the content field.
+     * @var        string
+     */
+    protected $content;
+
+    /**
+     * The value for the rating field.
      * @var        int
      */
-    protected $customer_id;
+    protected $rating;
 
     /**
      * The value for the visible field.
      * @var        int
      */
     protected $visible;
+
+    /**
+     * The value for the verified field.
+     * @var        int
+     */
+    protected $verified;
+
+    /**
+     * The value for the abuse field.
+     * @var        int
+     */
+    protected $abuse;
 
     /**
      * The value for the created_at field.
@@ -410,25 +434,14 @@ abstract class Comment implements ActiveRecordInterface
     }
 
     /**
-     * Get the [email] column value.
+     * Get the [customer_id] column value.
      *
-     * @return   string
+     * @return   int
      */
-    public function getEmail()
+    public function getCustomerId()
     {
 
-        return $this->email;
-    }
-
-    /**
-     * Get the [content] column value.
-     *
-     * @return   string
-     */
-    public function getContent()
-    {
-
-        return $this->content;
+        return $this->customer_id;
     }
 
     /**
@@ -454,14 +467,47 @@ abstract class Comment implements ActiveRecordInterface
     }
 
     /**
-     * Get the [customer_id] column value.
+     * Get the [email] column value.
+     *
+     * @return   string
+     */
+    public function getEmail()
+    {
+
+        return $this->email;
+    }
+
+    /**
+     * Get the [title] column value.
+     *
+     * @return   string
+     */
+    public function getTitle()
+    {
+
+        return $this->title;
+    }
+
+    /**
+     * Get the [content] column value.
+     *
+     * @return   string
+     */
+    public function getContent()
+    {
+
+        return $this->content;
+    }
+
+    /**
+     * Get the [rating] column value.
      *
      * @return   int
      */
-    public function getCustomerId()
+    public function getRating()
     {
 
-        return $this->customer_id;
+        return $this->rating;
     }
 
     /**
@@ -473,6 +519,28 @@ abstract class Comment implements ActiveRecordInterface
     {
 
         return $this->visible;
+    }
+
+    /**
+     * Get the [verified] column value.
+     *
+     * @return   int
+     */
+    public function getVerified()
+    {
+
+        return $this->verified;
+    }
+
+    /**
+     * Get the [abuse] column value.
+     *
+     * @return   int
+     */
+    public function getAbuse()
+    {
+
+        return $this->abuse;
     }
 
     /**
@@ -558,46 +626,29 @@ abstract class Comment implements ActiveRecordInterface
     } // setUsername()
 
     /**
-     * Set the value of [email] column.
+     * Set the value of [customer_id] column.
      *
-     * @param      string $v new value
+     * @param      int $v new value
      * @return   \Comment\Model\Comment The current object (for fluent API support)
      */
-    public function setEmail($v)
+    public function setCustomerId($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            $v = (int) $v;
         }
 
-        if ($this->email !== $v) {
-            $this->email = $v;
-            $this->modifiedColumns[CommentTableMap::EMAIL] = true;
+        if ($this->customer_id !== $v) {
+            $this->customer_id = $v;
+            $this->modifiedColumns[CommentTableMap::CUSTOMER_ID] = true;
+        }
+
+        if ($this->aCustomer !== null && $this->aCustomer->getId() !== $v) {
+            $this->aCustomer = null;
         }
 
 
         return $this;
-    } // setEmail()
-
-    /**
-     * Set the value of [content] column.
-     *
-     * @param      string $v new value
-     * @return   \Comment\Model\Comment The current object (for fluent API support)
-     */
-    public function setContent($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->content !== $v) {
-            $this->content = $v;
-            $this->modifiedColumns[CommentTableMap::CONTENT] = true;
-        }
-
-
-        return $this;
-    } // setContent()
+    } // setCustomerId()
 
     /**
      * Set the value of [ref] column.
@@ -642,29 +693,88 @@ abstract class Comment implements ActiveRecordInterface
     } // setRefId()
 
     /**
-     * Set the value of [customer_id] column.
+     * Set the value of [email] column.
+     *
+     * @param      string $v new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setEmail($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->email !== $v) {
+            $this->email = $v;
+            $this->modifiedColumns[CommentTableMap::EMAIL] = true;
+        }
+
+
+        return $this;
+    } // setEmail()
+
+    /**
+     * Set the value of [title] column.
+     *
+     * @param      string $v new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setTitle($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->title !== $v) {
+            $this->title = $v;
+            $this->modifiedColumns[CommentTableMap::TITLE] = true;
+        }
+
+
+        return $this;
+    } // setTitle()
+
+    /**
+     * Set the value of [content] column.
+     *
+     * @param      string $v new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setContent($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->content !== $v) {
+            $this->content = $v;
+            $this->modifiedColumns[CommentTableMap::CONTENT] = true;
+        }
+
+
+        return $this;
+    } // setContent()
+
+    /**
+     * Set the value of [rating] column.
      *
      * @param      int $v new value
      * @return   \Comment\Model\Comment The current object (for fluent API support)
      */
-    public function setCustomerId($v)
+    public function setRating($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->customer_id !== $v) {
-            $this->customer_id = $v;
-            $this->modifiedColumns[CommentTableMap::CUSTOMER_ID] = true;
-        }
-
-        if ($this->aCustomer !== null && $this->aCustomer->getId() !== $v) {
-            $this->aCustomer = null;
+        if ($this->rating !== $v) {
+            $this->rating = $v;
+            $this->modifiedColumns[CommentTableMap::RATING] = true;
         }
 
 
         return $this;
-    } // setCustomerId()
+    } // setRating()
 
     /**
      * Set the value of [visible] column.
@@ -686,6 +796,48 @@ abstract class Comment implements ActiveRecordInterface
 
         return $this;
     } // setVisible()
+
+    /**
+     * Set the value of [verified] column.
+     *
+     * @param      int $v new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setVerified($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->verified !== $v) {
+            $this->verified = $v;
+            $this->modifiedColumns[CommentTableMap::VERIFIED] = true;
+        }
+
+
+        return $this;
+    } // setVerified()
+
+    /**
+     * Set the value of [abuse] column.
+     *
+     * @param      int $v new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setAbuse($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->abuse !== $v) {
+            $this->abuse = $v;
+            $this->modifiedColumns[CommentTableMap::ABUSE] = true;
+        }
+
+
+        return $this;
+    } // setAbuse()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
@@ -772,31 +924,43 @@ abstract class Comment implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CommentTableMap::translateFieldName('Username', TableMap::TYPE_PHPNAME, $indexType)];
             $this->username = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CommentTableMap::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->email = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : CommentTableMap::translateFieldName('Content', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->content = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : CommentTableMap::translateFieldName('Ref', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->ref = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : CommentTableMap::translateFieldName('RefId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->ref_id = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : CommentTableMap::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CommentTableMap::translateFieldName('CustomerId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->customer_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : CommentTableMap::translateFieldName('Visible', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : CommentTableMap::translateFieldName('Ref', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->ref = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : CommentTableMap::translateFieldName('RefId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->ref_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : CommentTableMap::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->email = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : CommentTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->title = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : CommentTableMap::translateFieldName('Content', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->content = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : CommentTableMap::translateFieldName('Rating', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->rating = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : CommentTableMap::translateFieldName('Visible', TableMap::TYPE_PHPNAME, $indexType)];
             $this->visible = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : CommentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : CommentTableMap::translateFieldName('Verified', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->verified = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : CommentTableMap::translateFieldName('Abuse', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->abuse = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : CommentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : CommentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : CommentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -809,7 +973,7 @@ abstract class Comment implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 10; // 10 = CommentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 14; // 14 = CommentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating \Comment\Model\Comment object", 0, $e);
@@ -1051,11 +1215,8 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::USERNAME)) {
             $modifiedColumns[':p' . $index++]  = 'USERNAME';
         }
-        if ($this->isColumnModified(CommentTableMap::EMAIL)) {
-            $modifiedColumns[':p' . $index++]  = 'EMAIL';
-        }
-        if ($this->isColumnModified(CommentTableMap::CONTENT)) {
-            $modifiedColumns[':p' . $index++]  = 'CONTENT';
+        if ($this->isColumnModified(CommentTableMap::CUSTOMER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'CUSTOMER_ID';
         }
         if ($this->isColumnModified(CommentTableMap::REF)) {
             $modifiedColumns[':p' . $index++]  = 'REF';
@@ -1063,11 +1224,26 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::REF_ID)) {
             $modifiedColumns[':p' . $index++]  = 'REF_ID';
         }
-        if ($this->isColumnModified(CommentTableMap::CUSTOMER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'CUSTOMER_ID';
+        if ($this->isColumnModified(CommentTableMap::EMAIL)) {
+            $modifiedColumns[':p' . $index++]  = 'EMAIL';
+        }
+        if ($this->isColumnModified(CommentTableMap::TITLE)) {
+            $modifiedColumns[':p' . $index++]  = 'TITLE';
+        }
+        if ($this->isColumnModified(CommentTableMap::CONTENT)) {
+            $modifiedColumns[':p' . $index++]  = 'CONTENT';
+        }
+        if ($this->isColumnModified(CommentTableMap::RATING)) {
+            $modifiedColumns[':p' . $index++]  = 'RATING';
         }
         if ($this->isColumnModified(CommentTableMap::VISIBLE)) {
             $modifiedColumns[':p' . $index++]  = 'VISIBLE';
+        }
+        if ($this->isColumnModified(CommentTableMap::VERIFIED)) {
+            $modifiedColumns[':p' . $index++]  = 'VERIFIED';
+        }
+        if ($this->isColumnModified(CommentTableMap::ABUSE)) {
+            $modifiedColumns[':p' . $index++]  = 'ABUSE';
         }
         if ($this->isColumnModified(CommentTableMap::CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'CREATED_AT';
@@ -1092,11 +1268,8 @@ abstract class Comment implements ActiveRecordInterface
                     case 'USERNAME':
                         $stmt->bindValue($identifier, $this->username, PDO::PARAM_STR);
                         break;
-                    case 'EMAIL':
-                        $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
-                        break;
-                    case 'CONTENT':
-                        $stmt->bindValue($identifier, $this->content, PDO::PARAM_STR);
+                    case 'CUSTOMER_ID':
+                        $stmt->bindValue($identifier, $this->customer_id, PDO::PARAM_INT);
                         break;
                     case 'REF':
                         $stmt->bindValue($identifier, $this->ref, PDO::PARAM_STR);
@@ -1104,11 +1277,26 @@ abstract class Comment implements ActiveRecordInterface
                     case 'REF_ID':
                         $stmt->bindValue($identifier, $this->ref_id, PDO::PARAM_INT);
                         break;
-                    case 'CUSTOMER_ID':
-                        $stmt->bindValue($identifier, $this->customer_id, PDO::PARAM_INT);
+                    case 'EMAIL':
+                        $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
+                        break;
+                    case 'TITLE':
+                        $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
+                        break;
+                    case 'CONTENT':
+                        $stmt->bindValue($identifier, $this->content, PDO::PARAM_STR);
+                        break;
+                    case 'RATING':
+                        $stmt->bindValue($identifier, $this->rating, PDO::PARAM_INT);
                         break;
                     case 'VISIBLE':
                         $stmt->bindValue($identifier, $this->visible, PDO::PARAM_INT);
+                        break;
+                    case 'VERIFIED':
+                        $stmt->bindValue($identifier, $this->verified, PDO::PARAM_INT);
+                        break;
+                    case 'ABUSE':
+                        $stmt->bindValue($identifier, $this->abuse, PDO::PARAM_INT);
                         break;
                     case 'CREATED_AT':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1185,27 +1373,39 @@ abstract class Comment implements ActiveRecordInterface
                 return $this->getUsername();
                 break;
             case 2:
-                return $this->getEmail();
-                break;
-            case 3:
-                return $this->getContent();
-                break;
-            case 4:
-                return $this->getRef();
-                break;
-            case 5:
-                return $this->getRefId();
-                break;
-            case 6:
                 return $this->getCustomerId();
                 break;
+            case 3:
+                return $this->getRef();
+                break;
+            case 4:
+                return $this->getRefId();
+                break;
+            case 5:
+                return $this->getEmail();
+                break;
+            case 6:
+                return $this->getTitle();
+                break;
             case 7:
-                return $this->getVisible();
+                return $this->getContent();
                 break;
             case 8:
-                return $this->getCreatedAt();
+                return $this->getRating();
                 break;
             case 9:
+                return $this->getVisible();
+                break;
+            case 10:
+                return $this->getVerified();
+                break;
+            case 11:
+                return $this->getAbuse();
+                break;
+            case 12:
+                return $this->getCreatedAt();
+                break;
+            case 13:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1239,14 +1439,18 @@ abstract class Comment implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getUsername(),
-            $keys[2] => $this->getEmail(),
-            $keys[3] => $this->getContent(),
-            $keys[4] => $this->getRef(),
-            $keys[5] => $this->getRefId(),
-            $keys[6] => $this->getCustomerId(),
-            $keys[7] => $this->getVisible(),
-            $keys[8] => $this->getCreatedAt(),
-            $keys[9] => $this->getUpdatedAt(),
+            $keys[2] => $this->getCustomerId(),
+            $keys[3] => $this->getRef(),
+            $keys[4] => $this->getRefId(),
+            $keys[5] => $this->getEmail(),
+            $keys[6] => $this->getTitle(),
+            $keys[7] => $this->getContent(),
+            $keys[8] => $this->getRating(),
+            $keys[9] => $this->getVisible(),
+            $keys[10] => $this->getVerified(),
+            $keys[11] => $this->getAbuse(),
+            $keys[12] => $this->getCreatedAt(),
+            $keys[13] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1298,27 +1502,39 @@ abstract class Comment implements ActiveRecordInterface
                 $this->setUsername($value);
                 break;
             case 2:
-                $this->setEmail($value);
-                break;
-            case 3:
-                $this->setContent($value);
-                break;
-            case 4:
-                $this->setRef($value);
-                break;
-            case 5:
-                $this->setRefId($value);
-                break;
-            case 6:
                 $this->setCustomerId($value);
                 break;
+            case 3:
+                $this->setRef($value);
+                break;
+            case 4:
+                $this->setRefId($value);
+                break;
+            case 5:
+                $this->setEmail($value);
+                break;
+            case 6:
+                $this->setTitle($value);
+                break;
             case 7:
-                $this->setVisible($value);
+                $this->setContent($value);
                 break;
             case 8:
-                $this->setCreatedAt($value);
+                $this->setRating($value);
                 break;
             case 9:
+                $this->setVisible($value);
+                break;
+            case 10:
+                $this->setVerified($value);
+                break;
+            case 11:
+                $this->setAbuse($value);
+                break;
+            case 12:
+                $this->setCreatedAt($value);
+                break;
+            case 13:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1347,14 +1563,18 @@ abstract class Comment implements ActiveRecordInterface
 
         if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
         if (array_key_exists($keys[1], $arr)) $this->setUsername($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setEmail($arr[$keys[2]]);
-        if (array_key_exists($keys[3], $arr)) $this->setContent($arr[$keys[3]]);
-        if (array_key_exists($keys[4], $arr)) $this->setRef($arr[$keys[4]]);
-        if (array_key_exists($keys[5], $arr)) $this->setRefId($arr[$keys[5]]);
-        if (array_key_exists($keys[6], $arr)) $this->setCustomerId($arr[$keys[6]]);
-        if (array_key_exists($keys[7], $arr)) $this->setVisible($arr[$keys[7]]);
-        if (array_key_exists($keys[8], $arr)) $this->setCreatedAt($arr[$keys[8]]);
-        if (array_key_exists($keys[9], $arr)) $this->setUpdatedAt($arr[$keys[9]]);
+        if (array_key_exists($keys[2], $arr)) $this->setCustomerId($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setRef($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setRefId($arr[$keys[4]]);
+        if (array_key_exists($keys[5], $arr)) $this->setEmail($arr[$keys[5]]);
+        if (array_key_exists($keys[6], $arr)) $this->setTitle($arr[$keys[6]]);
+        if (array_key_exists($keys[7], $arr)) $this->setContent($arr[$keys[7]]);
+        if (array_key_exists($keys[8], $arr)) $this->setRating($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setVisible($arr[$keys[9]]);
+        if (array_key_exists($keys[10], $arr)) $this->setVerified($arr[$keys[10]]);
+        if (array_key_exists($keys[11], $arr)) $this->setAbuse($arr[$keys[11]]);
+        if (array_key_exists($keys[12], $arr)) $this->setCreatedAt($arr[$keys[12]]);
+        if (array_key_exists($keys[13], $arr)) $this->setUpdatedAt($arr[$keys[13]]);
     }
 
     /**
@@ -1368,12 +1588,16 @@ abstract class Comment implements ActiveRecordInterface
 
         if ($this->isColumnModified(CommentTableMap::ID)) $criteria->add(CommentTableMap::ID, $this->id);
         if ($this->isColumnModified(CommentTableMap::USERNAME)) $criteria->add(CommentTableMap::USERNAME, $this->username);
-        if ($this->isColumnModified(CommentTableMap::EMAIL)) $criteria->add(CommentTableMap::EMAIL, $this->email);
-        if ($this->isColumnModified(CommentTableMap::CONTENT)) $criteria->add(CommentTableMap::CONTENT, $this->content);
+        if ($this->isColumnModified(CommentTableMap::CUSTOMER_ID)) $criteria->add(CommentTableMap::CUSTOMER_ID, $this->customer_id);
         if ($this->isColumnModified(CommentTableMap::REF)) $criteria->add(CommentTableMap::REF, $this->ref);
         if ($this->isColumnModified(CommentTableMap::REF_ID)) $criteria->add(CommentTableMap::REF_ID, $this->ref_id);
-        if ($this->isColumnModified(CommentTableMap::CUSTOMER_ID)) $criteria->add(CommentTableMap::CUSTOMER_ID, $this->customer_id);
+        if ($this->isColumnModified(CommentTableMap::EMAIL)) $criteria->add(CommentTableMap::EMAIL, $this->email);
+        if ($this->isColumnModified(CommentTableMap::TITLE)) $criteria->add(CommentTableMap::TITLE, $this->title);
+        if ($this->isColumnModified(CommentTableMap::CONTENT)) $criteria->add(CommentTableMap::CONTENT, $this->content);
+        if ($this->isColumnModified(CommentTableMap::RATING)) $criteria->add(CommentTableMap::RATING, $this->rating);
         if ($this->isColumnModified(CommentTableMap::VISIBLE)) $criteria->add(CommentTableMap::VISIBLE, $this->visible);
+        if ($this->isColumnModified(CommentTableMap::VERIFIED)) $criteria->add(CommentTableMap::VERIFIED, $this->verified);
+        if ($this->isColumnModified(CommentTableMap::ABUSE)) $criteria->add(CommentTableMap::ABUSE, $this->abuse);
         if ($this->isColumnModified(CommentTableMap::CREATED_AT)) $criteria->add(CommentTableMap::CREATED_AT, $this->created_at);
         if ($this->isColumnModified(CommentTableMap::UPDATED_AT)) $criteria->add(CommentTableMap::UPDATED_AT, $this->updated_at);
 
@@ -1440,12 +1664,16 @@ abstract class Comment implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setUsername($this->getUsername());
-        $copyObj->setEmail($this->getEmail());
-        $copyObj->setContent($this->getContent());
+        $copyObj->setCustomerId($this->getCustomerId());
         $copyObj->setRef($this->getRef());
         $copyObj->setRefId($this->getRefId());
-        $copyObj->setCustomerId($this->getCustomerId());
+        $copyObj->setEmail($this->getEmail());
+        $copyObj->setTitle($this->getTitle());
+        $copyObj->setContent($this->getContent());
+        $copyObj->setRating($this->getRating());
         $copyObj->setVisible($this->getVisible());
+        $copyObj->setVerified($this->getVerified());
+        $copyObj->setAbuse($this->getAbuse());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1534,12 +1762,16 @@ abstract class Comment implements ActiveRecordInterface
     {
         $this->id = null;
         $this->username = null;
-        $this->email = null;
-        $this->content = null;
+        $this->customer_id = null;
         $this->ref = null;
         $this->ref_id = null;
-        $this->customer_id = null;
+        $this->email = null;
+        $this->title = null;
+        $this->content = null;
+        $this->rating = null;
         $this->visible = null;
+        $this->verified = null;
+        $this->abuse = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
