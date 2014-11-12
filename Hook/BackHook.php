@@ -10,28 +10,17 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
-namespace Comment;
 
-use Propel\Runtime\Connection\ConnectionInterface;
-use Thelia\Install\Database;
-use Thelia\Model\ConfigQuery;
-use Thelia\Module\BaseModule;
+namespace Comment\Hook;
+
+use Thelia\Core\Hook\BaseHook;
 
 /**
- * Class Comment
- * @package Comment
- *
- * @author Michaël Espeche <michael.espeche@gmail.com>
+ * Class BackHook
+ * @package Comment\Hook
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class Comment extends BaseModule
+class BackHook extends BaseHook
 {
-    public function postActivation(ConnectionInterface $con = null)
-    {               
-        ConfigQuery::write('comment_moderate', 1);
-        ConfigQuery::write('comment_', 1);
 
-        $database = new Database($con->getWrappedConnection());
-        $database->insertSql(null, [THELIA_MODULE_DIR . 'Comment/Config/thelia.sql']);
-    }
-}
+} 

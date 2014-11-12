@@ -30,8 +30,8 @@ use Thelia\Core\Event\ActionEvent;
  * This class contains all Comment events identifiers used by Comment Core
  *
  * @author Michaël Espeche <michael.espeche@gmail.com>
+ * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-
 class CommentEvent extends ActionEvent
 {
 

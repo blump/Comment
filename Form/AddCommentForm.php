@@ -22,61 +22,55 @@
 /*************************************************************************************/
 namespace Comment\Form;
 
-//use Symfony\Component\Validator\Constraints\Callback;
-
-//use Symfony\Component\Validator\ExecutionContextInterface;
-
-
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
-//use Thelia\Model\CustomerQuery;
 
 class AddCommentForm extends BaseForm
 {
     protected function buildForm()
     {
         $this->formBuilder
-            ->add('username', 'text', array(
-                'constraints' => array(
+            ->add('username', 'text', [
+                'constraints' => [
                     new NotBlank()                    
-                ),
+                ],
                 'label' => Translator::getInstance()->trans('Username'),
-                'label_attr' => array(
+                'label_attr' => [
                     'for' => 'comment_username'
-                )
-            ))
-            ->add('email', 'email', array(
-                'constraints' => array(
+                ]
+            ])
+            ->add('email', 'email', [
+                'constraints' => [
                     new NotBlank(),
                     new Email()
-                ),
+                ],
                 'label' => Translator::getInstance()->trans('Email'),
-                'label_attr' => array(
+                'label_attr' => [
                     'for' => 'comment_mail'
-                )
-            ))
-            ->add('content', 'text', array(
-                'constraints' => array(
+                ]
+            ])
+            ->add('content', 'text', [
+                'constraints' => [
                     new NotBlank()
-                ),
+                ],
                 'label' => Translator::getInstance()->trans('Content'),
-                'label_attr' => array(
+                'label_attr' => [
                     'for' => 'comment_content'
-                )
-            ))
-            ->add('ref', 'text', array(
-                'constraints' => array(
+                ]
+            ])
+            ->add('ref', 'text', [
+                'constraints' => [
                     new NotBlank()
-                )
-            ))
-            ->add('ref_id', 'text', array(
-                'constraints' => array(
-                    new GreaterThan(array('value' => 0))
-                )
-            ))
+                ]
+            ])
+            ->add('ref_id', 'text', [
+                'constraints' => [
+                    new GreaterThan(['value' => 0])
+                ]
+            ])
         ;
     }
 

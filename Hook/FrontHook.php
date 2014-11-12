@@ -10,28 +10,37 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
-namespace Comment;
 
-use Propel\Runtime\Connection\ConnectionInterface;
-use Thelia\Install\Database;
-use Thelia\Model\ConfigQuery;
-use Thelia\Module\BaseModule;
+namespace Comment\Hook;
+
+use Thelia\Core\Event\Hook\HookRenderBlockEvent;
+use Thelia\Core\Event\Hook\HookRenderEvent;
+use Thelia\Core\Hook\BaseHook;
 
 /**
- * Class Comment
- * @package Comment
- *
- * @author Michaël Espeche <michael.espeche@gmail.com>
+ * Class FrontHook
+ * @package Comment\Hook
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class Comment extends BaseModule
+class FrontHook extends BaseHook
 {
-    public function postActivation(ConnectionInterface $con = null)
-    {               
-        ConfigQuery::write('comment_moderate', 1);
-        ConfigQuery::write('comment_', 1);
+    public function onProductAdditional(HookRenderBlockEvent $event)
+    {
+        $product = $event->getArgument('product', null);
 
-        $database = new Database($con->getWrappedConnection());
-        $database->insertSql(null, [THELIA_MODULE_DIR . 'Comment/Config/thelia.sql']);
+        $event->add(
+            [
+                'id' => 'comment',
+                'title' => $this->trans("Comments"),
+                'content' => $this->render("product-additional.html")
+            ]
+        );
     }
-}
+
+    public function onContentMainBottom(HookRenderEvent $event){
+
+        $event->add($this->render("content-main-bottom.html"));
+
+    }
+
+} 

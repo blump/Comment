@@ -5,9 +5,7 @@
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
     <loops>
-        <!-- sample definition
-        <loop name="MySuperLoop" class="MyModule\Loop\MySuperLoop" />
-        -->
+        <loop name="comment" class="Comment\Loop\CommentLoop" />
     </loops>
 
     <forms>        
@@ -37,4 +35,21 @@
 
     </imports>
     -->
+
+    <hooks>
+        <hook class="Comment\Hook\FrontHook">
+
+
+        </hook>
+    </hooks>
+    <hooks>
+        <hook id="comment.hook.front" class="Comment\Hook\FrontHook" scope="request">
+            <tag name="hook.event_listener" event="product.additional" />
+            <tag name="hook.event_listener" event="content.main-bottom" />
+        </hook>
+        <hook id="comment.hook.back" class="Comment\Hook\BackHook" scope="request">
+            <tag name="hook.event_listener" event="product.additional" />
+            <tag name="hook.event_listener" event="content.main-bottom" />
+        </hook>
+    </hooks>
 </config>
