@@ -34,6 +34,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery orderByVisible($order = Criteria::ASC) Order by the visible column
  * @method     ChildCommentQuery orderByVerified($order = Criteria::ASC) Order by the verified column
  * @method     ChildCommentQuery orderByAbuse($order = Criteria::ASC) Order by the abuse column
+ * @method     ChildCommentQuery orderByLocale($order = Criteria::ASC) Order by the locale column
  * @method     ChildCommentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildCommentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -49,6 +50,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery groupByVisible() Group by the visible column
  * @method     ChildCommentQuery groupByVerified() Group by the verified column
  * @method     ChildCommentQuery groupByAbuse() Group by the abuse column
+ * @method     ChildCommentQuery groupByLocale() Group by the locale column
  * @method     ChildCommentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildCommentQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -75,6 +77,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildComment findOneByVisible(int $visible) Return the first ChildComment filtered by the visible column
  * @method     ChildComment findOneByVerified(int $verified) Return the first ChildComment filtered by the verified column
  * @method     ChildComment findOneByAbuse(int $abuse) Return the first ChildComment filtered by the abuse column
+ * @method     ChildComment findOneByLocale(string $locale) Return the first ChildComment filtered by the locale column
  * @method     ChildComment findOneByCreatedAt(string $created_at) Return the first ChildComment filtered by the created_at column
  * @method     ChildComment findOneByUpdatedAt(string $updated_at) Return the first ChildComment filtered by the updated_at column
  *
@@ -90,6 +93,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     array findByVisible(int $visible) Return ChildComment objects filtered by the visible column
  * @method     array findByVerified(int $verified) Return ChildComment objects filtered by the verified column
  * @method     array findByAbuse(int $abuse) Return ChildComment objects filtered by the abuse column
+ * @method     array findByLocale(string $locale) Return ChildComment objects filtered by the locale column
  * @method     array findByCreatedAt(string $created_at) Return ChildComment objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildComment objects filtered by the updated_at column
  *
@@ -180,7 +184,7 @@ abstract class CommentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, VISIBLE, VERIFIED, ABUSE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
+        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, VISIBLE, VERIFIED, ABUSE, LOCALE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -701,6 +705,35 @@ abstract class CommentQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(CommentTableMap::ABUSE, $abuse, $comparison);
+    }
+
+    /**
+     * Filter the query on the locale column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByLocale('fooValue');   // WHERE locale = 'fooValue'
+     * $query->filterByLocale('%fooValue%'); // WHERE locale LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $locale The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByLocale($locale = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($locale)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $locale)) {
+                $locale = str_replace('*', '%', $locale);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::LOCALE, $locale, $comparison);
     }
 
     /**

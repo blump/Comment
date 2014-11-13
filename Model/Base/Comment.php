@@ -129,6 +129,12 @@ abstract class Comment implements ActiveRecordInterface
     protected $abuse;
 
     /**
+     * The value for the locale field.
+     * @var        string
+     */
+    protected $locale;
+
+    /**
      * The value for the created_at field.
      * @var        string
      */
@@ -544,6 +550,17 @@ abstract class Comment implements ActiveRecordInterface
     }
 
     /**
+     * Get the [locale] column value.
+     *
+     * @return   string
+     */
+    public function getLocale()
+    {
+
+        return $this->locale;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -840,6 +857,27 @@ abstract class Comment implements ActiveRecordInterface
     } // setAbuse()
 
     /**
+     * Set the value of [locale] column.
+     *
+     * @param      string $v new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setLocale($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->locale !== $v) {
+            $this->locale = $v;
+            $this->modifiedColumns[CommentTableMap::LOCALE] = true;
+        }
+
+
+        return $this;
+    } // setLocale()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param      mixed $v string, integer (timestamp), or \DateTime value.
@@ -954,13 +992,16 @@ abstract class Comment implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : CommentTableMap::translateFieldName('Abuse', TableMap::TYPE_PHPNAME, $indexType)];
             $this->abuse = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : CommentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : CommentTableMap::translateFieldName('Locale', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->locale = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : CommentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : CommentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : CommentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -973,7 +1014,7 @@ abstract class Comment implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 14; // 14 = CommentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 15; // 15 = CommentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating \Comment\Model\Comment object", 0, $e);
@@ -1245,6 +1286,9 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::ABUSE)) {
             $modifiedColumns[':p' . $index++]  = 'ABUSE';
         }
+        if ($this->isColumnModified(CommentTableMap::LOCALE)) {
+            $modifiedColumns[':p' . $index++]  = 'LOCALE';
+        }
         if ($this->isColumnModified(CommentTableMap::CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'CREATED_AT';
         }
@@ -1297,6 +1341,9 @@ abstract class Comment implements ActiveRecordInterface
                         break;
                     case 'ABUSE':
                         $stmt->bindValue($identifier, $this->abuse, PDO::PARAM_INT);
+                        break;
+                    case 'LOCALE':
+                        $stmt->bindValue($identifier, $this->locale, PDO::PARAM_STR);
                         break;
                     case 'CREATED_AT':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1403,9 +1450,12 @@ abstract class Comment implements ActiveRecordInterface
                 return $this->getAbuse();
                 break;
             case 12:
-                return $this->getCreatedAt();
+                return $this->getLocale();
                 break;
             case 13:
+                return $this->getCreatedAt();
+                break;
+            case 14:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1449,8 +1499,9 @@ abstract class Comment implements ActiveRecordInterface
             $keys[9] => $this->getVisible(),
             $keys[10] => $this->getVerified(),
             $keys[11] => $this->getAbuse(),
-            $keys[12] => $this->getCreatedAt(),
-            $keys[13] => $this->getUpdatedAt(),
+            $keys[12] => $this->getLocale(),
+            $keys[13] => $this->getCreatedAt(),
+            $keys[14] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1532,9 +1583,12 @@ abstract class Comment implements ActiveRecordInterface
                 $this->setAbuse($value);
                 break;
             case 12:
-                $this->setCreatedAt($value);
+                $this->setLocale($value);
                 break;
             case 13:
+                $this->setCreatedAt($value);
+                break;
+            case 14:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1573,8 +1627,9 @@ abstract class Comment implements ActiveRecordInterface
         if (array_key_exists($keys[9], $arr)) $this->setVisible($arr[$keys[9]]);
         if (array_key_exists($keys[10], $arr)) $this->setVerified($arr[$keys[10]]);
         if (array_key_exists($keys[11], $arr)) $this->setAbuse($arr[$keys[11]]);
-        if (array_key_exists($keys[12], $arr)) $this->setCreatedAt($arr[$keys[12]]);
-        if (array_key_exists($keys[13], $arr)) $this->setUpdatedAt($arr[$keys[13]]);
+        if (array_key_exists($keys[12], $arr)) $this->setLocale($arr[$keys[12]]);
+        if (array_key_exists($keys[13], $arr)) $this->setCreatedAt($arr[$keys[13]]);
+        if (array_key_exists($keys[14], $arr)) $this->setUpdatedAt($arr[$keys[14]]);
     }
 
     /**
@@ -1598,6 +1653,7 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::VISIBLE)) $criteria->add(CommentTableMap::VISIBLE, $this->visible);
         if ($this->isColumnModified(CommentTableMap::VERIFIED)) $criteria->add(CommentTableMap::VERIFIED, $this->verified);
         if ($this->isColumnModified(CommentTableMap::ABUSE)) $criteria->add(CommentTableMap::ABUSE, $this->abuse);
+        if ($this->isColumnModified(CommentTableMap::LOCALE)) $criteria->add(CommentTableMap::LOCALE, $this->locale);
         if ($this->isColumnModified(CommentTableMap::CREATED_AT)) $criteria->add(CommentTableMap::CREATED_AT, $this->created_at);
         if ($this->isColumnModified(CommentTableMap::UPDATED_AT)) $criteria->add(CommentTableMap::UPDATED_AT, $this->updated_at);
 
@@ -1674,6 +1730,7 @@ abstract class Comment implements ActiveRecordInterface
         $copyObj->setVisible($this->getVisible());
         $copyObj->setVerified($this->getVerified());
         $copyObj->setAbuse($this->getAbuse());
+        $copyObj->setLocale($this->getLocale());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
@@ -1772,6 +1829,7 @@ abstract class Comment implements ActiveRecordInterface
         $this->visible = null;
         $this->verified = null;
         $this->abuse = null;
+        $this->locale = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;

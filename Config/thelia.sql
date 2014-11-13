@@ -23,6 +23,7 @@ CREATE TABLE `comment`
     `visible` TINYINT,
     `verified` TINYINT,
     `abuse` INTEGER,
+    `locale` VARCHAR(10),
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
