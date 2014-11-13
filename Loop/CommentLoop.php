@@ -13,12 +13,17 @@
 
 namespace Comment\Loop;
 
+use Comment\Comment;
+use Comment\Model\CommentQuery;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
+use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Type;
+use Thelia\Type\BooleanOrBothType;
 
 
 /**
@@ -33,25 +38,6 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
     /**
      * Definition of loop arguments
      *
-     * example :
-     *
-     * public function getArgDefinitions()
-     * {
-     *  return new ArgumentCollection(
-     *
-     *       Argument::createIntListTypeArgument('id'),
-     *           new Argument(
-     *           'ref',
-     *           new TypeCollection(
-     *               new Type\AlphaNumStringListType()
-     *           )
-     *       ),
-     *       Argument::createIntListTypeArgument('category'),
-     *       Argument::createBooleanTypeArgument('new'),
-     *       ...
-     *   );
-     * }
-     *
      * @return \Thelia\Core\Template\Loop\Argument\ArgumentCollection
      */
     protected function getArgDefinitions()
@@ -59,10 +45,11 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
         return new ArgumentCollection(
             Argument::createIntListTypeArgument('id'),
             Argument::createIntListTypeArgument('customer'),
-            Argument::createIntListTypeArgument('ref'),
+            Argument::createAnyTypeArgument('ref'),
             Argument::createIntListTypeArgument('ref_id'),
-            Argument::createBooleanOrBothTypeArgument('visible'),
-            Argument::createBooleanOrBothTypeArgument('verified'),
+            Argument::createBooleanOrBothTypeArgument('visible', 1),
+            Argument::createBooleanOrBothTypeArgument('verified', 1),
+            Argument::createAnyTypeArgument('locale'),
             new Argument(
                 'order',
                 new Type\TypeCollection(
@@ -87,7 +74,87 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
      */
     public function buildModelCriteria()
     {
-        // TODO: Implement buildModelCriteria() method.
+        $search = CommentQuery::create();
+
+        $id = $this->getId();
+        if (null !== $id) {
+            $search->filterById($id, Criteria::IN);
+        }
+
+        $customer = $this->getCustomer();
+        if (null !== $customer) {
+            $search->filterByCustomerId($customer, Criteria::IN);
+        }
+
+        $ref = $this->getRef();
+        $refId = $this->getRefId();
+        if (null !== $ref || null !== $refId) {
+            if (null === $ref || null === $refId) {
+                throw new \InvalidArgumentException(
+                    $this->translator->trans(
+                        "If 'ref' argument is specified, 'ref_id' argument should be specified",
+                        [],
+                        Comment::getModuleCode()
+                    )
+                );
+            }
+
+            $search->findByRef($ref);
+            $search->findByRefId($refId, Criteria::IN);
+        }
+
+        $visible = $this->getVisible();
+        if ($visible !== BooleanOrBothType::ANY) {
+            $search->filterByVisible($visible ? 1 : 0);
+        }
+
+        $verified = $this->getVerified();
+        if ($verified !== BooleanOrBothType::ANY) {
+            $search->filterByVerified($verified ? 1 : 0);
+        }
+
+        $locale = $this->getLocale();
+        if (null !== $locale) {
+            $search->filterByLocale($locale);
+        }
+
+        $orders  = $this->getOrder();
+        foreach ($orders as $order) {
+            switch ($order) {
+                case "id":
+                    $search->orderById(Criteria::ASC);
+                    break;
+                case "id_reverse":
+                    $search->orderById(Criteria::DESC);
+                    break;
+                case "visible":
+                    $search->orderByVisible(Criteria::ASC);
+                    break;
+                case "visible_reverse":
+                    $search->orderByVisible(Criteria::DESC);
+                    break;
+                case "verified":
+                    $search->orderByVerified(Criteria::ASC);
+                    break;
+                case "verified_reverse":
+                    $search->orderByVerified(Criteria::DESC);
+                    break;
+                case "abuse":
+                    $search->orderByAbuse(Criteria::ASC);
+                    break;
+                case "abuse_reverse":
+                    $search->orderByAbuse(Criteria::DESC);
+                    break;
+                case "rating":
+                    $search->orderByRating(Criteria::ASC);
+                    break;
+                case "rating_reverse":
+                    $search->orderByRating(Criteria::DESC);
+                    break;
+            }
+        }
+
+        return $search;
     }
 
     /**
@@ -97,7 +164,31 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
      */
     public function parseResults(LoopResult $loopResult)
     {
-        // TODO: Implement parseResults() method.
+        /** @var \Comment\Model\Comment $comment */
+        foreach ($loopResult->getResultDataCollection() as $comment) {
+            $loopResultRow = new LoopResultRow($comment);
+
+            $loopResultRow
+                ->set('ID', $comment->getId())
+                ->set('username', $comment->getUsername())
+                ->set('email', $comment->getEmail())
+                ->set('customer_id', $comment->getCustomerId())
+                ->set('ref', $comment->getRef())
+                ->set('ref_id', $comment->getRefId())
+                ->set('title', $comment->getTitle())
+                ->set('content', $comment->getContent())
+                ->set('rating', $comment->getRating())
+                ->set('visible', $comment->getVisible())
+                ->set('verified', $comment->getVerified())
+                ->set('abuse', $comment->getAbuse())
+            ;
+
+            $this->addOutputFields($loopResultRow, $comment);
+
+            $loopResult->addRow($loopResultRow);
+        }
+
+        return $loopResult;
     }
 
 
