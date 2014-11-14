@@ -111,10 +111,11 @@ abstract class Comment implements ActiveRecordInterface
     protected $rating;
 
     /**
-     * The value for the visible field.
+     * The value for the status field.
+     * Note: this column has a database default value of: 0
      * @var        int
      */
-    protected $visible;
+    protected $status;
 
     /**
      * The value for the verified field.
@@ -160,10 +161,23 @@ abstract class Comment implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->status = 0;
+    }
+
+    /**
      * Initializes internal state of Comment\Model\Base\Comment object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -517,14 +531,14 @@ abstract class Comment implements ActiveRecordInterface
     }
 
     /**
-     * Get the [visible] column value.
+     * Get the [status] column value.
      *
      * @return   int
      */
-    public function getVisible()
+    public function getStatus()
     {
 
-        return $this->visible;
+        return $this->status;
     }
 
     /**
@@ -794,25 +808,25 @@ abstract class Comment implements ActiveRecordInterface
     } // setRating()
 
     /**
-     * Set the value of [visible] column.
+     * Set the value of [status] column.
      *
      * @param      int $v new value
      * @return   \Comment\Model\Comment The current object (for fluent API support)
      */
-    public function setVisible($v)
+    public function setStatus($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->visible !== $v) {
-            $this->visible = $v;
-            $this->modifiedColumns[CommentTableMap::VISIBLE] = true;
+        if ($this->status !== $v) {
+            $this->status = $v;
+            $this->modifiedColumns[CommentTableMap::STATUS] = true;
         }
 
 
         return $this;
-    } // setVisible()
+    } // setStatus()
 
     /**
      * Set the value of [verified] column.
@@ -929,6 +943,10 @@ abstract class Comment implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->status !== 0) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -983,8 +1001,8 @@ abstract class Comment implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : CommentTableMap::translateFieldName('Rating', TableMap::TYPE_PHPNAME, $indexType)];
             $this->rating = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : CommentTableMap::translateFieldName('Visible', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->visible = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : CommentTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->status = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : CommentTableMap::translateFieldName('Verified', TableMap::TYPE_PHPNAME, $indexType)];
             $this->verified = (null !== $col) ? (int) $col : null;
@@ -1277,8 +1295,8 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::RATING)) {
             $modifiedColumns[':p' . $index++]  = 'RATING';
         }
-        if ($this->isColumnModified(CommentTableMap::VISIBLE)) {
-            $modifiedColumns[':p' . $index++]  = 'VISIBLE';
+        if ($this->isColumnModified(CommentTableMap::STATUS)) {
+            $modifiedColumns[':p' . $index++]  = 'STATUS';
         }
         if ($this->isColumnModified(CommentTableMap::VERIFIED)) {
             $modifiedColumns[':p' . $index++]  = 'VERIFIED';
@@ -1333,8 +1351,8 @@ abstract class Comment implements ActiveRecordInterface
                     case 'RATING':
                         $stmt->bindValue($identifier, $this->rating, PDO::PARAM_INT);
                         break;
-                    case 'VISIBLE':
-                        $stmt->bindValue($identifier, $this->visible, PDO::PARAM_INT);
+                    case 'STATUS':
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
                     case 'VERIFIED':
                         $stmt->bindValue($identifier, $this->verified, PDO::PARAM_INT);
@@ -1441,7 +1459,7 @@ abstract class Comment implements ActiveRecordInterface
                 return $this->getRating();
                 break;
             case 9:
-                return $this->getVisible();
+                return $this->getStatus();
                 break;
             case 10:
                 return $this->getVerified();
@@ -1496,7 +1514,7 @@ abstract class Comment implements ActiveRecordInterface
             $keys[6] => $this->getTitle(),
             $keys[7] => $this->getContent(),
             $keys[8] => $this->getRating(),
-            $keys[9] => $this->getVisible(),
+            $keys[9] => $this->getStatus(),
             $keys[10] => $this->getVerified(),
             $keys[11] => $this->getAbuse(),
             $keys[12] => $this->getLocale(),
@@ -1574,7 +1592,7 @@ abstract class Comment implements ActiveRecordInterface
                 $this->setRating($value);
                 break;
             case 9:
-                $this->setVisible($value);
+                $this->setStatus($value);
                 break;
             case 10:
                 $this->setVerified($value);
@@ -1624,7 +1642,7 @@ abstract class Comment implements ActiveRecordInterface
         if (array_key_exists($keys[6], $arr)) $this->setTitle($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setContent($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setRating($arr[$keys[8]]);
-        if (array_key_exists($keys[9], $arr)) $this->setVisible($arr[$keys[9]]);
+        if (array_key_exists($keys[9], $arr)) $this->setStatus($arr[$keys[9]]);
         if (array_key_exists($keys[10], $arr)) $this->setVerified($arr[$keys[10]]);
         if (array_key_exists($keys[11], $arr)) $this->setAbuse($arr[$keys[11]]);
         if (array_key_exists($keys[12], $arr)) $this->setLocale($arr[$keys[12]]);
@@ -1650,7 +1668,7 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::TITLE)) $criteria->add(CommentTableMap::TITLE, $this->title);
         if ($this->isColumnModified(CommentTableMap::CONTENT)) $criteria->add(CommentTableMap::CONTENT, $this->content);
         if ($this->isColumnModified(CommentTableMap::RATING)) $criteria->add(CommentTableMap::RATING, $this->rating);
-        if ($this->isColumnModified(CommentTableMap::VISIBLE)) $criteria->add(CommentTableMap::VISIBLE, $this->visible);
+        if ($this->isColumnModified(CommentTableMap::STATUS)) $criteria->add(CommentTableMap::STATUS, $this->status);
         if ($this->isColumnModified(CommentTableMap::VERIFIED)) $criteria->add(CommentTableMap::VERIFIED, $this->verified);
         if ($this->isColumnModified(CommentTableMap::ABUSE)) $criteria->add(CommentTableMap::ABUSE, $this->abuse);
         if ($this->isColumnModified(CommentTableMap::LOCALE)) $criteria->add(CommentTableMap::LOCALE, $this->locale);
@@ -1727,7 +1745,7 @@ abstract class Comment implements ActiveRecordInterface
         $copyObj->setTitle($this->getTitle());
         $copyObj->setContent($this->getContent());
         $copyObj->setRating($this->getRating());
-        $copyObj->setVisible($this->getVisible());
+        $copyObj->setStatus($this->getStatus());
         $copyObj->setVerified($this->getVerified());
         $copyObj->setAbuse($this->getAbuse());
         $copyObj->setLocale($this->getLocale());
@@ -1826,7 +1844,7 @@ abstract class Comment implements ActiveRecordInterface
         $this->title = null;
         $this->content = null;
         $this->rating = null;
-        $this->visible = null;
+        $this->status = null;
         $this->verified = null;
         $this->abuse = null;
         $this->locale = null;
@@ -1834,6 +1852,7 @@ abstract class Comment implements ActiveRecordInterface
         $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);

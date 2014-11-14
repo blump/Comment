@@ -20,7 +20,7 @@ CREATE TABLE `comment`
     `title` VARCHAR(255),
     `content` LONGTEXT,
     `rating` TINYINT,
-    `visible` TINYINT,
+    `status` TINYINT DEFAULT 0,
     `verified` TINYINT,
     `abuse` INTEGER,
     `locale` VARCHAR(10),

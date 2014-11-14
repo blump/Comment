@@ -31,7 +31,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery orderByTitle($order = Criteria::ASC) Order by the title column
  * @method     ChildCommentQuery orderByContent($order = Criteria::ASC) Order by the content column
  * @method     ChildCommentQuery orderByRating($order = Criteria::ASC) Order by the rating column
- * @method     ChildCommentQuery orderByVisible($order = Criteria::ASC) Order by the visible column
+ * @method     ChildCommentQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method     ChildCommentQuery orderByVerified($order = Criteria::ASC) Order by the verified column
  * @method     ChildCommentQuery orderByAbuse($order = Criteria::ASC) Order by the abuse column
  * @method     ChildCommentQuery orderByLocale($order = Criteria::ASC) Order by the locale column
@@ -47,7 +47,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery groupByTitle() Group by the title column
  * @method     ChildCommentQuery groupByContent() Group by the content column
  * @method     ChildCommentQuery groupByRating() Group by the rating column
- * @method     ChildCommentQuery groupByVisible() Group by the visible column
+ * @method     ChildCommentQuery groupByStatus() Group by the status column
  * @method     ChildCommentQuery groupByVerified() Group by the verified column
  * @method     ChildCommentQuery groupByAbuse() Group by the abuse column
  * @method     ChildCommentQuery groupByLocale() Group by the locale column
@@ -74,7 +74,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildComment findOneByTitle(string $title) Return the first ChildComment filtered by the title column
  * @method     ChildComment findOneByContent(string $content) Return the first ChildComment filtered by the content column
  * @method     ChildComment findOneByRating(int $rating) Return the first ChildComment filtered by the rating column
- * @method     ChildComment findOneByVisible(int $visible) Return the first ChildComment filtered by the visible column
+ * @method     ChildComment findOneByStatus(int $status) Return the first ChildComment filtered by the status column
  * @method     ChildComment findOneByVerified(int $verified) Return the first ChildComment filtered by the verified column
  * @method     ChildComment findOneByAbuse(int $abuse) Return the first ChildComment filtered by the abuse column
  * @method     ChildComment findOneByLocale(string $locale) Return the first ChildComment filtered by the locale column
@@ -90,7 +90,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     array findByTitle(string $title) Return ChildComment objects filtered by the title column
  * @method     array findByContent(string $content) Return ChildComment objects filtered by the content column
  * @method     array findByRating(int $rating) Return ChildComment objects filtered by the rating column
- * @method     array findByVisible(int $visible) Return ChildComment objects filtered by the visible column
+ * @method     array findByStatus(int $status) Return ChildComment objects filtered by the status column
  * @method     array findByVerified(int $verified) Return ChildComment objects filtered by the verified column
  * @method     array findByAbuse(int $abuse) Return ChildComment objects filtered by the abuse column
  * @method     array findByLocale(string $locale) Return ChildComment objects filtered by the locale column
@@ -184,7 +184,7 @@ abstract class CommentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, VISIBLE, VERIFIED, ABUSE, LOCALE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
+        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, STATUS, VERIFIED, ABUSE, LOCALE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -585,16 +585,16 @@ abstract class CommentQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the visible column
+     * Filter the query on the status column
      *
      * Example usage:
      * <code>
-     * $query->filterByVisible(1234); // WHERE visible = 1234
-     * $query->filterByVisible(array(12, 34)); // WHERE visible IN (12, 34)
-     * $query->filterByVisible(array('min' => 12)); // WHERE visible > 12
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status > 12
      * </code>
      *
-     * @param     mixed $visible The value to use as filter.
+     * @param     mixed $status The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -602,16 +602,16 @@ abstract class CommentQuery extends ModelCriteria
      *
      * @return ChildCommentQuery The current query, for fluid interface
      */
-    public function filterByVisible($visible = null, $comparison = null)
+    public function filterByStatus($status = null, $comparison = null)
     {
-        if (is_array($visible)) {
+        if (is_array($status)) {
             $useMinMax = false;
-            if (isset($visible['min'])) {
-                $this->addUsingAlias(CommentTableMap::VISIBLE, $visible['min'], Criteria::GREATER_EQUAL);
+            if (isset($status['min'])) {
+                $this->addUsingAlias(CommentTableMap::STATUS, $status['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($visible['max'])) {
-                $this->addUsingAlias(CommentTableMap::VISIBLE, $visible['max'], Criteria::LESS_EQUAL);
+            if (isset($status['max'])) {
+                $this->addUsingAlias(CommentTableMap::STATUS, $status['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -622,7 +622,7 @@ abstract class CommentQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(CommentTableMap::VISIBLE, $visible, $comparison);
+        return $this->addUsingAlias(CommentTableMap::STATUS, $status, $comparison);
     }
 
     /**

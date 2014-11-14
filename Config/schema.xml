@@ -11,7 +11,7 @@
         <column name="title" size="255" type="VARCHAR" />
         <column name="content" type="CLOB" />
         <column name="rating" type="TINYINT" />
-        <column name="visible" type="TINYINT" />
+        <column name="status" type="TINYINT" default="0" />
         <column name="verified" type="TINYINT" />
         <column name="abuse" type="INTEGER" />
         <column name="locale" size="10" type="VARCHAR" />
