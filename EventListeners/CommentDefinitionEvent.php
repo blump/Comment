@@ -38,6 +38,9 @@ class CommentDefinitionEvent extends CommentEvent
     /** @var array */
     protected $definition = [];
 
+    /** @var bool */
+    protected $valid = false;
+
     public function __construct()
     {
 
@@ -125,6 +128,23 @@ class CommentDefinitionEvent extends CommentEvent
     public function setCustomer($customer)
     {
         $this->customer = $customer;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isValid()
+    {
+        return $this->valid;
+    }
+
+    /**
+     * @param boolean $valid
+     */
+    public function setValid($valid)
+    {
+        $this->valid = $valid;
         return $this;
     }
 }

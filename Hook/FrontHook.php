@@ -16,9 +16,12 @@ namespace Comment\Hook;
 use Comment\Comment;
 use Comment\EventListeners\CommentDefinitionEvent;
 use Comment\EventListeners\CommentEvents;
+use Comment\Exception\InvalidDefinitionException;
 use Thelia\Core\Event\Hook\BaseHookRenderEvent;
+use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
+use Thelia\Log\Tlog;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Exception\InvalidArgumentException;
 
@@ -35,72 +38,66 @@ class FrontHook extends BaseHook
     {
     }
 
-    public function onShowComment(BaseHookRenderEvent $event)
+    public function onShowComment(HookRenderEvent $event)
     {
-        $ref = $event->getArgument('ref')
-            ? $event->getArgument('ref')
-            : $this->getView();
-        $refId = $event->getArgument('ref_id')
-            ? $event->getArgument('ref_id')
-            : $this->getRequest()->attributes['id'];
-
-        if (null === $ref || 0 === $refId) {
-            throw new InvalidArgumentException(
-                $this->trans("", [], Comment::getModuleCode())
-            );
-        }
-
-        $data = $this->showComment($ref, $refId);
+        $data = $this->showComment($event);
 
         if (null !== $data) {
-            if ($event instanceof HookRenderEvent) {
-                $event->add($data);
-            } else {
-                $event->add(
-                    [
-                        'id' => 'comment',
-                        'title' => $this->trans("Comments"),
-                        'content' => $data
-                    ]
-                );
-            }
+            $event->add($data);
         }
     }
 
-    protected function showComment($ref, $refId)
+    public function onShowBlockComment(HookRenderBlockEvent $event)
     {
+        $data = $this->showComment($event);
+
+        if (null !== $data) {
+            $event->add(
+                [
+                    'id' => 'comment',
+                    'title' => $this->trans("Comments"),
+                    'content' => $data
+                ]
+            );
+        }
+    }
+
+    protected function showComment(BaseHookRenderEvent $event)
+    {
+        list($ref, $refId) = $this->getParams($event);
 
         $eventDefinition = new CommentDefinitionEvent();
         $eventDefinition
             ->setRef($ref)
-            ->setRefId($refId);
+            ->setRefId($refId)
+            ->setCustomer($this->getCustomer())
+            ->setConfig(Comment::getConfig())
+        ;
+        $message = '';
 
-        $this->dispatcher->dispatch(
-            CommentEvents::COMMENT_GET_DEFINITION,
-            $eventDefinition
-        );
-
-        if (empty($eventDefinition)) {
-            return null;
+        try {
+            $this->dispatcher->dispatch(
+                CommentEvents::COMMENT_GET_DEFINITION,
+                $eventDefinition
+            );
+        } catch (InvalidDefinitionException $ex) {
+            if ($ex->isSilent()) {
+                return null;
+            }
+            $eventDefinition->setValid(false);
+            $message = $ex->getMessage();
+        } catch (\Exception $ex) {
+            Tlog::getInstance()->debug($ex->getMessage());
         }
 
         return $this->render(
             "comment.html",
-            ['definition' => $eventDefinition]
-        );
-    }
-
-    private function addMessage($event, $message)
-    {
-        $event->add(
             [
-                'id' => 'comment',
-                'title' => $this->trans("Comments"),
-                'content' => $message
+                'definition' => $eventDefinition,
+                'message'    => $message
             ]
         );
     }
-
 
     /**
      * Add the javascript script to manage comments
@@ -117,5 +114,32 @@ class FrontHook extends BaseHook
         if (in_array($this->getView(), $allowedRef)) {
             $event->add($this->render("js.html"));
         }
+    }
+
+    protected function getParams(BaseHookRenderEvent $event)
+    {
+        $ref = $event->getArgument('ref')
+            ? $event->getArgument('ref')
+            : $this->getView();
+
+        $refId = 0;
+
+        if ($event->getArgument('ref_id')) {
+            $refId = $event->getArgument('ref_id');
+        } else {
+            if ($this->getRequest()->attributes->has('id')) {
+                $refId = intval($this->getRequest()->attributes->get('id'));
+            } elseif ($this->getRequest()->query->has($ref . '_id')) {
+                $refId = intval($this->getRequest()->query->get($ref . '_id'));
+            }
+        }
+
+        if (null === $ref || 0 === $refId) {
+            throw new InvalidArgumentException(
+                $this->trans("", [], Comment::getModuleCode())
+            );
+        }
+
+        return [$ref, $refId];
     }
 }

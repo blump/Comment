@@ -40,7 +40,7 @@
     <hooks>
         <hook id="comment.hook.front" class="Comment\Hook\FrontHook" scope="request">
             <!--argument type="service" id="thelia.parser.context"/-->
-            <tag name="hook.event_listener" event="product.additional" method="onShowComment" />
+            <tag name="hook.event_listener" event="product.additional" method="onShowBlockComment" />
             <tag name="hook.event_listener" event="content.main-bottom" method="onShowComment" />
             <tag name="hook.event_listener" event="main.javascript-initialization" method="jsComment" />
         </hook>

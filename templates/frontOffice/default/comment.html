@@ -1,4 +1,5 @@
 <div id="comment-top">
+    {if $definition->isValid()}
     {form name="form.add.comment"}
     <form id="form-add-comment" action="{url path="/comment/add"}" method="post" novalidate>
 
@@ -59,9 +60,12 @@
         <button type="submit" class="btn btn-primary">{intl l="Send"}</button>
     </form>
     {/form}
+    {else}
+        <div class="alert alert-info">{$message}</div>
+    {/if}
 </div>
 <div id="comment-list" class="comment-list">
-{loop name="comments" type="comment" ref="$ref" ref_id="$ref_id" status="ACCEPTED" order="created" locale=""}
+{loop name="comments" type="comment" ref="$ref" ref_id="$ref_id" status="1" order="created" locale=""}
     <div class="comment-item">
         <h4 class="comment-author">{$TITLE}</h4>
         <h3 class="comment-title">{$TITLE}</h3>

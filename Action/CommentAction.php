@@ -97,7 +97,7 @@ class CommentAction implements EventSubscriberInterface
     {
         $config = $event->getConfig();
 
-        if (!in_array($event->getRef(), $config['allowed_ref'])) {
+        if (!in_array($event->getRef(), $config['ref_allowed'])) {
             throw new InvalidDefinitionException(
                 $this->translator->trans(
                     "Reference %ref is not allowed",
@@ -114,7 +114,8 @@ class CommentAction implements EventSubscriberInterface
                     "Only customer are allowed to publish comment",
                     [],
                     CommentModule::getModuleCode()
-                )
+                ),
+                false
             );
         }
 
@@ -129,7 +130,9 @@ class CommentAction implements EventSubscriberInterface
             ->findOne()
         ;
 
-        $event->setComment($comment);
+        if (null !== $comment) {
+            $event->setComment($comment);
+        }
     }
 
 
@@ -184,7 +187,8 @@ class CommentAction implements EventSubscriberInterface
                         "Only customers who have bought this product can publish comment",
                         [],
                         CommentModule::getModuleCode()
-                    )
+                    ),
+                    false
                 );
             }
         }
@@ -228,6 +232,8 @@ class CommentAction implements EventSubscriberInterface
             CommentEvents::COMMENT_ABUSE => ['abuse', 128],
             CommentEvents::COMMENT_STATUS_UPDATE => ['statusUpdate', 128],
             CommentEvents::COMMENT_GET_DEFINITION => ['getDefinition', 128],
+            CommentEvents::COMMENT_GET_DEFINITION_PRODUCT => ['getProductDefinition', 128],
+            CommentEvents::COMMENT_GET_DEFINITION_CONTENT => ['getContentDefinition', 128],
         ];
     }
 }

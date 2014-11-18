@@ -22,4 +22,28 @@ namespace Comment\Exception;
 class InvalidDefinitionException extends \RuntimeException
 {
 
+    protected $silent = true;
+
+    public function __construct($message, $silent = true)
+    {
+        $this->silent = $silent;
+
+        parent::__construct($message);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSilent()
+    {
+        return $this->silent;
+    }
+
+    /**
+     * @param boolean $silent
+     */
+    public function setSilent($silent)
+    {
+        $this->silent = $silent;
+    }
 }

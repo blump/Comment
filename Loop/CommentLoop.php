@@ -58,7 +58,9 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                             'id', 'id_reverse',
                             'status', 'status_reverse',
                             'verified', 'verified_reverse',
-                            'abuse', 'abuse_reverse'
+                            'abuse', 'abuse_reverse',
+                            'created', 'created_reverse',
+                            'updated', 'updated_reverse'
                         ]
                     )
                 ),
@@ -150,6 +152,18 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                     break;
                 case "rating_reverse":
                     $search->orderByRating(Criteria::DESC);
+                    break;
+                case "created":
+                    $search->addAscendingOrderByColumn('created_at');
+                    break;
+                case "created_reverse":
+                    $search->addDescendingOrderByColumn('created_at');
+                    break;
+                case "updated":
+                    $search->addAscendingOrderByColumn('updated_at');
+                    break;
+                case "updated_reverse":
+                    $search->addDescendingOrderByColumn('updated_at');
                     break;
             }
         }
