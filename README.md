@@ -17,6 +17,8 @@ If the comment has been accepted the customer can edit or delete it.
 
 
 
+
+
 ```smarty
 {form name="form.add.comment"}
 <form id="form-add-comment" action="{url path="/comment/add"}" method="post" novalidate>                

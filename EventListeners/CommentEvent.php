@@ -23,6 +23,9 @@
 
 namespace Comment\EventListeners;
 
+use Comment\Model\Comment;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Form\Form;
 use Thelia\Core\Event\ActionEvent;
 
 /**
@@ -37,113 +40,52 @@ class CommentEvent extends ActionEvent
 
     const COMMENT_ADD = 'comment.action.add';
 
-    protected $customerId;
-    protected $username;
-    protected $email;
-    protected $content;
-    protected $ref;
-    protected $refId;
-    protected $visible;
-    protected $comment;
-
+    /** @var Comment */
+    protected $comment = null;
 
     /**
      * Constructor
-     * @param type $username
-     * @param type $email
-     * @param type $content
-     * @param type $ref
-     * @param type $refId
-     * @param type $visible
      */
-    function __construct($username, $email, $content, $ref, $refId, $visible) {
-        $this->username = $username;
-        $this->email = $email;
-        $this->content = $content;
-        $this->ref = $ref;
-        $this->refId = $refId;
-        $this->visible = $visible;
-    }
-       
-    public function getCustomerId() {
-        return $this->customerId;
+    public function __construct()
+    {
     }
 
-    public function setCustomerId($customerId) {
-        $this->customerId = $customerId;
-        
-        return $this;
-    }
-            
-    public function getUsername() {
-        return $this->username;
-    }
-
-    public function getEmail() {
-        return $this->email;
-    }
-
-    public function getContent() {
-        return $this->content;
-    }
-
-    public function getRef() {
-        return $this->ref;
-    }
-
-    public function getRefId() {
-        return $this->refId;
-    }
-
-    public function getVisible() {
-        return $this->visible;
-    }
-
-    public function setUsername($username) {
-        $this->username = $username;
-        
-        return $this;
-    }
-
-    public function setEmail($email) {
-        $this->email = $email;
-        
-        return $this;
-    }
-
-    public function setContent($content) {
-        $this->content = $content;
-        
-        return $this;
-    }
-
-    public function setRef($ref) {
-        $this->ref = $ref;
-        
-        return $this;
-    }
-
-    public function setRefId($refId) {
-        $this->refId = $refId;
-        
-        return $this;
-    }
-
-    public function setVisible($visible) {
-        $this->visible = $visible;
-        
-        return $this;
-    }
-    
-    public function getComment() {
+    /**
+     * @return Comment|null
+     */
+    public function getComment()
+    {
         return $this->comment;
     }
 
-    public function setComment($comment) {
+    /**
+     * @param Comment $comment
+     */
+    public function setComment(Comment $comment)
+    {
         $this->comment = $comment;
-        
         return $this;
     }
 
+
+    /**
+     * bind form fields to parameters
+     *
+     * @param Form $form
+     */
+    public function bindForm(Form $form)
+    {
+        $fields = $form->getIterator();
+
+        /** @var \Symfony\Component\Form\Form $field */
+        foreach ($fields as $field) {
+            $functionName = sprintf("set%s", Container::camelize($field->getName()));
+            if (method_exists($this, $functionName)) {
+                $this->{$functionName}($field->getData());
+            } else {
+                $this->parameters[$field->getName()] = $field->getData();
+            }
+        }
+    }
 
 }

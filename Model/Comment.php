@@ -10,5 +10,5 @@ class Comment extends BaseComment
     const ACCEPTED = 1;
     const REFUSED = 2;
     const ABUSED = 3;
-    
+
 }

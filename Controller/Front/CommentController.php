@@ -23,7 +23,9 @@
 
 namespace Comment\Controller\Front;
 
+use Comment\Comment;
 use Comment\EventListeners\CommentEvent;
+use Comment\EventListeners\CommentEvents;
 use Comment\Form\AddCommentForm;
 use Exception;
 use Thelia\Controller\Front\BaseFrontController;
@@ -37,49 +39,73 @@ use Thelia\Log\Tlog;
 class CommentController extends BaseFrontController
 {
     const DEFAULT_VISIBLE = 0;
-    
-    public function createAction() {                
-                
+
+    public function showAction()
+    {
+
+    }
+
+    public function createAction()
+    {
+        $this->checkXmlHttpRequest();
+
         $error_message = false;
         $commentForm = new AddCommentForm($this->getRequest());
+        $responseData = [];
+
+        // adapt form
+        if (null !== $customer = $this->getSecurityContext()->getCustomerUser()) {
+            $commentForm->getFormBuilder()->remove('username');
+            $commentForm->getFormBuilder()->remove('email');
+        } else {
+            $commentForm->getFormBuilder()->remove('customer_id');
+        }
 
         try {
-
             $form = $this->validateForm($commentForm);
 
-            $event = new CommentEvent(
-                $form->get('username')->getData(),
-                $form->get('email')->getData(),
-                $form->get('content')->getData(),
-                $form->get('ref')->getData(),
-                $form->get('ref_id')->getData(),
-                self::DEFAULT_VISIBLE
-            );
+            $event = new CommentEvent();
+            $event->bindForm($form);
 
-            if (null !== $customer = $this->getSecurityContext()->getCustomerUser()) {                
-                $event->setCustomerId($customer->getId());
-                $event->setUsername($customer->getUsername());
-                $event->setEmail($customer->getEmail());
+            $this->dispatch(CommentEvents::COMMENT_CREATE, $event);
+
+            if (null !== $event->getComment()) {
+                $responseData = [
+                    "success" => true,
+                    "messages" => [
+                        $this->translator->trans("Thank you for submitting your comment."),
+                    ]
+                ];
+            } else {
+                $responseData = [
+                    "success" => false,
+                    "messages" => [
+                        $this->getTranslator()->trans("Sorry, an unknown error occurred. Please try again.", [], Comment::getModuleCode())
+                    ],
+                    "errors" => []
+                ];
             }
-
-            $this->dispatch(CommentEvent::COMMENT_ADD, $event);
 
         } catch (Exception $e) {
             $error_message = $e->getMessage();
-        }
-        
-        if ($error_message !== false) {
-            \Thelia\Log\Tlog::getInstance()->error(sprintf('Error during comment send : %s', $error_message));
+            $responseData = [
+                "success" => false,
+                "messages" => [$e->getMessage()],
+                "errors" => []
+            ];
+            /* todo error by field
+            foreach ($commentForm->getForm()->getErrors() as $field) {
 
-            $commentForm->setErrorMessage($error_message);
-
-            $this->getParserContext()
-                ->addForm($commentForm)
-                ->setGeneralError($error_message)
-            ;
-        } else {
-            $this->redirectSuccess($commentForm);
+            }
+            */
         }
+
+        return $this->jsonResponse(json_encode($responseData));
+    }
+
+    public function deleteAction()
+    {
+
     }
 
 }

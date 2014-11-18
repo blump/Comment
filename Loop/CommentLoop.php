@@ -47,7 +47,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
             Argument::createIntListTypeArgument('customer'),
             Argument::createAnyTypeArgument('ref'),
             Argument::createIntListTypeArgument('ref_id'),
-            Argument::createBooleanOrBothTypeArgument('visible', 1),
+            Argument::createIntListTypeArgument('status'),
             Argument::createBooleanOrBothTypeArgument('verified', 1),
             Argument::createAnyTypeArgument('locale'),
             new Argument(
@@ -56,7 +56,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                     new Type\EnumListType(
                         [
                             'id', 'id_reverse',
-                            'visible', 'visible_reverse',
+                            'status', 'status_reverse',
                             'verified', 'verified_reverse',
                             'abuse', 'abuse_reverse'
                         ]
@@ -103,9 +103,9 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
             $search->findByRefId($refId, Criteria::IN);
         }
 
-        $visible = $this->getVisible();
-        if ($visible !== BooleanOrBothType::ANY) {
-            $search->filterByVisible($visible ? 1 : 0);
+        $status = $this->getStatus();
+        if ($status !== null) {
+            $search->filterByStatus($status);
         }
 
         $verified = $this->getVerified();
@@ -128,10 +128,10 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                     $search->orderById(Criteria::DESC);
                     break;
                 case "visible":
-                    $search->orderByVisible(Criteria::ASC);
+                    $search->orderByStatus(Criteria::ASC);
                     break;
                 case "visible_reverse":
-                    $search->orderByVisible(Criteria::DESC);
+                    $search->orderByStatus(Criteria::DESC);
                     break;
                 case "verified":
                     $search->orderByVerified(Criteria::ASC);
@@ -178,7 +178,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('title', $comment->getTitle())
                 ->set('content', $comment->getContent())
                 ->set('rating', $comment->getRating())
-                ->set('visible', $comment->getVisible())
+                ->set('status', $comment->getStatus())
                 ->set('verified', $comment->getVerified())
                 ->set('abuse', $comment->getAbuse())
             ;

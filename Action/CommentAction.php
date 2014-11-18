@@ -23,9 +23,20 @@
 
 namespace Comment\Action;
 
+use Comment\EventListeners\CommentDefinitionEvent;
 use Comment\EventListeners\CommentEvent;
+use Comment\EventListeners\CommentEvents;
+use Comment\Exception\InvalidDefinitionException;
 use Comment\Model\Comment;
+use Comment\Comment as CommentModule;
+use Comment\Model\CommentQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Translation\TranslatorInterface;
+use Thelia\Exception\NotImplementedException;
+use Thelia\Model\ConfigQuery;
+use Thelia\Model\MetaDataQuery;
+use Thelia\Model\OrderProductQuery;
+use Thelia\Model\ProductQuery;
 
 /**
  *
@@ -37,8 +48,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class CommentAction implements EventSubscriberInterface
 {
+    /** @var null|TranslatorInterface */
+    protected $translator = null;
 
-    public function addComment(CommentEvent $event)
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
+    public function create(CommentEvent $event)
     {
      
         $comment = new Comment();
@@ -54,6 +72,132 @@ class CommentAction implements EventSubscriberInterface
         
         $event->setComment($comment);
     }
+
+    public function update(CommentEvent $event)
+    {
+        throw new NotImplementedException('Not yet implemented');
+    }
+
+    public function delete(CommentEvent $event)
+    {
+        throw new NotImplementedException('Not yet implemented');
+    }
+
+    public function abuse(CommentEvent $event)
+    {
+        throw new NotImplementedException('Not yet implemented');
+    }
+
+    public function statusChange(CommentEvent $event)
+    {
+        throw new NotImplementedException('Not yet implemented');
+    }
+
+    public function getDefinition(CommentDefinitionEvent $event)
+    {
+        $config = $event->getConfig();
+
+        if (!in_array($event->getRef(), $config['allowed_ref'])) {
+            throw new InvalidDefinitionException(
+                $this->translator->trans(
+                    "Reference %ref is not allowed",
+                    ['%ref' => $event->getRef()],
+                    CommentModule::getModuleCode()
+                )
+            );
+        }
+
+        // is only customer is authorized to publish
+        if ($config['only_customer'] && null === $event->getCustomer()) {
+            throw new InvalidDefinitionException(
+                $this->translator->trans(
+                    "Only customer are allowed to publish comment",
+                    [],
+                    CommentModule::getModuleCode()
+                )
+            );
+        }
+
+        $eventName = CommentEvents::COMMENT_GET_DEFINITION . "." . $event->getRef();
+        $event->getDispatcher()->dispatch($eventName, $event);
+
+        // is customer already have published something
+        $comment = CommentQuery::create()
+            ->filterByCustomerId($event->getCustomer()->getId())
+            ->filterByRef($event->getRef())
+            ->filterByRefId($event->getRefId())
+            ->findOne()
+        ;
+
+        $event->setComment($comment);
+    }
+
+
+    public function getProductDefinition(CommentDefinitionEvent $event)
+    {
+        $config = $event->getConfig();
+
+        $product = ProductQuery::create()->findPk($event->getRefId());
+        if (null === $product) {
+            throw new InvalidDefinitionException(
+                $this->translator->trans(
+                    "Product %id does not exist",
+                    ['%ref' => $event->getRef()],
+                    CommentModule::getModuleCode()
+                )
+            );
+        }
+
+        // is comment is authorized on this product
+        $commentProductActivated = MetaDataQuery::getVal(
+            'comment_activated',
+            \Thelia\Model\MetaData::PRODUCT_KEY,
+            $product->getId()
+        );
+
+        // not defined, get the global config
+        if (null === $commentProductActivated) {
+            if ($config['comment_activated']) {
+                throw new InvalidDefinitionException(
+                    $this->translator->trans(
+                        "Comment not activated on this element.",
+                        ['%ref' => $event->getRef()],
+                        CommentModule::getModuleCode()
+                    )
+                );
+            }
+        }
+
+        // customer has bought the product
+        $productBoughtCount = OrderProductQuery::getSaleStats(
+            $product->getRef(),
+            null,
+            null,
+            [2,3,4],
+            $event->getCustomer()->getId()
+        );
+
+        if ($config['only_verified']) {
+            if (0 === $productBoughtCount) {
+                throw new InvalidDefinitionException(
+                    $this->translator->trans(
+                        "Only customers who have bought this product can publish comment",
+                        [],
+                        CommentModule::getModuleCode()
+                    )
+                );
+            }
+        }
+
+        $verified = 0 !== $productBoughtCount;
+
+    }
+
+    public function getContentDefinition(CommentDefinitionEvent $event)
+    {
+
+    }
+
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -77,8 +221,13 @@ class CommentAction implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            CommentEvent::COMMENT_ADD => array('addComment', 128)            
-        );
+        return [
+            CommentEvents::COMMENT_CREATE => ['create', 128],
+            CommentEvents::COMMENT_DELETE => ['delete', 128],
+            CommentEvents::COMMENT_UPDATE => ['update', 128],
+            CommentEvents::COMMENT_ABUSE => ['abuse', 128],
+            CommentEvents::COMMENT_STATUS_UPDATE => ['statusUpdate', 128],
+            CommentEvents::COMMENT_GET_DEFINITION => ['getDefinition', 128],
+        ];
     }
 }

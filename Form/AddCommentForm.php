@@ -24,6 +24,8 @@ namespace Comment\Form;
 
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
@@ -35,7 +37,7 @@ class AddCommentForm extends BaseForm
         $this->formBuilder
             ->add('username', 'text', [
                 'constraints' => [
-                    new NotBlank()                    
+                    new NotBlank()
                 ],
                 'label' => Translator::getInstance()->trans('Username'),
                 'label_attr' => [
@@ -50,6 +52,15 @@ class AddCommentForm extends BaseForm
                 'label' => Translator::getInstance()->trans('Email'),
                 'label_attr' => [
                     'for' => 'comment_mail'
+                ]
+            ])
+            ->add('title', 'text', [
+                'constraints' => [
+                    new NotBlank()
+                ],
+                'label' => Translator::getInstance()->trans('Title'),
+                'label_attr' => [
+                    'for' => 'title'
                 ]
             ])
             ->add('content', 'text', [
@@ -71,7 +82,15 @@ class AddCommentForm extends BaseForm
                     new GreaterThan(['value' => 0])
                 ]
             ])
+            ->add('rating', 'text', [
+                'constraints' => [
+                    new GreaterThanOrEqual(['value' => 0]),
+                    new LessThanOrEqual(['value' => 5])
+                ]
+            ])
         ;
+
+
     }
 
     public function getName()

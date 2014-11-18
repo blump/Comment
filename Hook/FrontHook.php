@@ -13,9 +13,14 @@
 
 namespace Comment\Hook;
 
-use Thelia\Core\Event\Hook\HookRenderBlockEvent;
+use Comment\Comment;
+use Comment\EventListeners\CommentDefinitionEvent;
+use Comment\EventListeners\CommentEvents;
+use Thelia\Core\Event\Hook\BaseHookRenderEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
+use Thelia\Model\ConfigQuery;
+use Thelia\Model\Exception\InvalidArgumentException;
 
 /**
  * Class FrontHook
@@ -24,23 +29,93 @@ use Thelia\Core\Hook\BaseHook;
  */
 class FrontHook extends BaseHook
 {
-    public function onProductAdditional(HookRenderBlockEvent $event)
-    {
-        $product = $event->getArgument('product', null);
+    protected $parserContext = null;
 
+    public function __construct()
+    {
+    }
+
+    public function onShowComment(BaseHookRenderEvent $event)
+    {
+        $ref = $event->getArgument('ref')
+            ? $event->getArgument('ref')
+            : $this->getView();
+        $refId = $event->getArgument('ref_id')
+            ? $event->getArgument('ref_id')
+            : $this->getRequest()->attributes['id'];
+
+        if (null === $ref || 0 === $refId) {
+            throw new InvalidArgumentException(
+                $this->trans("", [], Comment::getModuleCode())
+            );
+        }
+
+        $data = $this->showComment($ref, $refId);
+
+        if (null !== $data) {
+            if ($event instanceof HookRenderEvent) {
+                $event->add($data);
+            } else {
+                $event->add(
+                    [
+                        'id' => 'comment',
+                        'title' => $this->trans("Comments"),
+                        'content' => $data
+                    ]
+                );
+            }
+        }
+    }
+
+    protected function showComment($ref, $refId)
+    {
+
+        $eventDefinition = new CommentDefinitionEvent();
+        $eventDefinition
+            ->setRef($ref)
+            ->setRefId($refId);
+
+        $this->dispatcher->dispatch(
+            CommentEvents::COMMENT_GET_DEFINITION,
+            $eventDefinition
+        );
+
+        if (empty($eventDefinition)) {
+            return null;
+        }
+
+        return $this->render(
+            "comment.html",
+            ['definition' => $eventDefinition]
+        );
+    }
+
+    private function addMessage($event, $message)
+    {
         $event->add(
             [
                 'id' => 'comment',
                 'title' => $this->trans("Comments"),
-                'content' => $this->render("product-additional.html")
+                'content' => $message
             ]
         );
     }
 
-    public function onContentMainBottom(HookRenderEvent $event){
 
-        $event->add($this->render("content-main-bottom.html"));
+    /**
+     * Add the javascript script to manage comments
+     *
+     * @param HookRenderEvent $event
+     */
+    public function jsComment(HookRenderEvent $event)
+    {
+        $allowedRef = explode(
+            ',',
+            ConfigQuery::read('comment_ref_allowed', Comment::CONFIG_REF_ALLOWED)
+        );
 
+        if (in_array($this->getView(), $allowedRef)) {
+            $event->add($this->render("js.html"));
+        }
     }
-
-} 
+}
