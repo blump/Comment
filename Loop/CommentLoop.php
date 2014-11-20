@@ -25,7 +25,6 @@ use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Type;
 use Thelia\Type\BooleanOrBothType;
 
-
 /**
  * Class CommentLoop
  * @package Comment\Loop
@@ -101,8 +100,8 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                 );
             }
 
-            $search->findByRef($ref);
-            $search->findByRefId($refId, Criteria::IN);
+            $search->filterByRef($ref);
+            $search->filterByRefId($refId, Criteria::IN);
         }
 
         $status = $this->getStatus();
@@ -121,50 +120,52 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
         }
 
         $orders  = $this->getOrder();
-        foreach ($orders as $order) {
-            switch ($order) {
-                case "id":
-                    $search->orderById(Criteria::ASC);
-                    break;
-                case "id_reverse":
-                    $search->orderById(Criteria::DESC);
-                    break;
-                case "visible":
-                    $search->orderByStatus(Criteria::ASC);
-                    break;
-                case "visible_reverse":
-                    $search->orderByStatus(Criteria::DESC);
-                    break;
-                case "verified":
-                    $search->orderByVerified(Criteria::ASC);
-                    break;
-                case "verified_reverse":
-                    $search->orderByVerified(Criteria::DESC);
-                    break;
-                case "abuse":
-                    $search->orderByAbuse(Criteria::ASC);
-                    break;
-                case "abuse_reverse":
-                    $search->orderByAbuse(Criteria::DESC);
-                    break;
-                case "rating":
-                    $search->orderByRating(Criteria::ASC);
-                    break;
-                case "rating_reverse":
-                    $search->orderByRating(Criteria::DESC);
-                    break;
-                case "created":
-                    $search->addAscendingOrderByColumn('created_at');
-                    break;
-                case "created_reverse":
-                    $search->addDescendingOrderByColumn('created_at');
-                    break;
-                case "updated":
-                    $search->addAscendingOrderByColumn('updated_at');
-                    break;
-                case "updated_reverse":
-                    $search->addDescendingOrderByColumn('updated_at');
-                    break;
+        if (null !== $orders) {
+            foreach ($orders as $order) {
+                switch ($order) {
+                    case "id":
+                        $search->orderById(Criteria::ASC);
+                        break;
+                    case "id_reverse":
+                        $search->orderById(Criteria::DESC);
+                        break;
+                    case "visible":
+                        $search->orderByStatus(Criteria::ASC);
+                        break;
+                    case "visible_reverse":
+                        $search->orderByStatus(Criteria::DESC);
+                        break;
+                    case "verified":
+                        $search->orderByVerified(Criteria::ASC);
+                        break;
+                    case "verified_reverse":
+                        $search->orderByVerified(Criteria::DESC);
+                        break;
+                    case "abuse":
+                        $search->orderByAbuse(Criteria::ASC);
+                        break;
+                    case "abuse_reverse":
+                        $search->orderByAbuse(Criteria::DESC);
+                        break;
+                    case "rating":
+                        $search->orderByRating(Criteria::ASC);
+                        break;
+                    case "rating_reverse":
+                        $search->orderByRating(Criteria::DESC);
+                        break;
+                    case "created":
+                        $search->addAscendingOrderByColumn('created_at');
+                        break;
+                    case "created_reverse":
+                        $search->addDescendingOrderByColumn('created_at');
+                        break;
+                    case "updated":
+                        $search->addAscendingOrderByColumn('updated_at');
+                        break;
+                    case "updated_reverse":
+                        $search->addDescendingOrderByColumn('updated_at');
+                        break;
+                }
             }
         }
 
@@ -184,17 +185,17 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
 
             $loopResultRow
                 ->set('ID', $comment->getId())
-                ->set('username', $comment->getUsername())
-                ->set('email', $comment->getEmail())
-                ->set('customer_id', $comment->getCustomerId())
-                ->set('ref', $comment->getRef())
-                ->set('ref_id', $comment->getRefId())
-                ->set('title', $comment->getTitle())
-                ->set('content', $comment->getContent())
-                ->set('rating', $comment->getRating())
-                ->set('status', $comment->getStatus())
-                ->set('verified', $comment->getVerified())
-                ->set('abuse', $comment->getAbuse())
+                ->set('USERNAME', $comment->getUsername())
+                ->set('EMAIL', $comment->getEmail())
+                ->set('CUSTOMER_ID', $comment->getCustomerId())
+                ->set('REF', $comment->getRef())
+                ->set('REF_ID', $comment->getRefId())
+                ->set('TITLE', $comment->getTitle())
+                ->set('CONTENT', $comment->getContent())
+                ->set('RATING', $comment->getRating())
+                ->set('STATUS', $comment->getStatus())
+                ->set('VERIFIED', $comment->getVerified())
+                ->set('ABUSE', $comment->getAbuse())
             ;
 
             $this->addOutputFields($loopResultRow, $comment);

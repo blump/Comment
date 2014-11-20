@@ -112,7 +112,18 @@ class FrontHook extends BaseHook
         );
 
         if (in_array($this->getView(), $allowedRef)) {
-            $event->add($this->render("js.html"));
+
+            list($ref, $refId) = $this->getParams($event);
+
+            $event->add(
+                $this->render(
+                    "js.html",
+                    [
+                        'ref' => $ref,
+                        'ref_id' => $refId
+                    ]
+                )
+            );
         }
     }
 

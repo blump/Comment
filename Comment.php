@@ -82,6 +82,9 @@ class Comment extends BaseModule
             'activated' => (
                 intval(ConfigQuery::read('comment_activated', self::CONFIG_ACTIVATED)) === 1
             ),
+            'moderate' => (
+                intval(ConfigQuery::read('comment_moderate', self::CONFIG_MODERATE)) === 1
+            ),
             'ref_allowed' => explode(
                 ',',
                 ConfigQuery::read('comment_ref_allowed', self::CONFIG_REF_ALLOWED)

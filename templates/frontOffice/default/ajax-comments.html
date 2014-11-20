@@ -1,0 +1,46 @@
+{default_translation_domain domain='comment.fo.default'}
+{$locale={lang attr="locale"}}
+{ifloop rel="comments"}
+    {loop name="comments" type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" order="created_reverse" locale="{$locale}" offset="{$start}" limit="{$count}" }
+    <div class="comment-item">
+        <h4 class="comment-author">
+            {if $CUSTOMER_ID}
+                {loop name="customer" type="customer" id="{$CUSTOMER_ID}" current="false" limit="1"}
+                    {$FIRSTNAME} {$LASTNAME|truncate:2:"...":true}
+                {/loop}
+            {else}
+                {$USERNAME}
+            {/if}
+        </h4>
+        <h3 class="comment-title">{$TITLE}</h3>
+        {if $RATING}<span class="comment-rating comment-rating-{$RATING}">{$RATING}</span>{/if}
+        <p class="comment-message">{$CONTENT}</p>
+        <ul class="comment-extra">
+            <li class="comment-date">{format_date date="{$CREATED}" output="date"}</li>
+            {if $VERIFIED}
+            <li class="comment-verified comment--is-verified">{intl l="Verified"}</li>
+            {else}
+            <li class="comment-verified">{intl l="Verified"}</li>
+            {/if}
+            <li class="comment-abuse">
+                <a href="{url path="/comment/abuse" id="{$ID}"}">{intl l="Mark as inappropriate"}</a>
+            </li>
+        </ul>
+    </div>
+    {/loop}
+
+    {if {count type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" locale="{$locale}" } > $start + $count }
+    <div class="comments-more">
+        <a href="#" class="comments-more-link">{intl l="Load more comments..."}</a>
+    </div>
+    {/if}
+{/ifloop}
+{elseloop rel="comments"}
+    <div class="alert alert-info">
+        {if $start == 0 }
+        {intl l="There is no comments yet"}
+        {else}
+        {intl l="No more comments"}
+        {/if}
+    </div>
+{/elseloop}

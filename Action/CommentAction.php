@@ -160,7 +160,7 @@ class CommentAction implements EventSubscriberInterface
 
         // not defined, get the global config
         if (null === $commentProductActivated) {
-            if ($config['comment_activated']) {
+            if (!$config['activated']) {
                 throw new InvalidDefinitionException(
                     $this->translator->trans(
                         "Comment not activated on this element.",

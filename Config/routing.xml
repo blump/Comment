@@ -14,8 +14,12 @@
         <default key="_controller">Comment\Controller\Front\CommentController::createAction</default>
     </route>
 
-    <route id="front.comment.delete" path="/comment/delete/">
+    <route id="front.comment.delete" path="/comment/delete">
         <default key="_controller">Comment\Controller\Front\CommentController::deleteAction</default>
+    </route>
+
+    <route id="front.comment.abuse" path="/comment/abuse">
+        <default key="_controller">Comment\Controller\Front\CommentController::abuseAction</default>
     </route>
 
     <!-- Back -->

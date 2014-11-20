@@ -1,4 +1,7 @@
 <div id="comment-top">
+
+    <div id="comment-top-message" class="alert hidden"></div>
+
     {if $definition->isValid()}
     {form name="form.add.comment"}
     <form id="form-add-comment" action="{url path="/comment/add"}" method="post" novalidate>
@@ -65,23 +68,5 @@
     {/if}
 </div>
 <div id="comment-list" class="comment-list">
-{loop name="comments" type="comment" ref="$ref" ref_id="$ref_id" status="1" order="created" locale=""}
-    <div class="comment-item">
-        <h4 class="comment-author">{$TITLE}</h4>
-        <h3 class="comment-title">{$TITLE}</h3>
-        {if $RATING}<span class="comment-rating comment-rating-{$RATING}">{$RATING}</span>{/if}
-        <p class="comment-message">{$MESSAGE}</p>
-        <ul class="comment-extra">
-            <li class="comment-date">{format_date date="{$CREATED}" format="date"}</li>
-            {if $VERIFIED}
-                <li class="comment-verified comment--is-verified">{intl l="Verified"}</li>
-            {else}
-                <li class="comment-verified">{intl l="Verified"}</li>
-            {/if}
-            <li class="comment-abuse">
-                <a href="{url url="/comment/abuse" id="{$ID}"}>{intl l="Mark as inappropriate"}</a>
-            </li>
-        </ul>
-    </div>
-{/loop}
+
 </div>

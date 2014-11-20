@@ -1,0 +1,89 @@
+<script type="text/javascript">
+
+var commentConfig = {
+    ref: '{$ref}',
+    id: '{$ref_id}',
+    start: 0,
+
+    get: '{url path="/comment/get"}',
+    post: '{url path="/comment/add"}',
+    delete: '{url path="/comment/delete"}',
+    abuse: '{url path="/comment/abuse"}'
+};
+
+{literal}
+(function($) {
+
+    $(document).ready(function () {
+
+        var $commentTop = $('#comment-top'),
+            $commentMessage = $('#comment-top-message'),
+            $commentList = $('#comment-list');
+
+        var displayMessage = function displayMessage($element, cssClass, messages){
+            $element.slideUp('fast', function(){
+                var i = 0;
+                if (messages.length > 0) {
+                    $element.html("");
+                    $element
+                        .removeClass('alert-success alert-info alert-warning alert-danger hidden')
+                        .addClass('alert-' + cssClass)
+                    ;
+                    for ( ; i < messages.length ; i++ ) {
+                        $element.append( $("p").html(messages[i]) );
+                    }
+                    $element.slideDown('slow');
+                }
+            });
+        };
+
+        var loadComments = function loadComments(start, count) {
+
+            $.ajax({
+                type: "GET",
+                data: {
+                    'ref': commentConfig['ref'],
+                    'ref_id': commentConfig['id']
+                },
+                url: commentConfig['get']
+            }).done(function(data){
+                $commentList.append(data);
+            });
+
+        };
+
+        $(document).on('#form-add-comment', 'submit', function (ev) {
+
+            ev.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                data: $(this).serialize(),
+                url: commentConfig['post']
+            }).done(function(data, textStatus, jqXHR){
+                if (data.success) {
+                    displayMessage($commentMessage, 'success', data.messages);
+                } else {
+                    displayMessage($commentMessage, 'warning', data.messages);
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown){
+                displayMessage($commentMessage, 'danger', '');
+            });
+
+        });
+
+        loadComments();
+
+        $($commentList).on( "click", ".comment-more-link", function(ev) {
+            ev.preventDefault();
+
+            commentConfig['start'] += 10;
+            loadComments(commentConfig['start'], 10);
+        });
+
+    });
+
+})(jQuery);
+{/literal}
+</script>
