@@ -23,6 +23,8 @@
     </route>
 
     <!-- Back -->
-
+    <route id="back.comment.configuration" path="/admin/module/comment/configuration" methods="post">
+        <default key="_controller">Comment\Controller\Back\CommentController::saveConfiguration</default>
+    </route>
 
 </routes>

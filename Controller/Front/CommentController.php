@@ -31,18 +31,18 @@ use Comment\Exception\InvalidDefinitionException;
 use Comment\Form\AddCommentForm;
 use Exception;
 use Thelia\Controller\Front\BaseFrontController;
-use Thelia\Log\Tlog;
 
 /**
  * Class CommentController
  * @package Comment\Controller\Admin
  * @author Michaël Espeche <michael.espeche@gmail.com>
+ * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
 class CommentController extends BaseFrontController
 {
     const DEFAULT_VISIBLE = 0;
 
-    public function getAction()
+    public function saveConfiguration()
     {
         // only ajax
         $this->checkXmlHttpRequest();
@@ -178,5 +178,4 @@ class CommentController extends BaseFrontController
     {
 
     }
-
 }
