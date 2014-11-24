@@ -14,28 +14,11 @@
 namespace Comment\EventListeners;
 
 /**
- * Class CommentCreateEvent
+ * Class CommentUpdateEvent
  * @package Comment\EventListeners
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
- *
- * @method getRef
- * @method getRefId
- * @method getCustomerId
- * @method getUsername
- * @method getEmail
- * @method getTitle
- * @method getContent
- * @method getStatus
- * @method isVerified
- * @method getRating
- *
  */
-class CommentCreateEvent extends CommentEvent
+class CommentUpdateEvent extends CommentCreateEvent
 {
-    protected $additionals = [
-        'ref', 'refId',
-        'customerId', 'username', 'email',
-        'title', 'content',
-        'status', 'verified', 'rating'
-    ];
+    protected $additionals = ['id'];
 }

@@ -13,8 +13,11 @@
 
 namespace Comment\Hook;
 
+use Comment\Comment;
+use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
+use Thelia\Tools\URL;
 
 /**
  * Class BackHook
@@ -24,8 +27,27 @@ use Thelia\Core\Hook\BaseHook;
 class BackHook extends BaseHook
 {
 
-    public function onModuleConfiguration(HookRenderEvent $event){
+    public function onModuleConfiguration(HookRenderEvent $event)
+    {
         $event->add($this->render("configuration.html"));
     }
 
+    /**
+     * Add a new entry in the admin tools menu
+     *
+     * should add to event a fragment with fields : id,class,url,title
+     *
+     * @param HookRenderBlockEvent $event
+     */
+    public function onMainTopMenuTools(HookRenderBlockEvent $event)
+    {
+        $event->add(
+            [
+                'id' => 'tools_menu_comment',
+                'class' => '',
+                'url' => URL::getInstance()->absoluteUrl('/admin/module/comments'),
+                'title' => $this->trans('Comments', [], Comment::getModuleCode())
+            ]
+        );
+    }
 }

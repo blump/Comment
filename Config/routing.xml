@@ -22,9 +22,35 @@
         <default key="_controller">Comment\Controller\Front\CommentController::abuseAction</default>
     </route>
 
-    <!-- Back -->
-    <route id="back.comment.configuration" path="/admin/module/comment/configuration" methods="post">
+    <!-- Admin -->
+    <route id="admin.comment.configuration" path="/admin/module/comment/configuration" methods="post">
         <default key="_controller">Comment\Controller\Back\CommentController::saveConfiguration</default>
+    </route>
+
+    <!-- crud -->
+
+    <route id="admin.comment.comments.list" path="/admin/module/comments">
+        <default key="_controller">Comment\Controller\Back\CommentController::defaultAction</default>
+    </route>
+
+    <route id="admin.comment.comments.create" path="/admin/module/comment/create">
+        <default key="_controller">Comment\Controller\Back\CommentController::createAction</default>
+    </route>
+
+    <route id="admin.comment.comments.update" path="/admin/module/comment/update">
+        <default key="_controller">Comment\Controller\Back\CommentController::updateAction</default>
+    </route>
+
+    <route id="admin.comment.comments.save" path="/admin/module/comment/save">
+        <default key="_controller">Comment\Controller\Back\CommentController::processUpdateAction</default>
+    </route>
+
+    <route id="admin.comment.comments.delete" path="/admin/module/comment/delete">
+        <default key="_controller">Comment\Controller\Back\CommentController::deleteAction</default>
+    </route>
+
+    <route id="admin.comment.comments.delete" path="/admin/module/comment/status" methods="post">
+        <default key="_controller">Comment\Controller\Back\CommentController::changeStatusAction</default>
     </route>
 
 </routes>

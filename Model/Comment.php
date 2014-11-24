@@ -11,4 +11,5 @@ class Comment extends BaseComment
     const REFUSED = 2;
     const ABUSED = 3;
 
+    const META_KEY_RATING = 'COMMENT_RATING';
 }

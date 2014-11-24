@@ -24,9 +24,15 @@
 namespace Comment\Controller\Back;
 
 use Comment\Comment;
+use Comment\EventListeners\CommentCreateEvent;
+use Comment\EventListeners\CommentEvent;
+use Comment\EventListeners\CommentEvents;
+use Comment\Form\CommentCreationForm;
+use Comment\Form\CommentModificationForm;
+use Comment\Model\CommentQuery;
 use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\ConfigQuery;
@@ -37,8 +43,246 @@ use Thelia\Tools\URL;
  * @package Comment\Controller\Back
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class CommentController extends BaseAdminController
+class CommentController extends AbstractCrudController
 {
+    public function __construct()
+    {
+        parent::__construct(
+            'comment',
+            'created_reverse',
+            'order',
+            AdminResources::CONFIG,
+            CommentEvents::COMMENT_CREATE,
+            CommentEvents::COMMENT_UPDATE,
+            CommentEvents::COMMENT_DELETE,
+            null, // No visibility toggle
+            null, // no position change
+            Comment::getModuleCode()
+        );
+    }
+
+    /**
+     * Return the creation form for this object
+     */
+    protected function getCreationForm()
+    {
+        return new CommentCreationForm($this->getRequest());
+    }
+
+    /**
+     * Return the update form for this object
+     */
+    protected function getUpdateForm()
+    {
+        return new CommentCreationForm($this->getRequest());
+    }
+
+    /**
+     * Hydrate the update form for this object, before passing it to the update template
+     *
+     * @param unknown $object
+     */
+    protected function hydrateObjectForm($object)
+    {
+        // Prepare the data that will hydrate the form
+        $data = [
+            'id'           => $object->getId(),
+            'name'         => $object->getName(),
+            'value'        => $object->getValue(),
+            'hidden'       => $object->getHidden(),
+            'secured'      => $object->getSecured(),
+            'locale'       => $object->getLocale(),
+            'title'        => $object->getTitle(),
+            'chapo'        => $object->getChapo(),
+            'description'  => $object->getDescription(),
+            'postscriptum' => $object->getPostscriptum()
+        ];
+
+        // Setup the object form
+        return new CommentModificationForm($this->getRequest(), "form", $data);
+    }
+
+    /**
+     * Creates the creation event with the provided form data
+     *
+     * @param unknown $formData
+     */
+    protected function getCreationEvent($formData)
+    {
+        $event = new CommentCreateEvent();
+
+        $event->bindForm($formData);
+
+        return $event;
+    }
+
+    /**
+     * Creates the update event with the provided form data
+     *
+     * @param unknown $formData
+     */
+    protected function getUpdateEvent($formData)
+    {
+        $event = new CommentUpdateEvent();
+
+        $event->bindForm($formData);
+
+        return $event;
+    }
+
+    /**
+     * Creates the delete event with the provided form data
+     */
+    protected function getDeleteEvent()
+    {
+        $event = new CommentEvent();
+
+        $event->setId($this->getRequest()->get('comment_id'));
+
+        return $event;
+    }
+
+    /**
+     * Return true if the event contains the object, e.g. the action has updated the object in the event.
+     *
+     * @param CommentEvent $event
+     */
+    protected function eventContainsObject($event)
+    {
+        return null !== $event->getComment();
+    }
+
+    /**
+     * Get the created object from an event.
+     *
+     * @param CommentEvent $event
+     *
+     * @return \Comment\Model\Comment
+     */
+    protected function getObjectFromEvent($event)
+    {
+        return $event->getComment();
+    }
+
+    /**
+     * Load an existing object from the database
+     */
+    protected function getExistingObject()
+    {
+        return CommentQuery::create()
+            ->findPk($this->getRequest()->get('comment_id'));
+    }
+
+    /**
+     * Returns the object label form the object event (name, title, etc.)
+     *
+     * @param \Comment\Model\Comment $object
+     */
+    protected function getObjectLabel($object)
+    {
+        $object->getTitle();
+    }
+
+    /**
+     * Returns the object ID from the object
+     *
+     * @param \Comment\Model\Comment $object
+     */
+    protected function getObjectId($object)
+    {
+        $object->getId();
+    }
+
+    /**
+     * Render the main list template
+     *
+     * @param unknown $currentOrder , if any, null otherwise.
+     */
+    protected function renderListTemplate($currentOrder)
+    {
+        return $this->render('comments', ['order' => $currentOrder]);
+    }
+
+    /**
+     * Render the edition template
+     */
+    protected function renderEditionTemplate()
+    {
+        return $this->render(
+            'comment-edit',
+            [
+                'comment_id' => $this->getRequest()->get('comment_id')
+            ]
+        );
+    }
+
+    /**
+     * Must return a RedirectResponse instance
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    protected function redirectToEditionTemplate()
+    {
+        return $this->generateRedirectFromRoute(
+            "admin.comment.comments.update",
+            ['comment_id' => $this->getRequest()->get('comment_id')]
+        );
+    }
+
+    /**
+     * Must return a RedirectResponse instance
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    protected function redirectToListTemplate()
+    {
+        return $this->generateRedirectFromRoute('admin.comment.comments.default');
+    }
+
+
+    public function changeStatusAction()
+    {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['comment'], AccessManager::UPDATE)
+        ) {
+            return $response;
+        }
+
+        $message = [
+            "success" => false,
+        ];
+
+        $id = $this->getRequest()->request->get('id');
+        $status = $this->getRequest()->request->get('id');
+
+        try {
+            $event = new CommentEvent(['new_status']);
+            $event
+                ->setId($id)
+                ->setNewStatus($status);
+
+            $this->dispatch(
+                CommentEvents::COMMENT_STATUS_UPDATE,
+                $event
+            );
+
+            $message = [
+                "success" => true,
+                "data" => [
+                    'id' => $id,
+                    'status' => $event->getComment()->getStatus()
+                ]
+            ];
+
+        } catch (\Exception $ex) {
+            $message["error"] = $ex->getMessage();
+        }
+
+        return $this->jsonResponse(json_encode($message));
+    }
+
+    /**
+     * Save comment module configuration
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function saveConfiguration()
     {
 

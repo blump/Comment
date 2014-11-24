@@ -11,31 +11,45 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Form;
+
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * Class CommentCreateEvent
- * @package Comment\EventListeners
+ * Class CommentModificationForm
+ * @package Comment\Form
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
- *
- * @method getRef
- * @method getRefId
- * @method getCustomerId
- * @method getUsername
- * @method getEmail
- * @method getTitle
- * @method getContent
- * @method getStatus
- * @method isVerified
- * @method getRating
- *
  */
-class CommentCreateEvent extends CommentEvent
+class CommentModificationForm extends CommentCreationForm
 {
-    protected $additionals = [
-        'ref', 'refId',
-        'customerId', 'username', 'email',
-        'title', 'content',
-        'status', 'verified', 'rating'
-    ];
+    protected function buildForm()
+    {
+        parent::buildForm();
+
+        $this
+            ->formBuilder
+            ->add(
+                'id',
+                'text',
+                [
+                    'constraints' => [
+                        new NotBlank()
+                    ],
+                    'label' => $this->trans('Id'),
+                    'label_attr' => [
+                        'for' => 'id'
+                    ]
+                ]
+            )
+        ;
+    }
+
+
+    /**
+     * @return string the name of you form. This name must be unique
+     */
+    public function getName()
+    {
+        return 'admin_comment_modification';
+    }
 }

@@ -27,6 +27,7 @@ use Comment\EventListeners\CommentCreateEvent;
 use Comment\EventListeners\CommentDefinitionEvent;
 use Comment\EventListeners\CommentEvent;
 use Comment\EventListeners\CommentEvents;
+use Comment\EventListeners\CommentUpdateEvent;
 use Comment\Exception\InvalidDefinitionException;
 use Comment\Model\Comment;
 use Comment\Comment as CommentModule;
@@ -35,6 +36,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Thelia\Exception\NotImplementedException;
 use Thelia\Model\ConfigQuery;
+use Thelia\Model\MetaData;
 use Thelia\Model\MetaDataQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\ProductQuery;
@@ -76,26 +78,146 @@ class CommentAction implements EventSubscriberInterface
         ;
         
         $event->setComment($comment);
+
+        if (Comment::ACCEPTED === $comment->getStatus()) {
+            $this->dispatchRatingCompute(
+                $event->getDispatcher(),
+                $comment->getRef(),
+                $comment->getRefId()
+            );
+        }
+
     }
 
-    public function update(CommentEvent $event)
+    public function update(CommentUpdateEvent $event)
     {
-        throw new NotImplementedException('Not yet implemented');
+        if (null == $comment = CommentQuery::create()->findPk($event->getId())) {
+            $comment
+                ->setRef($event->getRef())
+                ->setRefId($event->getRefId())
+                ->setCustomerId($event->getCustomerId())
+                ->setUsername($event->getUsername())
+                ->setEmail($event->getEmail())
+                ->setTitle($event->getTitle())
+                ->setContent($event->getContent())
+                ->setStatus($event->getStatus())
+                ->setVerified($event->isVerified())
+                ->setRating($event->getRating())
+                ->save()
+            ;
+            $event->setComment($comment);
+
+            $this->dispatchRatingCompute(
+                $event->getDispatcher(),
+                $comment->getRef(),
+                $comment->getRefId()
+            );
+
+        }
     }
 
     public function delete(CommentEvent $event)
     {
-        throw new NotImplementedException('Not yet implemented');
+        if (null == $comment = CommentQuery::create()->findPk($event->getId())) {
+            $comment->delete();
+
+            $event->setComment($comment);
+
+            if (Comment::ACCEPTED === $comment->getStatus()) {
+                $this->dispatchRatingCompute(
+                    $event->getDispatcher(),
+                    $comment->getRef(),
+                    $comment->getRefId()
+                );
+            }
+        }
     }
 
     public function abuse(CommentEvent $event)
     {
-        throw new NotImplementedException('Not yet implemented');
+        if (null == $comment = CommentQuery::create()->findPk($event->getId())) {
+            $comment->setAbuse($comment->getAbuse() + 1);
+            $comment->save();
+
+            $event->setComment($comment);
+        }
     }
 
     public function statusChange(CommentEvent $event)
     {
-        throw new NotImplementedException('Not yet implemented');
+        $changed = false;
+
+        if (null !== $comment = CommentQuery::create()->findPk($event->getId())) {
+            if ($comment->getStatus() !== $event->getNewStatus()) {
+                $comment->setStatus($event->getNewStatus());
+                $comment->save();
+
+                $event->setComment($comment);
+
+                $this->dispatchRatingCompute(
+                    $event->getDispatcher(),
+                    $comment->getRef(),
+                    $comment->getRefId()
+                );
+            }
+        }
+    }
+
+    public function productRatingCompute(CommentEvent $event)
+    {
+        if ('product' === $event->getRef()) {
+
+            $product = ProductQuery::create()->findPk($event->getRefId());
+            if (null !== $product) {
+
+                $query = CommentQuery::create()
+                    ->filterByRef('product')
+                    ->filterByRefId($product->getId())
+                    ->filterByStatus(Comment::ACCEPTED)
+                    ->withColumn("AVG(RATING)", 'AVG_RATING')
+                    ->select('AVG_RATING')
+                ;
+
+                $rating = $query->findOne();
+
+                if (null !== $rating) {
+                    $rating = round($rating, 2);
+
+                    $event->setRating($rating);
+
+                    MetaDataQuery::setVal(
+                        Comment::META_KEY_RATING,
+                        MetaData::PRODUCT_KEY,
+                        $product->getId(),
+                        $rating
+                    );
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Dispatch an event to compute an average rating
+     *
+     * @param string $ref
+     * @param int $refId
+     */
+    protected function dispatchRatingCompute($dispatcher, $ref, $refId)
+    {
+        $ratingEvent = new CommentEvent(['ref', 'ref_id', 'rating']);
+
+        $ratingEvent
+            ->setRef($ref)
+            ->setRefId($refId)
+        ;
+
+        $dispatcher->dispatch(
+            CommentEvents::COMMENT_RATING_COMPUTE,
+            $ratingEvent
+        );
     }
 
     public function getDefinition(CommentDefinitionEvent $event)
@@ -244,7 +366,8 @@ class CommentAction implements EventSubscriberInterface
             CommentEvents::COMMENT_DELETE => ['delete', 128],
             CommentEvents::COMMENT_UPDATE => ['update', 128],
             CommentEvents::COMMENT_ABUSE => ['abuse', 128],
-            CommentEvents::COMMENT_STATUS_UPDATE => ['statusUpdate', 128],
+            CommentEvents::COMMENT_STATUS_UPDATE => ['statusChange', 128],
+            CommentEvents::COMMENT_RATING_COMPUTE => ['productRatingCompute', 128],
             CommentEvents::COMMENT_GET_DEFINITION => ['getDefinition', 128],
             CommentEvents::COMMENT_GET_DEFINITION_PRODUCT => ['getProductDefinition', 128],
             CommentEvents::COMMENT_GET_DEFINITION_CONTENT => ['getContentDefinition', 128],

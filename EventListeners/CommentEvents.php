@@ -26,6 +26,7 @@ class CommentEvents
     const COMMENT_DELETE = "action.comment.delete";
     const COMMENT_STATUS_UPDATE = "action.comment.status.update";
     const COMMENT_ABUSE = "action.comment.abuse";
+    const COMMENT_RATING_COMPUTE = "action.commentv.rating.compute";
     //
     const COMMENT_GET_DEFINITION = "action.comment.definition";
     const COMMENT_GET_DEFINITION_PRODUCT = "action.comment.definition.product";

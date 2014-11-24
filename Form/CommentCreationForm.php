@@ -11,31 +11,22 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Form;
+
+use Thelia\Form\BaseForm;
 
 /**
- * Class CommentCreateEvent
- * @package Comment\EventListeners
+ * Class CommentCreationForm
+ * @package Comment\Form
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
- *
- * @method getRef
- * @method getRefId
- * @method getCustomerId
- * @method getUsername
- * @method getEmail
- * @method getTitle
- * @method getContent
- * @method getStatus
- * @method isVerified
- * @method getRating
- *
  */
-class CommentCreateEvent extends CommentEvent
+class CommentCreationForm extends AddCommentForm
 {
-    protected $additionals = [
-        'ref', 'refId',
-        'customerId', 'username', 'email',
-        'title', 'content',
-        'status', 'verified', 'rating'
-    ];
+    /**
+     * @return string the name of you form. This name must be unique
+     */
+    public function getName()
+    {
+        return 'admin_comment_creation';
+    }
 }

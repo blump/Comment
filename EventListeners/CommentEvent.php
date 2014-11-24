@@ -42,14 +42,39 @@ class CommentEvent extends ActionEvent
     /** @var array attributes */
     protected $attributes = [];
 
+    /** @var array attributes */
+    protected $additionals = [];
+
+    /** @var int */
+    protected $id = null;
+
     /** @var Comment */
     protected $comment = null;
 
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($attributes = [])
     {
+        $this->attributes = array_merge($attributes, $this->additionals);
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
