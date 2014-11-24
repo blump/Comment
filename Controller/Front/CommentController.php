@@ -24,6 +24,7 @@
 namespace Comment\Controller\Front;
 
 use Comment\Comment;
+use Comment\EventListeners\CommentCreateEvent;
 use Comment\EventListeners\CommentDefinitionEvent;
 use Comment\EventListeners\CommentEvent;
 use Comment\EventListeners\CommentEvents;
@@ -42,7 +43,7 @@ class CommentController extends BaseFrontController
 {
     const DEFAULT_VISIBLE = 0;
 
-    public function saveConfiguration()
+    public function getAction()
     {
         // only ajax
         $this->checkXmlHttpRequest();
@@ -79,13 +80,16 @@ class CommentController extends BaseFrontController
         $this->checkXmlHttpRequest();
 
         $responseData = [];
+        /** @var CommentDefinitionEvent $definition */
         $definition = null;
 
         try {
+            $params = $this->getRequest()->get('admin_add_comment');
             $definition = $this->getDefinition(
-                $this->getRequest()->get('ref', null),
-                $this->getRequest()->get('ref_id', null)
+                $params['ref'],
+                $params['ref_id']
             );
+
         } catch (InvalidDefinitionException $ex) {
             if ($ex->isSilent()) {
                 // Comment not authorized on this resource
@@ -100,7 +104,6 @@ class CommentController extends BaseFrontController
             }
         }
 
-        $error_message = false;
         $commentForm = new AddCommentForm($this->getRequest());
 
         // adapt form
@@ -111,11 +114,20 @@ class CommentController extends BaseFrontController
             $commentForm->getFormBuilder()->remove('customer_id');
         }
 
+        if (!$definition->hasRating()) {
+            $commentForm->getFormBuilder()->remove('rating');
+        }
+
         try {
             $form = $this->validateForm($commentForm);
 
-            $event = new CommentEvent();
+            $event = new CommentCreateEvent();
             $event->bindForm($form);
+
+            $event->setVerified($definition->isVerified());
+            if (!$definition->getConfig()['moderate']) {
+                $event->setStatus(\Comment\Model\Comment::ACCEPTED);
+            }
 
             $this->dispatch(CommentEvents::COMMENT_CREATE, $event);
 
@@ -123,7 +135,11 @@ class CommentController extends BaseFrontController
                 $responseData = [
                     "success" => true,
                     "messages" => [
-                        $this->translator->trans("Thank you for submitting your comment."),
+                        $this->translator->trans(
+                            "Thank you for submitting your comment.",
+                            [],
+                            Comment::getModuleCode()
+                        ),
                     ]
                 ];
             } else {
@@ -140,17 +156,11 @@ class CommentController extends BaseFrontController
                 ];
             }
         } catch (Exception $ex) {
-            $error_message = $e->getMessage();
             $responseData = [
                 "success" => false,
                 "messages" => [$ex->getMessage()],
                 "errors" => []
             ];
-            /* todo error by field
-            foreach ($commentForm->getForm()->getErrors() as $field) {
-
-            }
-            */
         }
 
         return $this->jsonResponse(json_encode($responseData));

@@ -35,8 +35,11 @@ class CommentDefinitionEvent extends CommentEvent
     /** @var Customer */
     protected $customer = null;
 
-    /** @var array */
-    protected $definition = [];
+    /** @var bool */
+    protected $verified = false;
+
+    /** @var bool */
+    protected $rating = false;
 
     /** @var bool */
     protected $valid = false;
@@ -83,23 +86,6 @@ class CommentDefinitionEvent extends CommentEvent
     /**
      * @return array
      */
-    public function getDefinition()
-    {
-        return $this->definition;
-    }
-
-    /**
-     * @param array $definition
-     */
-    public function setDefinition($definition)
-    {
-        $this->definition = $definition;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
     public function getConfig()
     {
         return $this->config;
@@ -128,6 +114,40 @@ class CommentDefinitionEvent extends CommentEvent
     public function setCustomer($customer)
     {
         $this->customer = $customer;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isVerified()
+    {
+        return $this->verified;
+    }
+
+    /**
+     * @param boolean $verified
+     */
+    public function setVerified($verified)
+    {
+        $this->verified = $verified;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function hasRating()
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param boolean $rating
+     */
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
         return $this;
     }
 

@@ -80,6 +80,7 @@ class FrontHook extends BaseHook
                 CommentEvents::COMMENT_GET_DEFINITION,
                 $eventDefinition
             );
+            $eventDefinition->setValid(true);
         } catch (InvalidDefinitionException $ex) {
             if ($ex->isSilent()) {
                 return null;

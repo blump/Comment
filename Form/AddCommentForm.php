@@ -34,6 +34,8 @@ class AddCommentForm extends BaseForm
 {
     protected function buildForm()
     {
+        //$definition = $this->getDefinition();
+
         $this->formBuilder
             ->add('username', 'text', [
                 'constraints' => [
@@ -92,7 +94,11 @@ class AddCommentForm extends BaseForm
 
 
     }
-
+    /*
+    protected function getDefinition() {
+        $this->form->get('success_url');
+    }
+*/
     public function getName()
     {
         return 'admin_add_comment';

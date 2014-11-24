@@ -22,7 +22,8 @@ var commentConfig = {
 
         var displayMessage = function displayMessage($element, cssClass, messages){
             $element.slideUp('fast', function(){
-                var i = 0;
+                var i = 0,
+                    domP;
                 if (messages.length > 0) {
                     $element.html("");
                     $element
@@ -30,7 +31,8 @@ var commentConfig = {
                         .addClass('alert-' + cssClass)
                     ;
                     for ( ; i < messages.length ; i++ ) {
-                        $element.append( $("p").html(messages[i]) );
+                        domP = document.createElement( "p" );
+                        $element.append( $(domP).html(messages[i]) );
                     }
                     $element.slideDown('slow');
                 }
@@ -52,7 +54,7 @@ var commentConfig = {
 
         };
 
-        $(document).on('#form-add-comment', 'submit', function (ev) {
+        $('#form-add-comment').on('submit', function (ev) {
 
             ev.preventDefault();
 

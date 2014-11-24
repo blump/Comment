@@ -23,6 +23,7 @@
 
 namespace Comment\Action;
 
+use Comment\EventListeners\CommentCreateEvent;
 use Comment\EventListeners\CommentDefinitionEvent;
 use Comment\EventListeners\CommentEvent;
 use Comment\EventListeners\CommentEvents;
@@ -56,19 +57,23 @@ class CommentAction implements EventSubscriberInterface
         $this->translator = $translator;
     }
 
-    public function create(CommentEvent $event)
+    public function create(CommentCreateEvent $event)
     {
-     
         $comment = new Comment();
 
-        $comment->setCustomerId($event->getCustomerId())
-                ->setUsername($event->getUsername())
-                ->setEmail($event->getEmail())
-                ->setContent($event->getContent())
-                ->setRef($event->getRef())
-                ->setRefId($event->getRefId())
-                ->setVisible($event->getVisible())
-                ->save();
+        $comment
+            ->setRef($event->getRef())
+            ->setRefId($event->getRefId())
+            ->setCustomerId($event->getCustomerId())
+            ->setUsername($event->getUsername())
+            ->setEmail($event->getEmail())
+            ->setTitle($event->getTitle())
+            ->setContent($event->getContent())
+            ->setStatus($event->getStatus())
+            ->setVerified($event->isVerified())
+            ->setRating($event->getRating())
+            ->save()
+        ;
         
         $event->setComment($comment);
     }
@@ -122,16 +127,17 @@ class CommentAction implements EventSubscriberInterface
         $eventName = CommentEvents::COMMENT_GET_DEFINITION . "." . $event->getRef();
         $event->getDispatcher()->dispatch($eventName, $event);
 
-        // is customer already have published something
-        $comment = CommentQuery::create()
-            ->filterByCustomerId($event->getCustomer()->getId())
-            ->filterByRef($event->getRef())
-            ->filterByRefId($event->getRefId())
-            ->findOne()
-        ;
+        if (null !== $event->getCustomer()) {
+            // is customer already have published something
+            $comment = CommentQuery::create()
+                ->filterByCustomerId($event->getCustomer()->getId())
+                ->filterByRef($event->getRef())
+                ->filterByRefId($event->getRefId())
+                ->findOne();
 
-        if (null !== $comment) {
-            $event->setComment($comment);
+            if (null !== $comment) {
+                $event->setComment($comment);
+            }
         }
     }
 
@@ -171,35 +177,43 @@ class CommentAction implements EventSubscriberInterface
             }
         }
 
-        // customer has bought the product
-        $productBoughtCount = OrderProductQuery::getSaleStats(
-            $product->getRef(),
-            null,
-            null,
-            [2,3,4],
-            $event->getCustomer()->getId()
-        );
+        $verified = false;
+        if (null !== $event->getCustomer()) {
+            // customer has bought the product
+            $productBoughtCount = OrderProductQuery::getSaleStats(
+                $product->getRef(),
+                null,
+                null,
+                [2, 3, 4],
+                $event->getCustomer()->getId()
+            );
 
-        if ($config['only_verified']) {
-            if (0 === $productBoughtCount) {
-                throw new InvalidDefinitionException(
-                    $this->translator->trans(
-                        "Only customers who have bought this product can publish comment",
-                        [],
-                        CommentModule::getModuleCode()
-                    ),
-                    false
-                );
+            if ($config['only_verified']) {
+                if (0 === $productBoughtCount) {
+                    throw new InvalidDefinitionException(
+                        $this->translator->trans(
+                            "Only customers who have bought this product can publish comment",
+                            [],
+                            CommentModule::getModuleCode()
+                        ),
+                        false
+                    );
+                }
             }
+
+            $verified = 0 !== $productBoughtCount;
+        } else {
+            $verified = false;
         }
 
-        $verified = 0 !== $productBoughtCount;
-
+        $event->setVerified($verified);
+        $event->setRating(true);
     }
 
     public function getContentDefinition(CommentDefinitionEvent $event)
     {
-
+        $event->setVerified(true);
+        $event->setRating(false);
     }
 
 

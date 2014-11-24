@@ -27,6 +27,7 @@ use Comment\Model\Comment;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\Form;
 use Thelia\Core\Event\ActionEvent;
+use Thelia\Exception\MemberAccessException;
 
 /**
  *
@@ -34,11 +35,12 @@ use Thelia\Core\Event\ActionEvent;
  *
  * @author Michaël Espeche <michael.espeche@gmail.com>
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
+ *
  */
 class CommentEvent extends ActionEvent
 {
-
-    const COMMENT_ADD = 'comment.action.add';
+    /** @var array attributes */
+    protected $attributes = [];
 
     /** @var Comment */
     protected $comment = null;
@@ -67,6 +69,32 @@ class CommentEvent extends ActionEvent
         return $this;
     }
 
+    public function __call($methodName, $args)
+    {
+        if (preg_match('~^(set|get|is|has)([A-Z].*)$~', $methodName, $matches)) {
+            $property = Container::underscore($matches[2]);
+
+            if (in_array($property, $this->attributes)) {
+                switch ($matches[1]) {
+                    case 'set':
+                        if (count($args) !== 1) {
+                            throw new MemberAccessException('Method ' . $methodName . ' need 1 argument');
+                        }
+                        $this->parameters[$property] = $args[0];
+                        return $this;
+                    case 'get':
+                    case 'is':
+                    case 'has':
+                        if (count($args) !== 0) {
+                            throw new MemberAccessException('Method ' . $methodName . ' does not have argument');
+                        }
+                        return $this->parameters[$property];
+                }
+            } else {
+                throw new MemberAccessException('Method ' . $methodName . ' not exists');
+            }
+        }
+    }
 
     /**
      * bind form fields to parameters
@@ -87,5 +115,4 @@ class CommentEvent extends ActionEvent
             }
         }
     }
-
 }

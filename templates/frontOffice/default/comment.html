@@ -9,11 +9,11 @@
         {form_hidden_fields form=$form}
 
         {form_field form=$form field="ref"}
-        <input type="hidden" name="{$name}" value="{$comment_ref}" />
+        <input type="hidden" name="{$name}" value="{$definition->getRef()}" />
         {/form_field}
 
         {form_field form=$form field="ref_id"}
-        <input type="hidden" name="{$name}" value="{$comment_ref_id}" />
+        <input type="hidden" name="{$name}" value="{$definition->getRefId()}" />
         {/form_field}
 
         {if ! $customer }
@@ -46,19 +46,21 @@
         </div>
         {/form_field}
 
-        {form_field form=$form field="rating"}
-        <div class="form-group">
-            <label>
-                {$label}
-                <input type="text" name="{$name}" class="form-control" value="0">
-                <input type="text" name="{$name}" class="form-control" value="1">
-                <input type="text" name="{$name}" class="form-control" value="2">
-                <input type="text" name="{$name}" class="form-control" value="3">
-                <input type="text" name="{$name}" class="form-control" value="4">
-                <input type="text" name="{$name}" class="form-control" value="5">
-            </label>
-        </div>
-        {/form_field}
+        {if $definition->hasRating()}
+            {form_field form=$form field="rating"}
+            <div class="form-group">
+                <label>
+                    {$label}
+                    <input type="radio" name="{$name}" class="form-control" value="0">
+                    <input type="radio" name="{$name}" class="form-control" value="1">
+                    <input type="radio" name="{$name}" class="form-control" value="2">
+                    <input type="radio" name="{$name}" class="form-control" value="3">
+                    <input type="radio" name="{$name}" class="form-control" value="4">
+                    <input type="radio" name="{$name}" class="form-control" value="5">
+                </label>
+            </div>
+            {/form_field}
+        {/if}
 
         <button type="submit" class="btn btn-primary">{intl l="Send"}</button>
     </form>
