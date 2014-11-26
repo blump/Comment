@@ -24,9 +24,12 @@
 namespace Comment\Controller\Back;
 
 use Comment\Comment;
+use Comment\EventListeners\CommentChangeStatusEvent;
 use Comment\EventListeners\CommentCreateEvent;
+use Comment\EventListeners\CommentDeleteEvent;
 use Comment\EventListeners\CommentEvent;
 use Comment\EventListeners\CommentEvents;
+use Comment\EventListeners\CommentUpdateEvent;
 use Comment\Form\CommentCreationForm;
 use Comment\Form\CommentModificationForm;
 use Comment\Model\CommentQuery;
@@ -45,6 +48,9 @@ use Thelia\Tools\URL;
  */
 class CommentController extends AbstractCrudController
 {
+
+    protected $currentRouter = "router.comment";
+
     public function __construct()
     {
         parent::__construct(
@@ -74,28 +80,29 @@ class CommentController extends AbstractCrudController
      */
     protected function getUpdateForm()
     {
-        return new CommentCreationForm($this->getRequest());
+        return new CommentModificationForm($this->getRequest());
     }
 
     /**
      * Hydrate the update form for this object, before passing it to the update template
      *
-     * @param unknown $object
+     * @param \Comment\Model\Comment $object
      */
     protected function hydrateObjectForm($object)
     {
         // Prepare the data that will hydrate the form
         $data = [
-            'id'           => $object->getId(),
-            'name'         => $object->getName(),
-            'value'        => $object->getValue(),
-            'hidden'       => $object->getHidden(),
-            'secured'      => $object->getSecured(),
-            'locale'       => $object->getLocale(),
-            'title'        => $object->getTitle(),
-            'chapo'        => $object->getChapo(),
-            'description'  => $object->getDescription(),
-            'postscriptum' => $object->getPostscriptum()
+            'ref' => $object->getRef(),
+            'ref_id' => $object->getRefId(),
+            'customer_id' => $object->getCustomerId(),
+            'username' => $object->getUsername(),
+            'email' => $object->getEmail(),
+            'locale' => $object->getLocale(),
+            'title' => $object->getTitle(),
+            'content' => $object->getContent(),
+            'status' => $object->getStatus(),
+            'verified' => $object->getVerified(),
+            'rating' => $object->getRating()
         ];
 
         // Setup the object form
@@ -135,7 +142,7 @@ class CommentController extends AbstractCrudController
      */
     protected function getDeleteEvent()
     {
-        $event = new CommentEvent();
+        $event = new CommentDeleteEvent();
 
         $event->setId($this->getRequest()->get('comment_id'));
 
@@ -169,8 +176,13 @@ class CommentController extends AbstractCrudController
      */
     protected function getExistingObject()
     {
-        return CommentQuery::create()
-            ->findPk($this->getRequest()->get('comment_id'));
+
+        $comment_id = $this->getRequest()->get('comment_id');
+        if (null === $comment_id) {
+            $comment_id = $this->getRequest()->attributes('comment_id');
+        }
+
+        return CommentQuery::create()->findPk($comment_id);
     }
 
     /**
@@ -196,7 +208,7 @@ class CommentController extends AbstractCrudController
     /**
      * Render the main list template
      *
-     * @param unknown $currentOrder , if any, null otherwise.
+     * @param string $currentOrder , if any, null otherwise.
      */
     protected function renderListTemplate($currentOrder)
     {
@@ -250,29 +262,32 @@ class CommentController extends AbstractCrudController
         ];
 
         $id = $this->getRequest()->request->get('id');
-        $status = $this->getRequest()->request->get('id');
+        $status = $this->getRequest()->request->get('status');
 
-        try {
-            $event = new CommentEvent(['new_status']);
-            $event
-                ->setId($id)
-                ->setNewStatus($status);
-
-            $this->dispatch(
-                CommentEvents::COMMENT_STATUS_UPDATE,
+        if (null !== $id && null !== $status) {
+            try {
+                $event = new CommentChangeStatusEvent();
                 $event
-            );
+                    ->setId($id)
+                    ->setNewStatus($status);
 
-            $message = [
-                "success" => true,
-                "data" => [
-                    'id' => $id,
-                    'status' => $event->getComment()->getStatus()
-                ]
-            ];
+                $this->dispatch(
+                    CommentEvents::COMMENT_STATUS_UPDATE,
+                    $event
+                );
 
-        } catch (\Exception $ex) {
-            $message["error"] = $ex->getMessage();
+                $message = [
+                    "success" => true,
+                    "data" => [
+                        'id' => $id,
+                        'status' => $event->getComment()->getStatus()
+                    ]
+                ];
+            } catch (\Exception $ex) {
+                $message["error"] = $ex->getMessage();
+            }
+        } else {
+            $message["error"] = $this->getTranslator()->trans('Missing parameters', [], Comment::getModuleCode());
         }
 
         return $this->jsonResponse(json_encode($message));

@@ -13,9 +13,6 @@
 
 namespace Comment\EventListeners;
 
-use Thelia\Model\Customer;
-
-
 /**
  * Class CommentDefinitionEvent
  * @package Comment\EventListeners
@@ -32,7 +29,7 @@ class CommentDefinitionEvent extends CommentEvent
     /** @var array */
     protected $config = [];
 
-    /** @var Customer */
+    /** @var \Thelia\Model\Customer */
     protected $customer = null;
 
     /** @var bool */
@@ -46,7 +43,6 @@ class CommentDefinitionEvent extends CommentEvent
 
     public function __construct()
     {
-
     }
 
     /**
@@ -101,7 +97,7 @@ class CommentDefinitionEvent extends CommentEvent
     }
 
     /**
-     * @return Customer
+     * @return \Thelia\Model\Customer
      */
     public function getCustomer()
     {
@@ -109,7 +105,7 @@ class CommentDefinitionEvent extends CommentEvent
     }
 
     /**
-     * @param Customer $customer
+     * @param \Thelia\Model\Customer $customer
      */
     public function setCustomer($customer)
     {

@@ -13,11 +13,73 @@
 
 namespace Comment\EventListeners;
 
+use Thelia\Core\Event\ActionEvent;
+
 /**
- * Class CommentUpdateEvent
+ * Class CommentComputeRatingEvent
  * @package Comment\EventListeners
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class CommentUpdateEvent extends CommentCreateEvent
+class CommentComputeRatingEvent extends ActionEvent
 {
+    /** @var  string */
+    protected $ref;
+
+    /** @var int */
+    protected $refId;
+
+    /** @var float */
+    protected $rating;
+
+    /**
+     * @return string
+     */
+    public function getRef()
+    {
+        return $this->ref;
+    }
+
+    /**
+     * @param string $ref
+     */
+    public function setRef($ref)
+    {
+        $this->ref = $ref;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRefId()
+    {
+        return $this->refId;
+    }
+
+    /**
+     * @param int $refId
+     */
+    public function setRefId($refId)
+    {
+        $this->refId = $refId;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRating()
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param float $rating
+     */
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+
+        return $this;
+    }
 }

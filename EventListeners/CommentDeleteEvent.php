@@ -14,10 +14,10 @@
 namespace Comment\EventListeners;
 
 /**
- * Class CommentUpdateEvent
+ * Class CommentDeleteEvent
  * @package Comment\EventListeners
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class CommentUpdateEvent extends CommentCreateEvent
+class CommentDeleteEvent extends CommentEvent
 {
 }

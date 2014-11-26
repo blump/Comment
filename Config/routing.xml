@@ -29,7 +29,7 @@
 
     <!-- crud -->
 
-    <route id="admin.comment.comments.list" path="/admin/module/comments">
+    <route id="admin.comment.comments.default" path="/admin/module/comments">
         <default key="_controller">Comment\Controller\Back\CommentController::defaultAction</default>
     </route>
 
@@ -37,19 +37,21 @@
         <default key="_controller">Comment\Controller\Back\CommentController::createAction</default>
     </route>
 
-    <route id="admin.comment.comments.update" path="/admin/module/comment/update">
+    <route id="admin.comment.comments.update" path="/admin/module/comment/update/{comment_id}">
         <default key="_controller">Comment\Controller\Back\CommentController::updateAction</default>
+        <requirement key="comment_id">\d+</requirement>
     </route>
 
-    <route id="admin.comment.comments.save" path="/admin/module/comment/save">
+    <route id="admin.comment.comments.save" path="/admin/module/comment/save/{comment_id}" methods="post">
         <default key="_controller">Comment\Controller\Back\CommentController::processUpdateAction</default>
+        <requirement key="comment_id">\d+</requirement>
     </route>
 
-    <route id="admin.comment.comments.delete" path="/admin/module/comment/delete">
+    <route id="admin.comment.comments.delete" path="/admin/module/comment/delete" methods="post">
         <default key="_controller">Comment\Controller\Back\CommentController::deleteAction</default>
     </route>
 
-    <route id="admin.comment.comments.delete" path="/admin/module/comment/status" methods="post">
+    <route id="admin.comment.comments.status" path="/admin/module/comment/status" methods="post">
         <default key="_controller">Comment\Controller\Back\CommentController::changeStatusAction</default>
     </route>
 

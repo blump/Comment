@@ -23,8 +23,12 @@
 
 namespace Comment\Action;
 
+use Comment\EventListeners\CommentAbuseEvent;
+use Comment\EventListeners\CommentChangeStatusEvent;
+use Comment\EventListeners\CommentComputeRatingEvent;
 use Comment\EventListeners\CommentCreateEvent;
 use Comment\EventListeners\CommentDefinitionEvent;
+use Comment\EventListeners\CommentDeleteEvent;
 use Comment\EventListeners\CommentEvent;
 use Comment\EventListeners\CommentEvents;
 use Comment\EventListeners\CommentUpdateEvent;
@@ -91,7 +95,7 @@ class CommentAction implements EventSubscriberInterface
 
     public function update(CommentUpdateEvent $event)
     {
-        if (null == $comment = CommentQuery::create()->findPk($event->getId())) {
+        if (null !== $comment = CommentQuery::create()->findPk($event->getId())) {
             $comment
                 ->setRef($event->getRef())
                 ->setRefId($event->getRefId())
@@ -116,9 +120,9 @@ class CommentAction implements EventSubscriberInterface
         }
     }
 
-    public function delete(CommentEvent $event)
+    public function delete(CommentDeleteEvent $event)
     {
-        if (null == $comment = CommentQuery::create()->findPk($event->getId())) {
+        if (null !== $comment = CommentQuery::create()->findPk($event->getId())) {
             $comment->delete();
 
             $event->setComment($comment);
@@ -133,9 +137,9 @@ class CommentAction implements EventSubscriberInterface
         }
     }
 
-    public function abuse(CommentEvent $event)
+    public function abuse(CommentAbuseEvent $event)
     {
-        if (null == $comment = CommentQuery::create()->findPk($event->getId())) {
+        if (null !== $comment = CommentQuery::create()->findPk($event->getId())) {
             $comment->setAbuse($comment->getAbuse() + 1);
             $comment->save();
 
@@ -143,7 +147,7 @@ class CommentAction implements EventSubscriberInterface
         }
     }
 
-    public function statusChange(CommentEvent $event)
+    public function statusChange(CommentChangeStatusEvent $event)
     {
         $changed = false;
 
@@ -163,7 +167,7 @@ class CommentAction implements EventSubscriberInterface
         }
     }
 
-    public function productRatingCompute(CommentEvent $event)
+    public function productRatingCompute(CommentComputeRatingEvent $event)
     {
         if ('product' === $event->getRef()) {
 
@@ -207,7 +211,7 @@ class CommentAction implements EventSubscriberInterface
      */
     protected function dispatchRatingCompute($dispatcher, $ref, $refId)
     {
-        $ratingEvent = new CommentEvent(['ref', 'ref_id', 'rating']);
+        $ratingEvent = new CommentComputeRatingEvent();
 
         $ratingEvent
             ->setRef($ref)

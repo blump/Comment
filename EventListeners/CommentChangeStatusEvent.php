@@ -14,10 +14,30 @@
 namespace Comment\EventListeners;
 
 /**
- * Class CommentUpdateEvent
+ * Class CommentChangeStatusEvent
  * @package Comment\EventListeners
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class CommentUpdateEvent extends CommentCreateEvent
+class CommentChangeStatusEvent extends CommentEvent
 {
+    /** @var int */
+    protected $newStatus;
+
+    /**
+     * @return int
+     */
+    public function getNewStatus()
+    {
+        return $this->newStatus;
+    }
+
+    /**
+     * @param int $newStatus
+     */
+    public function setNewStatus($newStatus)
+    {
+        $this->newStatus = $newStatus;
+
+        return $this;
+    }
 }

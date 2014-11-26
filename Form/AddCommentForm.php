@@ -34,8 +34,6 @@ class AddCommentForm extends BaseForm
 {
     protected function buildForm()
     {
-        //$definition = $this->getDefinition();
-
         $this->formBuilder
             ->add('username', 'text', [
                 'constraints' => [
@@ -71,23 +69,35 @@ class AddCommentForm extends BaseForm
                 ],
                 'label' => Translator::getInstance()->trans('Content'),
                 'label_attr' => [
-                    'for' => 'comment_content'
+                    'for' => 'content'
                 ]
             ])
             ->add('ref', 'text', [
                 'constraints' => [
                     new NotBlank()
+                ],
+                'label' => Translator::getInstance()->trans('Ref'),
+                'label_attr' => [
+                    'for' => 'ref'
                 ]
             ])
             ->add('ref_id', 'text', [
                 'constraints' => [
                     new GreaterThan(['value' => 0])
+                ],
+                'label' => Translator::getInstance()->trans('Ref Id'),
+                'label_attr' => [
+                    'for' => 'ref_id'
                 ]
             ])
             ->add('rating', 'text', [
                 'constraints' => [
                     new GreaterThanOrEqual(['value' => 0]),
                     new LessThanOrEqual(['value' => 5])
+                ],
+                'label' => Translator::getInstance()->trans('Rating'),
+                'label_attr' => [
+                    'for' => 'rating'
                 ]
             ])
         ;

@@ -11,6 +11,7 @@
     <forms>        
         <form name="form.add.comment" class="Comment\Form\AddCommentForm" />
         <form name="comment.configuration.form" class="Comment\Form\ConfigurationForm" />
+        <form name="admin.comment.modification.form" class="Comment\Form\CommentModificationForm" />
     </forms>
 
     <commands>

@@ -135,7 +135,7 @@ class CommentController extends BaseFrontController
                 $responseData = [
                     "success" => true,
                     "messages" => [
-                        $this->translator->trans(
+                        $this->getTranslator()->trans(
                             "Thank you for submitting your comment.",
                             [],
                             Comment::getModuleCode()

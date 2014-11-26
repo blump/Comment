@@ -24,10 +24,7 @@
 namespace Comment\EventListeners;
 
 use Comment\Model\Comment;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Form\Form;
 use Thelia\Core\Event\ActionEvent;
-use Thelia\Exception\MemberAccessException;
 
 /**
  *
@@ -39,12 +36,6 @@ use Thelia\Exception\MemberAccessException;
  */
 class CommentEvent extends ActionEvent
 {
-    /** @var array attributes */
-    protected $attributes = [];
-
-    /** @var array attributes */
-    protected $additionals = [];
-
     /** @var int */
     protected $id = null;
 
@@ -54,9 +45,8 @@ class CommentEvent extends ActionEvent
     /**
      * Constructor
      */
-    public function __construct($attributes = [])
+    public function __construct()
     {
-        $this->attributes = array_merge($attributes, $this->additionals);
     }
 
     /**
@@ -91,53 +81,7 @@ class CommentEvent extends ActionEvent
     public function setComment(Comment $comment)
     {
         $this->comment = $comment;
+
         return $this;
-    }
-
-    public function __call($methodName, $args)
-    {
-        if (preg_match('~^(set|get|is|has)([A-Z].*)$~', $methodName, $matches)) {
-            $property = Container::underscore($matches[2]);
-
-            if (in_array($property, $this->attributes)) {
-                switch ($matches[1]) {
-                    case 'set':
-                        if (count($args) !== 1) {
-                            throw new MemberAccessException('Method ' . $methodName . ' need 1 argument');
-                        }
-                        $this->parameters[$property] = $args[0];
-                        return $this;
-                    case 'get':
-                    case 'is':
-                    case 'has':
-                        if (count($args) !== 0) {
-                            throw new MemberAccessException('Method ' . $methodName . ' does not have argument');
-                        }
-                        return $this->parameters[$property];
-                }
-            } else {
-                throw new MemberAccessException('Method ' . $methodName . ' not exists');
-            }
-        }
-    }
-
-    /**
-     * bind form fields to parameters
-     *
-     * @param Form $form
-     */
-    public function bindForm(Form $form)
-    {
-        $fields = $form->getIterator();
-
-        /** @var \Symfony\Component\Form\Form $field */
-        foreach ($fields as $field) {
-            $functionName = sprintf("set%s", Container::camelize($field->getName()));
-            if (method_exists($this, $functionName)) {
-                $this->{$functionName}($field->getData());
-            } else {
-                $this->parameters[$field->getName()] = $field->getData();
-            }
-        }
     }
 }
