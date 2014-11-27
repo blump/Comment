@@ -92,6 +92,7 @@ class CommentController extends AbstractCrudController
     {
         // Prepare the data that will hydrate the form
         $data = [
+            'id' => $object->getId(),
             'ref' => $object->getRef(),
             'ref_id' => $object->getRefId(),
             'customer_id' => $object->getCustomerId(),
@@ -116,9 +117,10 @@ class CommentController extends AbstractCrudController
      */
     protected function getCreationEvent($formData)
     {
-        $event = new CommentCreateEvent();
-
-        $event->bindForm($formData);
+        $event = $this->bindFormData(
+            new CommentCreateEvent(),
+            $formData
+        );
 
         return $event;
     }
@@ -130,9 +132,29 @@ class CommentController extends AbstractCrudController
      */
     protected function getUpdateEvent($formData)
     {
-        $event = new CommentUpdateEvent();
+        $event = $this->bindFormData(
+            new CommentUpdateEvent(),
+            $formData
+        );
 
-        $event->bindForm($formData);
+        $event->setId($formData['id']);
+
+        return $event;
+    }
+
+    protected function bindFormData($event, $formData)
+    {
+        $event->setRef($formData['ref']);
+        $event->setRefId($formData['ref_id']);
+        $event->setCustomerId($formData['customer_id']);
+        $event->setUsername($formData['username']);
+        $event->setEmail($formData['email']);
+        $event->setLocale($formData['locale']);
+        $event->setTitle($formData['title']);
+        $event->setContent($formData['content']);
+        $event->setStatus($formData['status']);
+        $event->setVerified($formData['verified']);
+        $event->setRating($formData['rating']);
 
         return $event;
     }
@@ -236,6 +258,7 @@ class CommentController extends AbstractCrudController
     {
         return $this->generateRedirectFromRoute(
             "admin.comment.comments.update",
+            [],
             ['comment_id' => $this->getRequest()->get('comment_id')]
         );
     }

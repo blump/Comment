@@ -35,12 +35,12 @@
         {/if}
 
         {* Loop Filter *}
-        $loop_limit={$smarty.get.loop_limit|default:50}}
-        {$loop_page={$smarty.get.loop_page|default:1}}
+        {$loop_limit={$smarty.get.loop_limit|default:20}}
+        {$loop_page={$smarty.get.page|default:1}}
         {$loop_order={$smarty.get.loop_order|default:'created_reverse'}}
-        {$loop_status={$smarty.get.$loop_status|default:''}}
+        {$loop_status={$smarty.get.loop_status|default:''}}
 
-        {assign var="amount" value={count type="comment" status="$loop_status" order="$loop_status" backend_context="1"}}
+        {assign var="amount" value={count type="comment" status=$loop_status order=$loop_order backend_context="1"}}
         {if $amount < $loop_limit * $loop_page}
             {$loop_page=1}
         {/if}
@@ -57,31 +57,38 @@
                                     <span class="glyphicon glyphicon-plus-sign"></span>
                                 </a>
                                 {/loop}
-                                <div class="table-filters row">
-                                    <div class="col-md-2">Status :</div>
-                                    <div class="col-md-10">
-                                        <select name="loop_status">
-                                            {foreach $comment_status as $status}
-                                            <option value="{$status@index}" {if $status@index == $filter_status}selected="selected"{/if}>{$status.label}</li>
-                                            {/foreach}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button class="trigger-filter" type="button">Filter</button>
-                                    </div>
 
+                                <div class="table-filters">
+                                    <form class="form-inline" role="form">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <label for="loop_status" class="sr-only">{intl l="Status"}</label>
+                                                <select id="loop_status" name="loop_status" class="filter-element form-control" data-name="loop_status">
+                                                    <option value="">{intl l="All"}</option>
+                                                    {foreach $comment_status as $status}
+                                                    <option value="{$status@index}" {if $status@index == $filter_status}selected="selected"{/if}>{$status.label}</option>
+                                                    {/foreach}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="trigger-filter btn btn-default" type="button">{intl l="Filter"}</button>
+                                        </div>
+                                    </form>
                                 </div>
+
                             </caption>
                             <thead>
                             <tr>
                                 <th>{intl l="ID"}</th>
                                 <th>{intl l="Author"}</th>
                                 <th>{intl l="Comment"}</th>
+                                <th>{intl l="Reference"}</th>
                                 <th>{intl l="Actions"}</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {loop type="comment" name="comment.list" status="$loop_status" order="$loop_status" page="$loop_page" limit="$loop_limit" backend_context="1"}
+                            {loop type="comment" name="comment.list" status=$loop_status order=$loop_order page=$loop_page limit=$loop_limit load_ref="1" backend_context="1"}
                             <tr>
                                 <td>{$ID}</td>
 
@@ -117,6 +124,18 @@
                                     </ul>
                                 </td>
 
+                                {* Reference *}
+                                <td>
+                                    {if $REF_VIEW_URL}
+                                    <a href="{$REF_VIEW_URL}" title="{intl l='View'}" >
+                                    {/if}
+                                    {if $REF_TITLE}{$REF_TITLE} {/if}
+                                    ({$REF}: {$REF_ID})
+                                    {if $REF_VIEW_URL}
+                                    </a>
+                                    {/if}
+                                </td>
+
                                 <td class="actions" data-id="{$ID}">
                                     <div class="btn-group dropdown dropdown-status">
                                         {loop type="auth" name="can_change" role="ADMIN" module="comment" access="UPDATE"}
@@ -142,22 +161,38 @@
                             </tr>
                             {/loop}
                             </tbody>
-                        </table>
+                            <tfoot>
+                            <tr>
+                                <td colspan="100">
+                                    {include
+                                    file = "includes/pagination.html"
 
+                                    loop_ref       = "comment.list"
+                                    max_page_count = $loop_limit
+                                    page_url       = "{url path={navigate to="current"} product_order=$loop_page}"
+                                    }
+
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        {*
                         {if $amount > $limit}
                         <div class="pagination-container" role="pagination" aria-labelledby="pagination-label-{$toolbar}}">
                             <strong id="pagination-label-{$toolbar}}" class="pagination-label">{intl l="Pagination"}</strong>
                             <ul class="pagination">
-                                <li{if $product_page le 1} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$product_page-1} }" title="{intl l="Previous"}" class="prev"><i class="icon-prev"></i></a></li>
-                                {pageloop rel="product_list"}
-                                <li{if $PAGE eq $CURRENT} class="active"{/if}><a href="{url path={navigate to="current"} page=$PAGE }"> {$PAGE} </a></li>
-                                {if $PAGE eq $LAST}
-                                <li{if $CURRENT eq $LAST} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$NEXT} }"  title="{intl l="Next"}" class="next"><i class="icon-next"></i></a></li>
-                                {/if}
+                                <li{if $loop_page le 1} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$loop_page-1} }" title="{intl l="Previous"}" class="prev"><i class="icon-prev"></i></a></li>
+
+                                {pageloop rel="comment.list" limit=$loop_limit}
+                                    <li{if $PAGE eq $CURRENT} class="active"{/if}><a href="{url path={navigate to="current"} page=$PAGE }"> {$PAGE} </a></li>
+                                    {if $PAGE eq $LAST}
+                                        <li{if $CURRENT eq $LAST} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$NEXT} }"  title="{intl l="Next"}" class="next"><i class="icon-next"></i></a></li>
+                                    {/if}
                                 {/pageloop}
                             </ul>
                         </div>
                         {/if}
+                        *}
                     </form>
 
                 </div>
@@ -331,21 +366,73 @@
             $("#comment_delete_id").val($(this).data("id"));
         });
 
-        var filterLoop = function filterLoop(){
-            var $filterForm = $('filters');
+        var getQueryParams = function getQueryParams() {
+            var pl = /\+/g,  // Regex for replacing addition symbol with a space
+                search = /([^&=]+)=?([^&]*)/g,
+                decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                query = window.location.search.substring(1),
+                urlParams = {},
+                matches;
+
+            while (matches = search.exec(query)) {
+                urlParams[decode(matches[1])] = decode(matches[2]);
+            }
+
+            return urlParams;
+        };
+
+        var getFilterLoop = function getFilterLoop(){
+            var $filterForm = $('.table-filters');
             var filters = {};
 
-            $filters.find('.filter-element').each(function(){
+            $filterForm.find('.filter-element').each(function(){
                 var $this = $(this);
                 filters[$this.data('name')] = $this.val();
             });
 
+            return filters;
+        };
 
+        var setFilterLoop = function setFilterLoop(){
+            var $filterForm = $('.table-filters');
+            var filters = getQueryParams();
+
+            $filterForm.find('.filter-element').each(function(){
+                var $this = $(this);
+                if ($this.data('name') in filters) {
+                    $this.val(filters[$this.data('name')]);
+                }
+            });
+
+            return filters;
         };
 
         $(".trigger-filter").on('click', function(){
+            var queries = [],
+                param,
+                params,
+                newParams;
 
+            params = getQueryParams();
+            newParams = getFilterLoop();
+
+            for (param in newParams) {
+                if (newParams.hasOwnProperty(param)) {
+                    params[param] = newParams[param];
+                }
+            }
+
+            for (param in params) {
+                if (params.hasOwnProperty(param)) {
+                    queries.push(encodeURIComponent(param) + '=' + encodeURIComponent(params[param]));
+                }
+            }
+
+            window.location.search = '?' + queries.join('&');
         });
+
+        setFilterLoop();
+
     });
     {/literal}
 </script>

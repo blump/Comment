@@ -11,25 +11,37 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Form;
 
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Thelia\Form\BaseForm;
 
 /**
- * Class CommentEvents
- * @package Comment\EventListeners
+ * Class CommentAbuseForm
+ * @package Comment\Form
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class CommentEvents
+class CommentAbuseForm extends BaseForm
 {
-    const COMMENT_CREATE = "action.comment.create";
-    const COMMENT_UPDATE = "action.comment.update";
-    const COMMENT_DELETE = "action.comment.delete";
-    const COMMENT_STATUS_UPDATE = "action.comment.status.update";
-    const COMMENT_ABUSE = "action.comment.abuse";
-    const COMMENT_RATING_COMPUTE = "action.comment.rating.compute";
-    const COMMENT_REFERENCE_GETTER = "action.comment.reference.getter";
-    //
-    const COMMENT_GET_DEFINITION = "action.comment.definition";
-    const COMMENT_GET_DEFINITION_PRODUCT = "action.comment.definition.product";
-    const COMMENT_GET_DEFINITION_CONTENT = "action.comment.definition.content";
+    protected function buildForm()
+    {
+        $this
+            ->formBuilder
+            ->add(
+                'id',
+                'comment_id'
+            )
+        ;
+    }
+
+
+
+    /**
+     * @return string the name of you form. This name must be unique
+     */
+    public function getName()
+    {
+        return 'comment_abuse';
+    }
 }

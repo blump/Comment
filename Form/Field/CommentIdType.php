@@ -11,25 +11,35 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Form\Field;
 
+use Comment\Model\CommentQuery;
+use Thelia\Core\Form\Type\Field\AbstractIdType;
 
 /**
- * Class CommentEvents
- * @package Comment\EventListeners
+ * Class CommentIdType
+ * @package Comment\Form\Field
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
-class CommentEvents
+class CommentIdType extends AbstractIdType
 {
-    const COMMENT_CREATE = "action.comment.create";
-    const COMMENT_UPDATE = "action.comment.update";
-    const COMMENT_DELETE = "action.comment.delete";
-    const COMMENT_STATUS_UPDATE = "action.comment.status.update";
-    const COMMENT_ABUSE = "action.comment.abuse";
-    const COMMENT_RATING_COMPUTE = "action.comment.rating.compute";
-    const COMMENT_REFERENCE_GETTER = "action.comment.reference.getter";
-    //
-    const COMMENT_GET_DEFINITION = "action.comment.definition";
-    const COMMENT_GET_DEFINITION_PRODUCT = "action.comment.definition.product";
-    const COMMENT_GET_DEFINITION_CONTENT = "action.comment.definition.content";
+    /**
+     * @return \Propel\Runtime\ActiveQuery\ModelCriteria
+     *
+     * Get the model query to check
+     */
+    protected function getQuery()
+    {
+        return new CommentQuery();
+    }
+
+    /**
+     * Returns the name of this type.
+     *
+     * @return string The name of this type
+     */
+    public function getName()
+    {
+        return "comment_id";
+    }
 }

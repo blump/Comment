@@ -55,6 +55,27 @@ class CommentCreateEvent extends CommentEvent
     /** @var int */
     protected $rating;
 
+    /** @var int */
+    protected $abuse;
+
+    /**
+     * @return int
+     */
+    public function getAbuse()
+    {
+        return $this->abuse;
+    }
+
+    /**
+     * @param int $abuse
+     */
+    public function setAbuse($abuse)
+    {
+        $this->abuse = $abuse;
+
+        return $this;
+    }
+
     /**
      * @return string
      */

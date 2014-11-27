@@ -30,7 +30,7 @@ class CommentModificationForm extends CommentCreationForm
             ->formBuilder
             ->add(
                 'id',
-                'text',
+                'integer',
                 [
                     'constraints' => [
                         new NotBlank()

@@ -1,7 +1,8 @@
 {default_translation_domain domain='comment.fo.default'}
 {$locale={lang attr="locale"}}
 {ifloop rel="comments"}
-    {loop name="comments" type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" order="created_reverse" locale="{$locale}" offset="{$start}" limit="{$count}" }
+    {loop name="comments" type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" order="created_reverse"
+        offset="{$start}" limit="{$count}" }
     <div class="comment-item">
         <h4 class="comment-author">
             {if $CUSTOMER_ID}
@@ -15,6 +16,7 @@
         <h3 class="comment-title">{$TITLE}</h3>
         {if $RATING}<span class="comment-rating comment-rating-{$RATING}">{$RATING}</span>{/if}
         <p class="comment-message">{$CONTENT}</p>
+        <div class="comment-alert alert hidden"></div>
         <ul class="comment-extra">
             <li class="comment-date">{format_date date="{$CREATED}" output="date"}</li>
             {if $VERIFIED}
@@ -23,13 +25,21 @@
             <li class="comment-verified">{intl l="Verified"}</li>
             {/if}
             <li class="comment-abuse">
-                <a href="{url path="/comment/abuse" id="{$ID}"}">{intl l="Mark as inappropriate"}</a>
+                {form name="comment.abuse.form"}
+                <form id="form-add-comment" action="{url path="/comment/abuse"}" method="post" novalidate>
+                {form_hidden_fields form=$form}
+                {form_field form=$form field="id"}
+                    <input type="hidden" name="{$name}" value="{$ID}" />
+                    <a href="#" class="abuse-trigger">{intl l="Mark as inappropriate"}</a>
+                {/form_field}
+                </form>
+                {/form}
             </li>
         </ul>
     </div>
     {/loop}
 
-    {if {count type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" locale="{$locale}" } > $start + $count }
+    {if {count type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" } > $start + $count }
     <div class="comments-more">
         <a href="#" class="comments-more-link">{intl l="Load more comments..."}</a>
     </div>

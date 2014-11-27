@@ -9,7 +9,8 @@
     </loops>
 
     <forms>        
-        <form name="form.add.comment" class="Comment\Form\AddCommentForm" />
+        <form name="comment.add.form" class="Comment\Form\AddCommentForm" />
+        <form name="comment.abuse.form" class="Comment\Form\CommentAbuseForm" />
         <form name="comment.configuration.form" class="Comment\Form\ConfigurationForm" />
         <form name="admin.comment.modification.form" class="Comment\Form\CommentModificationForm" />
     </forms>
@@ -21,10 +22,17 @@
     </commands>
 
     <services>
+
         <service id="comment.action" class="Comment\Action\CommentAction">
             <argument type="service" id="thelia.translator" />
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="comment.form.type.field.comment_id" class="Comment\Form\Field\CommentIdType">
+            <argument type="service" id="thelia.translator" />
+            <tag name="thelia.form.type" />
+        </service>
+
     </services>
 
     <!--

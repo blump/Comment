@@ -14,6 +14,8 @@
 namespace Comment\Loop;
 
 use Comment\Comment;
+use Comment\EventListeners\CommentEvents;
+use Comment\EventListeners\CommentReferenceGetterEvent;
 use Comment\Model\CommentQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseLoop;
@@ -34,6 +36,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
 {
     protected $timestampable = true;
 
+    protected $cacheRef = [];
     /**
      * Definition of loop arguments
      *
@@ -47,8 +50,9 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
             Argument::createAnyTypeArgument('ref'),
             Argument::createIntListTypeArgument('ref_id'),
             Argument::createIntListTypeArgument('status'),
-            Argument::createBooleanOrBothTypeArgument('verified', 1),
+            Argument::createBooleanOrBothTypeArgument('verified', BooleanOrBothType::ANY),
             Argument::createAnyTypeArgument('locale'),
+            Argument::createAnyTypeArgument('load_ref', 0),
             new Argument(
                 'order',
                 new Type\TypeCollection(
@@ -198,6 +202,15 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('ABUSE', $comment->getAbuse())
             ;
 
+            if (1 == $this->getLoadRef()) {
+                // dispatch event to get the reference element
+                $this->getReference(
+                    $loopResultRow,
+                    $comment->getRef(),
+                    $comment->getRefId()
+                );
+            }
+
             $this->addOutputFields($loopResultRow, $comment);
 
             $loopResult->addRow($loopResultRow);
@@ -206,5 +219,39 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
         return $loopResult;
     }
 
+    /**
+     * @param LoopResultRow $loopResultRow
+     * @param string $ref
+     * @param int $refId
+     */
+    protected function getReference(LoopResultRow &$loopResultRow, $ref, $refId)
+    {
+        $key = sprintf('%s:%s', $ref, $refId);
+        $data = [
+            'REF_OBJECT' => null,
+            'REF_TITLE' => null,
+            'REF_EDIT_URL' => null,
+            'REF_VIEW_URL' => null
+        ];
 
+        if (!array_key_exists($key, $this->cacheRef)) {
+            $event = new CommentReferenceGetterEvent($ref, $refId, $this->request->getLocale());
+
+            $this->dispatcher->dispatch(
+                CommentEvents::COMMENT_REFERENCE_GETTER,
+                $event
+            );
+
+            $data['REF_OBJECT'] = $event->getObject();
+            $data['REF_TITLE'] = $event->getTitle();
+            $data['REF_EDIT_URL'] = $event->getEditUrl();
+            $data['REF_VIEW_URL'] = $event->getViewUrl();
+        } else {
+            $data = $this->cacheRef[$key];
+        }
+
+        foreach ($data as $k => $v) {
+            $loopResultRow->set($k, $v);
+        }
+    }
 }

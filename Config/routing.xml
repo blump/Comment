@@ -10,15 +10,16 @@
         <default key="_controller">Comment\Controller\Front\CommentController::getAction</default>
     </route>
 
-    <route id="front.comment.add" path="/comment/add">
+    <route id="front.comment.add" path="/comment/add" methods="post">
         <default key="_controller">Comment\Controller\Front\CommentController::createAction</default>
     </route>
 
-    <route id="front.comment.delete" path="/comment/delete">
+    <route id="front.comment.delete" path="/comment/delete/{comment_id}">
         <default key="_controller">Comment\Controller\Front\CommentController::deleteAction</default>
+        <requirement key="comment_id">\d+</requirement>
     </route>
 
-    <route id="front.comment.abuse" path="/comment/abuse">
+    <route id="front.comment.abuse" path="/comment/abuse" methods="post">
         <default key="_controller">Comment\Controller\Front\CommentController::abuseAction</default>
     </route>
 

@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\HttpFoundation\Request;
@@ -49,7 +50,7 @@ class CommentCreationForm extends BaseForm
             ->formBuilder
             ->add(
                 'customer_id',
-                'text',
+                'integer',
                 [
                     'required' => false,
                     'label' => $this->trans('Customer'),
@@ -61,7 +62,7 @@ class CommentCreationForm extends BaseForm
             ->add('username', 'text', [
                 'required' => false,
                 'constraints' => [
-                    new NotBlank()
+                    new Length(['min' => 2])
                 ],
                 'label' => $this->trans('Username'),
                 'label_attr' => [
@@ -115,7 +116,7 @@ class CommentCreationForm extends BaseForm
                     'for' => 'ref'
                 ]
             ])
-            ->add('ref_id', 'text', [
+            ->add('ref_id', 'integer', [
                 'constraints' => [
                     new GreaterThanOrEqual(['value' => 0])
                 ],
@@ -124,7 +125,7 @@ class CommentCreationForm extends BaseForm
                     'for' => 'ref_id'
                 ]
             ])
-            ->add('rating', 'text', [
+            ->add('rating', 'integer', [
                 'required' => false,
                 'constraints' => [
                     new GreaterThanOrEqual(['value' => 0]),
@@ -137,7 +138,7 @@ class CommentCreationForm extends BaseForm
             ])
             ->add(
                 'status',
-                'text',
+                'integer',
                 [
                     'label' => $this->trans('Status'),
                     'label_attr' => [
@@ -147,11 +148,21 @@ class CommentCreationForm extends BaseForm
             )
             ->add(
                 'verified',
-                'text',
+                'integer',
                 [
                     'label' => $this->trans('Verified'),
                     'label_attr' => [
                         'for' => 'verified'
+                    ]
+                ]
+            )
+            ->add(
+                'abuse',
+                'integer',
+                [
+                    'label' => $this->trans('Abuse'),
+                    'label_attr' => [
+                        'for' => 'abuse'
                     ]
                 ]
             )

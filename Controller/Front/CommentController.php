@@ -24,14 +24,19 @@
 namespace Comment\Controller\Front;
 
 use Comment\Comment;
+use Comment\EventListeners\CommentAbuseEvent;
 use Comment\EventListeners\CommentCreateEvent;
 use Comment\EventListeners\CommentDefinitionEvent;
+use Comment\EventListeners\CommentDeleteEvent;
 use Comment\EventListeners\CommentEvent;
 use Comment\EventListeners\CommentEvents;
 use Comment\Exception\InvalidDefinitionException;
 use Comment\Form\AddCommentForm;
+use Comment\Form\CommentAbuseForm;
+use Comment\Model\CommentQuery;
 use Exception;
 use Thelia\Controller\Front\BaseFrontController;
+use Thelia\Form\Exception\FormValidationException;
 
 /**
  * Class CommentController
@@ -74,6 +79,47 @@ class CommentController extends BaseFrontController
 
     }
 
+    public function abuseAction()
+    {
+        // only ajax
+        $this->checkXmlHttpRequest();
+
+        $abuseForm = $this->createForm('comment.abuse.form');
+
+        $messageData = [
+            "success" => false
+        ];
+
+        try {
+            $form = $this->validateForm($abuseForm);
+
+            $comment_id = $form->get("id")->getData();
+
+            $event = new CommentAbuseEvent();
+            $event->setId($comment_id);
+
+            $this->dispatch(CommentEvents::COMMENT_ABUSE, $event);
+
+            $messageData["success"] = true;
+            $messageData["message"] = $this->getTranslator()->trans(
+                "Your request has been registered. Thank you.",
+                [],
+                Comment::getModuleCode()
+            );
+
+        } catch (\Exception $ex) {
+            // all errors
+            $messageData["message"] = $this->getTranslator()->trans(
+                "Your request could not be validated. Try it later",
+                [],
+                Comment::getModuleCode()
+            );
+        }
+
+        return $this->jsonResponse(json_encode($messageData));
+    }
+
+
     public function createAction()
     {
         // only ajax
@@ -104,7 +150,7 @@ class CommentController extends BaseFrontController
             }
         }
 
-        $commentForm = new AddCommentForm($this->getRequest());
+        $commentForm = $this->createForm('comment.add.form');
 
         // adapt form
         if (null !== $customer = $definition->getCustomer()) {
@@ -125,9 +171,14 @@ class CommentController extends BaseFrontController
             $event->bindForm($form);
 
             $event->setVerified($definition->isVerified());
+
             if (!$definition->getConfig()['moderate']) {
                 $event->setStatus(\Comment\Model\Comment::ACCEPTED);
+            } else {
+                $event->setStatus(\Comment\Model\Comment::PENDING);
             }
+
+            $event->setLocale($this->getRequest()->getLocale());
 
             $this->dispatch(CommentEvents::COMMENT_CREATE, $event);
 
@@ -142,6 +193,13 @@ class CommentController extends BaseFrontController
                         ),
                     ]
                 ];
+                if ($definition->getConfig()['moderate']) {
+                    $responseData['messages'][] = $this->getTranslator()->trans(
+                        "Your comment will be put online once verified.",
+                        [],
+                        Comment::getModuleCode()
+                    );
+                }
             } else {
                 $responseData = [
                     "success" => false,
@@ -151,15 +209,13 @@ class CommentController extends BaseFrontController
                             [],
                             Comment::getModuleCode()
                         )
-                    ],
-                    "errors" => []
+                    ]
                 ];
             }
         } catch (Exception $ex) {
             $responseData = [
                 "success" => false,
-                "messages" => [$ex->getMessage()],
-                "errors" => []
+                "messages" => [$ex->getMessage()]
             ];
         }
 
@@ -184,8 +240,51 @@ class CommentController extends BaseFrontController
         return $eventDefinition;
     }
 
-    public function deleteAction()
+    public function deleteAction($commentId)
     {
+        // only ajax
+        $this->checkXmlHttpRequest();
 
+        $messageData = [
+            "success" => false
+        ];
+
+        try {
+            $customer = $this->getSecurityContext()->getCustomerUser();
+
+            // find the comment
+            $comment = CommentQuery::create()->findPk($commentId);
+
+            if (null === $comment) {
+                if ($comment->getCustomerId() === $customer->getId()) {
+                    $event = new CommentDeleteEvent();
+                    $event->setId($commentId);
+
+                    $this->dispatch(CommentEvents::COMMENT_DELETE, $event);
+
+                    if (null !== $event->getComment()) {
+                        $messageData["success"] = true;
+                        $messageData["message"] = $this->getTranslator()->trans(
+                            "Your comment has been deleted.",
+                            [],
+                            Comment::getModuleCode()
+                        );
+                    }
+                }
+            }
+
+        } catch (\Exception $ex) {
+            ;
+        }
+
+        if (false === $messageData["success"]) {
+            $messageData["message"] = $this->getTranslator()->trans(
+                "Comment could not be removed. Please try later.",
+                [],
+                Comment::getModuleCode()
+            );
+        }
+
+        return $this->jsonResponse(json_encode($messageData));
     }
 }

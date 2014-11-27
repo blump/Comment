@@ -31,6 +31,7 @@ use Comment\EventListeners\CommentDefinitionEvent;
 use Comment\EventListeners\CommentDeleteEvent;
 use Comment\EventListeners\CommentEvent;
 use Comment\EventListeners\CommentEvents;
+use Comment\EventListeners\CommentReferenceGetterEvent;
 use Comment\EventListeners\CommentUpdateEvent;
 use Comment\Exception\InvalidDefinitionException;
 use Comment\Model\Comment;
@@ -40,10 +41,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Thelia\Exception\NotImplementedException;
 use Thelia\Model\ConfigQuery;
+use Thelia\Model\ContentQuery;
 use Thelia\Model\MetaData;
 use Thelia\Model\MetaDataQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\ProductQuery;
+use Thelia\Tools\URL;
 
 /**
  *
@@ -73,11 +76,13 @@ class CommentAction implements EventSubscriberInterface
             ->setCustomerId($event->getCustomerId())
             ->setUsername($event->getUsername())
             ->setEmail($event->getEmail())
+            ->setLocale($event->getLocale())
             ->setTitle($event->getTitle())
             ->setContent($event->getContent())
             ->setStatus($event->getStatus())
             ->setVerified($event->isVerified())
             ->setRating($event->getRating())
+            ->setAbuse($event->getAbuse())
             ->save()
         ;
         
@@ -102,11 +107,13 @@ class CommentAction implements EventSubscriberInterface
                 ->setCustomerId($event->getCustomerId())
                 ->setUsername($event->getUsername())
                 ->setEmail($event->getEmail())
+                ->setLocale($event->getLocale())
                 ->setTitle($event->getTitle())
                 ->setContent($event->getContent())
                 ->setStatus($event->getStatus())
                 ->setVerified($event->isVerified())
                 ->setRating($event->getRating())
+                ->setAbuse($event->getAbuse())
                 ->save()
             ;
             $event->setComment($comment);
@@ -224,6 +231,37 @@ class CommentAction implements EventSubscriberInterface
         );
     }
 
+    public function getRefrence(CommentReferenceGetterEvent $event)
+    {
+        if ('product' === $event->getRef()) {
+            $product = ProductQuery::create()->findPk($event->getRefId());
+            if (null !== $product) {
+                $event->setTitle($product->getTitle());
+                $event->setViewUrl($product->getUrl($event->getLocale()));
+                $event->setEditUrl(
+                    URL::getInstance()->absoluteUrl(
+                        '/admin/products/update',
+                        ['product_id' => $product->getId()]
+                    )
+                );
+                $event->setObject($product);
+            }
+        } elseif ('content' === $event->getRef()) {
+            $content = ContentQuery::create()->findPk($event->getRefId());
+            if (null !== $content) {
+                $event->setTitle($content->getTitle());
+                $event->setViewUrl($content->getUrl($event->getLocale()));
+                $event->setEditUrl(
+                    URL::getInstance()->absoluteUrl(
+                        '/admin/contents/update',
+                        ['product_id' => $content->getId()]
+                    )
+                );
+                $event->setObject($content);
+            }
+        }
+    }
+
     public function getDefinition(CommentDefinitionEvent $event)
     {
         $config = $event->getConfig();
@@ -238,6 +276,9 @@ class CommentAction implements EventSubscriberInterface
             );
         }
 
+        $eventName = CommentEvents::COMMENT_GET_DEFINITION . "." . $event->getRef();
+        $event->getDispatcher()->dispatch($eventName, $event);
+
         // is only customer is authorized to publish
         if ($config['only_customer'] && null === $event->getCustomer()) {
             throw new InvalidDefinitionException(
@@ -249,9 +290,6 @@ class CommentAction implements EventSubscriberInterface
                 false
             );
         }
-
-        $eventName = CommentEvents::COMMENT_GET_DEFINITION . "." . $event->getRef();
-        $event->getDispatcher()->dispatch($eventName, $event);
 
         if (null !== $event->getCustomer()) {
             // is customer already have published something
@@ -271,6 +309,8 @@ class CommentAction implements EventSubscriberInterface
     public function getProductDefinition(CommentDefinitionEvent $event)
     {
         $config = $event->getConfig();
+
+        $event->setRating(true);
 
         $product = ProductQuery::create()->findPk($event->getRefId());
         if (null === $product) {
@@ -333,7 +373,6 @@ class CommentAction implements EventSubscriberInterface
         }
 
         $event->setVerified($verified);
-        $event->setRating(true);
     }
 
     public function getContentDefinition(CommentDefinitionEvent $event)
@@ -372,6 +411,7 @@ class CommentAction implements EventSubscriberInterface
             CommentEvents::COMMENT_ABUSE => ['abuse', 128],
             CommentEvents::COMMENT_STATUS_UPDATE => ['statusChange', 128],
             CommentEvents::COMMENT_RATING_COMPUTE => ['productRatingCompute', 128],
+            CommentEvents::COMMENT_REFERENCE_GETTER => ['getRefrence', 128],
             CommentEvents::COMMENT_GET_DEFINITION => ['getDefinition', 128],
             CommentEvents::COMMENT_GET_DEFINITION_PRODUCT => ['getProductDefinition', 128],
             CommentEvents::COMMENT_GET_DEFINITION_CONTENT => ['getContentDefinition', 128],

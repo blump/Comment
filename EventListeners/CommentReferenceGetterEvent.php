@@ -26,6 +26,8 @@ class CommentReferenceGetterEvent extends ActionEvent
     protected $ref;
     /** @var int */
     protected $refId;
+    /** @var string */
+    protected $locale;
     /** @var mixed */
     protected $object;
     /** @var string */
@@ -34,6 +36,14 @@ class CommentReferenceGetterEvent extends ActionEvent
     protected $viewUrl;
     /** @var string */
     protected $editUrl;
+
+    public function __construct($ref, $refId, $locale)
+    {
+        $this->ref = $ref;
+        $this->refId = $refId;
+        $this->locale = $locale;
+    }
+
 
     /**
      * @return string
@@ -51,6 +61,23 @@ class CommentReferenceGetterEvent extends ActionEvent
         $this->editUrl = $editUrl;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
     }
 
     /**
@@ -103,6 +130,24 @@ class CommentReferenceGetterEvent extends ActionEvent
     public function setRefId($refId)
     {
         $this->refId = $refId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
 
         return $this;
     }

@@ -1,74 +1,108 @@
-<div id="comment-top">
+<div class="comments-main">
+    <div id="comment-top">
 
-    <div id="comment-top-message" class="alert hidden"></div>
+        <div id="comment-top-message" class="alert hidden"></div>
 
-    {if $definition->isValid()}
-    {form name="form.add.comment"}
-    <form id="form-add-comment" action="{url path="/comment/add"}" method="post" novalidate>
+        {if $definition->isValid()}
+        {form name="form.add.comment"}
+        <form id="form-add-comment" action="{url path="/comment/add"}" method="post" novalidate>
 
-        {form_hidden_fields form=$form}
+            {form_hidden_fields form=$form}
 
-        {form_field form=$form field="ref"}
-        <input type="hidden" name="{$name}" value="{$definition->getRef()}" />
-        {/form_field}
+            {form_field form=$form field="ref"}
+            <input type="hidden" name="{$name}" value="{$definition->getRef()}" />
+            {/form_field}
 
-        {form_field form=$form field="ref_id"}
-        <input type="hidden" name="{$name}" value="{$definition->getRefId()}" />
-        {/form_field}
+            {form_field form=$form field="ref_id"}
+            <input type="hidden" name="{$name}" value="{$definition->getRefId()}" />
+            {/form_field}
 
-        {if ! $customer }
-            {form_field form=$form field="username"}
+            {if ! $customer }
+                {form_field form=$form field="username"}
+                <div class="form-group">
+                    <label for="{$label_attr.for}">{$label}</label>
+                    <input type="text" name="{$name}" id="{$label_attr.for}" class="form-control" {if $required} required{/if}>
+                </div>
+                {/form_field}
+
+                {form_field form=$form field="email"}
+                <div class="form-group">
+                    <label for="{$label_attr.for}">{$label}</label>
+                    <input type="email" name="{$name}" id="{$label_attr.for}" class="form-control" {if $required} required{/if}>
+                </div>
+                {/form_field}
+            {/if}
+
+            {form_field form=$form field="title"}
             <div class="form-group">
                 <label for="{$label_attr.for}">{$label}</label>
                 <input type="text" name="{$name}" id="{$label_attr.for}" class="form-control" {if $required} required{/if}>
             </div>
             {/form_field}
 
-            {form_field form=$form field="email"}
+            {form_field form=$form field="content"}
             <div class="form-group">
                 <label for="{$label_attr.for}">{$label}</label>
-                <input type="email" name="{$name}" id="{$label_attr.for}" class="form-control" {if $required} required{/if}>
+                <textarea name="{$name}" id="{$label_attr.for}" class="form-control" {if $required} required{/if}></textarea>
             </div>
             {/form_field}
-        {/if}
 
-        {form_field form=$form field="title"}
-        <div class="form-group">
-            <label for="{$label_attr.for}">{$label}</label>
-            <input type="text" name="{$name}" id="{$label_attr.for}" class="form-control" {if $required} required{/if}>
-        </div>
-        {/form_field}
-
-        {form_field form=$form field="content"}
-        <div class="form-group">
-            <label for="{$label_attr.for}">{$label}</label>
-            <textarea name="{$name}" id="{$label_attr.for}" class="form-control" {if $required} required{/if}></textarea>
-        </div>
-        {/form_field}
-
-        {if $definition->hasRating()}
-            {form_field form=$form field="rating"}
-            <div class="form-group">
-                <label>
+            {if $definition->hasRating()}
+                {form_field form=$form field="rating"}
+                <div class="form-group">
                     {$label}
-                    <input type="radio" name="{$name}" class="form-control" value="0">
-                    <input type="radio" name="{$name}" class="form-control" value="1">
-                    <input type="radio" name="{$name}" class="form-control" value="2">
-                    <input type="radio" name="{$name}" class="form-control" value="3">
-                    <input type="radio" name="{$name}" class="form-control" value="4">
-                    <input type="radio" name="{$name}" class="form-control" value="5">
-                </label>
-            </div>
-            {/form_field}
+                    <label class="radio-inline">
+                        <input type="radio" name="{$name}" class="form-control" value="0"> 0
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="{$name}" class="form-control" value="1"> 1
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="{$name}" class="form-control" value="2"> 2
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="{$name}" class="form-control" value="3"> 3
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="{$name}" class="form-control" value="4"> 4
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="{$name}" class="form-control" value="5"> 5
+                    </label>
+                </div>
+                {/form_field}
+            {/if}
+
+            <button type="submit" class="btn btn-primary">{intl l="Send"}</button>
+        </form>
+        {/form}
+        {else}
+            <div class="alert alert-info">{$message}</div>
+        {/if}
+    </div>
+
+    <div id="comment-body" class="comment-body">
+        {if $definition->hasRating()}
+        <div class="comment-rating">
+            {$rating={meta meta="COMMENT_RATING" key="{$definition->getRef()}" id="{$definition->getRefId()}"}}
+            rating: {if $rating}{$rating}{/if}
+        </div>
         {/if}
 
-        <button type="submit" class="btn btn-primary">{intl l="Send"}</button>
-    </form>
-    {/form}
-    {else}
-        <div class="alert alert-info">{$message}</div>
-    {/if}
-</div>
-<div id="comment-list" class="comment-list">
+        {* Existing comment *}
+        {$comment = $definition->getComment()}
+        {if $comment}
+        <div id="comment-customer" class="comment-item">
+            <h2>{intl l="Your comment"}</h2>
+            <h3 class="comment-title">{$comment->getTitle()}</h3>
+            {if $RATING}<span class="comment-rating comment-rating-{$RATING}">{$RATING}</span>{/if}
+            <p class="comment-message">{$comment->getContent()}</p>
+            <ul class="comment-edit list-inline">
+                <li><a href="#" class="delete-trigger" data-id="{$comment->getId()}" data-confirm="{intl l="Are you sure ?"}">{intl l="Delete"}</a></li>
+            </ul>
+        </div>
+        {/if}
 
+        <div id="comment-list" class="comment-list"></div>
+    </div>
 </div>
