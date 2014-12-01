@@ -56,7 +56,7 @@
         <default key="_controller">Comment\Controller\Back\CommentController::changeStatusAction</default>
     </route>
 
-    <route id="admin.comment.comments.status" path="/admin/module/comment/activation/{ref}/{refId}" methods="post">
+    <route id="admin.comment.comments.activation" path="/admin/module/comment/activation/{ref}/{refId}" methods="post">
         <default key="_controller">Comment\Controller\Back\CommentController::activationAction</default>
         <requirement key="ref">.*</requirement>
         <requirement key="refId">\d+</requirement>

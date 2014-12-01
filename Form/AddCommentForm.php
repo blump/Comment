@@ -37,7 +37,7 @@ class AddCommentForm extends BaseForm
         $this->formBuilder
             ->add('username', 'text', [
                 'constraints' => [
-                    new NotBlank()
+                    new NotBlank(['groups' => ['anonymous']])
                 ],
                 'label' => Translator::getInstance()->trans('Username'),
                 'label_attr' => [
@@ -46,8 +46,8 @@ class AddCommentForm extends BaseForm
             ])
             ->add('email', 'email', [
                 'constraints' => [
-                    new NotBlank(),
-                    new Email()
+                    new NotBlank(['groups' => ['anonymous']]),
+                    new Email(['groups' => ['anonymous']])
                 ],
                 'label' => Translator::getInstance()->trans('Email'),
                 'label_attr' => [
@@ -92,8 +92,8 @@ class AddCommentForm extends BaseForm
             ])
             ->add('rating', 'text', [
                 'constraints' => [
-                    new GreaterThanOrEqual(['value' => 0]),
-                    new LessThanOrEqual(['value' => 5])
+                    new GreaterThanOrEqual(['value' => 0, 'groups' => ['rating']]),
+                    new LessThanOrEqual(['value' => 5, 'groups' => ['rating']])
                 ],
                 'label' => Translator::getInstance()->trans('Rating'),
                 'label_attr' => [

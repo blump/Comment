@@ -1,5 +1,23 @@
+{function name=comment_stars empty=1}
+    {$star='<span class="glyphicon glyphicon-star"></span>'}
+    {$star_empty='<span class="glyphicon glyphicon-star-empty"></span>'}
+
+    {for $foo=0 to 4}
+        {if $value > $foo}
+            {$star nofilter}
+        {elseif $empty == 1}
+            {$star_empty nofilter}
+        {/if}
+    {/for}
+{/function}
+
 <div class="comments-main">
+
     <div id="comment-top">
+
+        <div class="well well-sm">
+            {intl l="Add your comment"}
+        </div>
 
         <div id="comment-top-message" class="alert hidden"></div>
 
@@ -17,7 +35,7 @@
             <input type="hidden" name="{$name}" value="{$definition->getRefId()}" />
             {/form_field}
 
-            {if ! $customer }
+            {if ! $definition->getCustomer()}
                 {form_field form=$form field="username"}
                 <div class="form-group">
                     <label for="{$label_attr.for}">{$label}</label>
@@ -48,32 +66,43 @@
             {/form_field}
 
             {if $definition->hasRating()}
-                {form_field form=$form field="rating"}
+
+               {form_field form=$form field="rating"}
                 <div class="form-group">
                     {$label}
-                    <label class="radio-inline">
-                        <input type="radio" name="{$name}" class="form-control" value="0"> 0
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="{$name}" class="form-control" value="1"> 1
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="{$name}" class="form-control" value="2"> 2
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="{$name}" class="form-control" value="3"> 3
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="{$name}" class="form-control" value="4"> 4
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="{$name}" class="form-control" value="5"> 5
-                    </label>
+                    <div class="text-primary">
+                        <label class="radio-inline">
+                            <input type="radio" name="{$name}" value="0">
+                            {comment_stars value=0}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="{$name}" value="1">
+                            {comment_stars value=1}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="{$name}" value="2">
+                            {comment_stars value=2}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="{$name}" value="3">
+                            {comment_stars value=3}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="{$name}" value="4">
+                            {comment_stars value=4}
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="{$name}" value="5">
+                            {comment_stars value=5}
+                        </label>
+                    </div>
                 </div>
                 {/form_field}
             {/if}
 
-            <button type="submit" class="btn btn-primary">{intl l="Send"}</button>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">{intl l="Send"}</button>
+            </div>
         </form>
         {/form}
         {else}
@@ -82,26 +111,17 @@
     </div>
 
     <div id="comment-body" class="comment-body">
-        {if $definition->hasRating()}
-        <div class="comment-rating">
-            {$rating={meta meta="COMMENT_RATING" key="{$definition->getRef()}" id="{$definition->getRefId()}"}}
-            rating: {if $rating}{$rating}{/if}
+        <div class="well well-sm">
+            {intl l="Comments"}
+            {if $definition->hasRating()}
+                {$rating={meta meta="COMMENT_RATING" key="{$definition->getRef()}" id="{$definition->getRefId()}"}}
+                {if $rating}
+                <span class="pull-right">
+                    rating: {comment_stars value=$rating}
+                </span>
+                {/if}
+            {/if}
         </div>
-        {/if}
-
-        {* Existing comment *}
-        {$comment = $definition->getComment()}
-        {if $comment}
-        <div id="comment-customer" class="comment-item">
-            <h2>{intl l="Your comment"}</h2>
-            <h3 class="comment-title">{$comment->getTitle()}</h3>
-            {if $RATING}<span class="comment-rating comment-rating-{$RATING}">{$RATING}</span>{/if}
-            <p class="comment-message">{$comment->getContent()}</p>
-            <ul class="comment-edit list-inline">
-                <li><a href="#" class="delete-trigger" data-id="{$comment->getId()}" data-confirm="{intl l="Are you sure ?"}">{intl l="Delete"}</a></li>
-            </ul>
-        </div>
-        {/if}
 
         <div id="comment-list" class="comment-list"></div>
     </div>

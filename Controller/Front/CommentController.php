@@ -150,19 +150,25 @@ class CommentController extends BaseFrontController
             }
         }
 
-        $commentForm = $this->createForm('comment.add.form');
+        $customer = $definition->getCustomer();
 
-        // adapt form
-        if (null !== $customer = $definition->getCustomer()) {
-            $commentForm->getFormBuilder()->remove('username');
-            $commentForm->getFormBuilder()->remove('email');
-        } else {
-            $commentForm->getFormBuilder()->remove('customer_id');
+        $validationGroups = [
+            'Default'
+        ];
+
+        if (null === $customer) {
+            $validationGroups[] = 'anonymous';
         }
-
         if (!$definition->hasRating()) {
-            $commentForm->getFormBuilder()->remove('rating');
+            $validationGroups[] = 'rating';
         }
+
+        $commentForm = $this->createForm(
+            'comment.add.form',
+            'form',
+            [],
+            ['validation_groups' => $validationGroups]
+        );
 
         try {
             $form = $this->validateForm($commentForm);
@@ -171,6 +177,10 @@ class CommentController extends BaseFrontController
             $event->bindForm($form);
 
             $event->setVerified($definition->isVerified());
+
+            if (null !== $customer) {
+                $event->setCustomerId($customer->getId());
+            }
 
             if (!$definition->getConfig()['moderate']) {
                 $event->setStatus(\Comment\Model\Comment::ACCEPTED);

@@ -377,8 +377,30 @@ class CommentAction implements EventSubscriberInterface
 
     public function getContentDefinition(CommentDefinitionEvent $event)
     {
+        $config = $event->getConfig();
+
         $event->setVerified(true);
         $event->setRating(false);
+
+        // is comment is authorized on this product
+        $commentProductActivated = MetaDataQuery::getVal(
+            Comment::META_KEY_ACTIVATED,
+            \Thelia\Model\MetaData::CONTENT_KEY,
+            $event->getRefId()
+        );
+
+        // not defined, get the global config
+        if ("1" !== $commentProductActivated) {
+            if ("0" === $commentProductActivated || false === $config['activated']) {
+                throw new InvalidDefinitionException(
+                    $this->translator->trans(
+                        "Comment not activated on this element.",
+                        ['%ref' => $event->getRef()],
+                        CommentModule::getModuleCode()
+                    )
+                );
+            }
+        }
     }
 
 
