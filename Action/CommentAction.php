@@ -325,14 +325,14 @@ class CommentAction implements EventSubscriberInterface
 
         // is comment is authorized on this product
         $commentProductActivated = MetaDataQuery::getVal(
-            'comment_activated',
+            Comment::META_KEY_ACTIVATED,
             \Thelia\Model\MetaData::PRODUCT_KEY,
             $product->getId()
         );
 
         // not defined, get the global config
-        if (null === $commentProductActivated) {
-            if (!$config['activated']) {
+        if ("1" !== $commentProductActivated) {
+            if ("0" === $commentProductActivated || false === $config['activated']) {
                 throw new InvalidDefinitionException(
                     $this->translator->trans(
                         "Comment not activated on this element.",

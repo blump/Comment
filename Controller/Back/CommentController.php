@@ -39,6 +39,8 @@ use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\ConfigQuery;
+use Thelia\Model\MetaData;
+use Thelia\Model\MetaDataQuery;
 use Thelia\Tools\URL;
 
 /**
@@ -315,6 +317,44 @@ class CommentController extends AbstractCrudController
 
         return $this->jsonResponse(json_encode($message));
     }
+
+    public function activationAction($ref, $refId)
+    {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['comment'], AccessManager::UPDATE)
+        ) {
+            return $response;
+        }
+
+        $message = [
+            "success" => false,
+        ];
+
+        $status = $this->getRequest()->request->get('status');
+
+        switch ($status) {
+            case "0":
+            case "1":
+                MetaDataQuery::setVal(\Comment\Model\Comment::META_KEY_ACTIVATED, $ref, $refId, $status);
+                $message['success'] = true;
+                break;
+            case "-1":
+                $deleted = MetaDataQuery::create()
+                    ->filterByMetaKey(\Comment\Model\Comment::META_KEY_ACTIVATED)
+                    ->filterByElementKey($ref)
+                    ->filterByElementId($refId)
+                    ->delete()
+                ;
+                if ($deleted === 1) {
+                    $message['success'] = true;
+                }
+                break;
+        }
+
+        $message['status'] = MetaDataQuery::getVal(\Comment\Model\Comment::META_KEY_ACTIVATED, $ref, $refId, "-1");
+
+        return $this->jsonResponse(json_encode($message));
+    }
+
 
     /**
      * Save comment module configuration

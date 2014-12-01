@@ -89,6 +89,7 @@ class FrontHook extends BaseHook
             $message = $ex->getMessage();
         } catch (\Exception $ex) {
             Tlog::getInstance()->debug($ex->getMessage());
+            return null;
         }
 
         return $this->render(

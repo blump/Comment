@@ -50,4 +50,34 @@ class BackHook extends BaseHook
             ]
         );
     }
+
+    public function onProductTabContent(HookRenderEvent $event)
+    {
+        $this->onTabContent($event, 'product');
+    }
+
+    public function onContentTabContent(HookRenderEvent $event)
+    {
+        $this->onTabContent($event, 'content');
+    }
+
+    protected function onTabContent(HookRenderEvent $event, $ref)
+    {
+        $event->add(
+            $this->render(
+                'tab-content.html',
+                [
+                    'ref' => $ref,
+                    'id' => $event->getArgument('id')
+                ]
+            )
+        );
+    }
+
+    public function onJsTabContent(HookRenderEvent $event)
+    {
+        $event->add(
+            $this->addJS('assets/js/comment.js')
+        );
+    }
 }

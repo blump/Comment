@@ -58,6 +58,10 @@
         <hook id="comment.hook.back" class="Comment\Hook\BackHook" scope="request">
             <tag name="hook.event_listener" event="module.configuration" type="back" />
             <tag name="hook.event_listener" event="main.top-menu-tools" type="back" />
+            <tag name="hook.event_listener" event="product.tab-content" type="back" method="onProductTabContent" />
+            <tag name="hook.event_listener" event="product.edit-js" type="back" method="onJsTabContent" />
+            <tag name="hook.event_listener" event="content.tab-content" type="back" method="onContentTabContent" />
+            <tag name="hook.event_listener" event="content.edit-js" type="back" method="onJsTabContent" />
         </hook>
 
     </hooks>
