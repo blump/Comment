@@ -13,7 +13,9 @@
 
 namespace Comment\Form;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Thelia\Core\HttpFoundation\Request;
 
 /**
  * Class CommentModificationForm
@@ -22,6 +24,16 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class CommentModificationForm extends CommentCreationForm
 {
+    public function __construct(
+        Request $request,
+        $type = "form",
+        $data = [],
+        $options = [],
+        ContainerInterface $container = null
+    ) {
+        parent::__construct($request, $type, $data, $options, $container);
+    }
+
     protected function buildForm()
     {
         parent::buildForm();

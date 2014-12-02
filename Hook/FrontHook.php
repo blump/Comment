@@ -55,7 +55,7 @@ class FrontHook extends BaseHook
             $event->add(
                 [
                     'id' => 'comment',
-                    'title' => $this->trans("Comments"),
+                    'title' => $this->trans("Comments", [], Comment::getModuleCode()),
                     'content' => $data
                 ]
             );
@@ -126,6 +126,11 @@ class FrontHook extends BaseHook
                     ]
                 )
             );
+
+            $event->add(
+                $this->addJS('assets/js/comment.js')
+            );
+
         }
     }
 
@@ -149,7 +154,7 @@ class FrontHook extends BaseHook
 
         if (null === $ref || 0 === $refId) {
             throw new InvalidArgumentException(
-                $this->trans("", [], Comment::getModuleCode())
+                $this->trans("Reference not found", [], Comment::getModuleCode())
             );
         }
 

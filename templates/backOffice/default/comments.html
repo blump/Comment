@@ -4,7 +4,7 @@
 {$admin_current_location = 'configuration'}
 {/block}
 
-{block name="page-title"}{intl l='Comments'}{/block}
+{block name="page-title"}{intl d='comment.bo.default' l='Comments'}{/block}
 
 {block name="check-module"}comment{/block}
 {block name="check-access"}view{/block}
@@ -18,8 +18,8 @@
     <div id="wrapper" class="container">
 
         <ul class="breadcrumb">
-            <li><a href="{url path='/admin/home'}">{intl l="Home"}</a></li>
-            <li><a href="{url path='/admin/module/comments'}">{intl l="Comments"}</a></li>
+            <li><a href="{url path='/admin/home'}">{intl d='comment.bo.default' l="Home"}</a></li>
+            <li><a href="{url path='/admin/module/comments'}">{intl d='comment.bo.default' l="Comments"}</a></li>
         </ul>
 
         {hook name="comments.top" location="comments_top" }
@@ -51,20 +51,23 @@
                     <form action="" method="">
                         <table class="table table-striped table-condensed table-left-aligned">
                             <caption>
-                                {intl l="Comments management"}
+                                {intl d='comment.bo.default' l="Comments management"}
+
+                                {* No create action for now
                                 {loop type="auth" name="can_create" role="ADMIN" module="comment" access="CREATE"}
-                                <a class="btn btn-primary action-btn" title="{intl l='Add a new comment'}" href="#creation_dialog" data-toggle="modal">
+                                <a class="btn btn-primary action-btn" title="{intl d='comment.bo.default' l='Add a new comment'}" href="#creation_dialog" data-toggle="modal">
                                     <span class="glyphicon glyphicon-plus-sign"></span>
                                 </a>
                                 {/loop}
+                                *}
 
                                 <div class="table-filters">
                                     <form class="form-inline" role="form">
                                         <div class="form-group">
                                             <div class="input-group">
-                                                <label for="loop_status" class="sr-only">{intl l="Status"}</label>
+                                                <label for="loop_status" class="sr-only">{intl d='comment.bo.default' l="Status"}</label>
                                                 <select id="loop_status" name="loop_status" class="filter-element form-control" data-name="loop_status">
-                                                    <option value="">{intl l="All"}</option>
+                                                    <option value="">{intl d='comment.bo.default' l="All"}</option>
                                                     {foreach $comment_status as $status}
                                                     <option value="{$status@index}" {if $status@index == $filter_status}selected="selected"{/if}>{$status.label}</option>
                                                     {/foreach}
@@ -72,7 +75,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <button class="trigger-filter btn btn-default" type="button">{intl l="Filter"}</button>
+                                            <button class="trigger-filter btn btn-default" type="button">{intl d='comment.bo.default' l="Filter"}</button>
                                         </div>
                                     </form>
                                 </div>
@@ -80,11 +83,11 @@
                             </caption>
                             <thead>
                             <tr>
-                                <th>{intl l="ID"}</th>
-                                <th>{intl l="Author"}</th>
-                                <th>{intl l="Comment"}</th>
-                                <th>{intl l="Reference"}</th>
-                                <th>{intl l="Actions"}</th>
+                                <th>{intl d='comment.bo.default' l="ID"}</th>
+                                <th>{intl d='comment.bo.default' l="Author"}</th>
+                                <th>{intl d='comment.bo.default' l="Comment"}</th>
+                                <th>{intl d='comment.bo.default' l="Reference"}</th>
+                                <th>{intl d='comment.bo.default' l="Actions"}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -102,10 +105,10 @@
                                         </a>
                                         {/loop}
                                         {elseloop rel="customer"}
-                                        <em>{intl l="Unknow customer %id" id="{$CUSTOMER_ID}" }</em>
+                                        <em>{intl d='comment.bo.default' l="Unknow customer %id" id="{$CUSTOMER_ID}" }</em>
                                         {/elseloop}
                                     {else}
-                                        <span class="label label-default">{intl l="not a customer"}</span><br>
+                                        <span class="label label-default">{intl d='comment.bo.default' l="not a customer"}</span><br>
                                         <a href="mailto:{$EMAIL}">
                                             <img src="http://www.gravatar.com/avatar/{$EMAIL|trim|strtolower|md5}?s=48" alt="" /><br>
                                             {$USERNAME}
@@ -118,16 +121,16 @@
                                     <h4>{$TITLE}</h4>
                                     <p>{$CONTENT}</p>
                                     <ul class="list-inline">
-                                        <li>{intl l="Posted: "} <strong>{format_date date={$CREATED} output="datetime"}</strong></li>
-                                        <li>{intl l="rating: "} <strong>{$RATING}</strong></li>
-                                        <li>{intl l="verified: "} <strong>{if $VERIFIED}{intl l='yes'}{else}{intl l='no'}{/if}</strong></li>
+                                        <li>{intl d='comment.bo.default' l="Posted: "} <strong>{format_date date={$CREATED} output="datetime"}</strong></li>
+                                        <li>{intl d='comment.bo.default' l="rating: "} <strong>{$RATING}</strong></li>
+                                        <li>{intl d='comment.bo.default' l="verified: "} <strong>{if $VERIFIED}{intl d='comment.bo.default' l='yes'}{else}{intl d='comment.bo.default' l='no'}{/if}</strong></li>
                                     </ul>
                                 </td>
 
                                 {* Reference *}
                                 <td>
                                     {if $REF_VIEW_URL}
-                                    <a href="{$REF_VIEW_URL}" title="{intl l='View'}" >
+                                    <a href="{$REF_VIEW_URL}" title="{intl d='comment.bo.default' l='View'}" >
                                     {/if}
                                     {if $REF_TITLE}{$REF_TITLE} {/if}
                                     ({$REF}: {$REF_ID})
@@ -147,12 +150,12 @@
                                     <hr class="invisible" />
                                     <div class="btn-group dropdown dropdown-status">
                                         {loop type="auth" name="can_change" role="ADMIN" module="comment" access="UPDATE"}
-                                        <a class="btn btn-default btn-xs comment-change" data-id="{$ID}" title="{intl l='Change this comment'}" href="{url path="/admin/module/comment/update/$ID"}">
+                                        <a class="btn btn-default btn-xs comment-change" data-id="{$ID}" title="{intl d='comment.bo.default' l='Change this comment'}" href="{url path="/admin/module/comment/update/$ID"}">
                                             <span class="glyphicon glyphicon-edit"></span>
                                         </a>
                                         {/loop}
                                         {loop type="auth" name="can_change" role="ADMIN" module="comment" access="DELETE"}
-                                        <a href="#delete_dialog" data-toggle="modal" data-id="{$ID}" class="btn btn-default btn-xs comment-delete" title="{intl l="Delete this comment"}">
+                                        <a href="#delete_dialog" data-toggle="modal" data-id="{$ID}" class="btn btn-default btn-xs comment-delete" title="{intl d='comment.bo.default' l="Delete this comment"}">
                                         <span class="glyphicon glyphicon-trash"></span>
                                         </a>
                                         {/loop}
@@ -179,14 +182,14 @@
                         {*
                         {if $amount > $limit}
                         <div class="pagination-container" role="pagination" aria-labelledby="pagination-label-{$toolbar}}">
-                            <strong id="pagination-label-{$toolbar}}" class="pagination-label">{intl l="Pagination"}</strong>
+                            <strong id="pagination-label-{$toolbar}}" class="pagination-label">{intl d='comment.bo.default' l="Pagination"}</strong>
                             <ul class="pagination">
-                                <li{if $loop_page le 1} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$loop_page-1} }" title="{intl l="Previous"}" class="prev"><i class="icon-prev"></i></a></li>
+                                <li{if $loop_page le 1} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$loop_page-1} }" title="{intl d='comment.bo.default' l="Previous"}" class="prev"><i class="icon-prev"></i></a></li>
 
                                 {pageloop rel="comment.list" limit=$loop_limit}
                                     <li{if $PAGE eq $CURRENT} class="active"{/if}><a href="{url path={navigate to="current"} page=$PAGE }"> {$PAGE} </a></li>
                                     {if $PAGE eq $LAST}
-                                        <li{if $CURRENT eq $LAST} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$NEXT} }"  title="{intl l="Next"}" class="next"><i class="icon-next"></i></a></li>
+                                        <li{if $CURRENT eq $LAST} class="disabled"{/if}><a href="{url path={navigate to="current"} page={$NEXT} }"  title="{intl d='comment.bo.default' l="Next"}" class="next"><i class="icon-next"></i></a></li>
                                     {/if}
                                 {/pageloop}
                             </ul>
@@ -228,10 +231,10 @@
     file = "includes/generic-create-dialog.html"
 
     dialog_id    = "creation_dialog"
-    dialog_title = {intl l="Create a new comment"}
+    dialog_title = {intl d='comment.bo.default' l="Create a new comment"}
     dialog_body  = {$smarty.capture.creation_dialog nofilter}
 
-    dialog_ok_label     = {intl l="Create this comment"}
+    dialog_ok_label     = {intl d='comment.bo.default' l="Create this comment"}
 
     form_action        = {url path='/admin/configuration/comments/add'}
     form_enctype       = {form_enctype form=$form}
@@ -251,8 +254,8 @@
     file = "includes/generic-confirm-dialog.html"
 
     dialog_id       = "delete_dialog"
-    dialog_title    = {intl l="Delete comment"}
-    dialog_message  = {intl l="Do you really want to delete this comment ?"}
+    dialog_title    = {intl d='comment.bo.default' l="Delete comment"}
+    dialog_message  = {intl d='comment.bo.default' l="Do you really want to delete this comment ?"}
 
     form_action         = {token_url path='/admin/module/comment/delete'}
     form_content        = {$smarty.capture.delete_dialog nofilter}
@@ -267,10 +270,10 @@
 
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h2>{intl l="Error"}</h2>
+                <h2>{intl d='comment.bo.default' l="Error"}</h2>
             </div>
             <div class="modal-body">
-                <strong>{intl l="Impossible to delete comment."} {intl l="Please contact your administrator or try later"}</strong>
+                <strong>{intl d='comment.bo.default' l="Impossible to delete comment."} {intl d='comment.bo.default' l="Please contact your administrator or try later"}</strong>
             </div>
 
         </div>
@@ -283,10 +286,10 @@
 
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h2>{intl l="Error"}</h2>
+                <h2>{intl d='comment.bo.default' l="Error"}</h2>
             </div>
             <div class="modal-body">
-                <strong>{intl l="Impossible to change status."} {intl l="Please contact your administrator or try later"}</strong>
+                <strong>{intl d='comment.bo.default' l="Impossible to change status."} {intl d='comment.bo.default' l="Please contact your administrator or try later"}</strong>
             </div>
 
         </div>

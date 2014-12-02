@@ -54,7 +54,7 @@
                 <li class="comment-verified">{intl l="Verified"}</li>
                 {/if}
                 {if $customer_id && $customer_id == $CUSTOMER_ID}
-                <li><a href="#" class="delete-trigger" data-id="{$ID}" data-confirm="{intl l="Are you sure ?"}">{intl l="Delete"}</a></li>
+                <li><a href="{url path="/comment/delete/{$ID}"}" class="delete-trigger" data-id="{$ID}" data-message="{intl l="Are you sure ?"}">{intl l="Delete"}</a></li>
                 {else}
                 <li class="comment-abuse">
                     {form name="comment.abuse.form"}

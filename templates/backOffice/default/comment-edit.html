@@ -4,7 +4,7 @@
 {$admin_current_location = 'configuration'}
 {/block}
 
-{block name="page-title"}{intl l='Edit comment'}{/block}
+{block name="page-title"}{intl d='comment.bo.default' l='Edit comment'}{/block}
 
 {block name="check-module"}comment{/block}
 {block name="check-access"}update{/block}
@@ -19,9 +19,9 @@
         {loop name="comment_edit" type="comment" hidden="*" id="$comment_id" backend_context="1" limit="1"}
 
         <ul class="breadcrumb">
-            <li><a href="{url path='/admin/home'}">{intl l="Home"}</a></li>
-            <li><a href="{url path='/admin/module/comments'}">{intl l="Comments"}</a></li>
-            <li>{intl l='Editing comment "%name"' name={$ID}}</li>
+            <li><a href="{url path='/admin/home'}">{intl d='comment.bo.default' l="Home"}</a></li>
+            <li><a href="{url path='/admin/module/comments'}">{intl d='comment.bo.default' l="Comments"}</a></li>
+            <li>{intl d='comment.bo.default' l='Editing comment "%name"' name={$ID}}</li>
         </ul>
 
         <div class="row">
@@ -29,12 +29,12 @@
                 <div class="row">
 
                     <div class="col-md-12 title title-without-tabs">
-                        {intl l="Edit comment %name" name={$ID}}
+                        {intl d='comment.bo.default' l="Edit comment %name" name={$ID}}
                     </div>
 
                     <div class="form-container">
                         <div class="col-md-12">
-                            {form name="admin.comment.modification.form"}
+                            {form name="admin.comment.modification.form" blo=1}
                             <form method="POST" action='{url path="/admin/module/comment/save/{$comment_id}"}' {form_enctype form=$form}>
                             <fieldset>
                                 {* Be sure to get the comment ID, even if the form could not be validated *}
@@ -84,7 +84,7 @@
                                         </a>
                                         {/loop}
                                         {elseloop rel="customer"}
-                                            <em>{intl l="Unknow customer %id" id="{$CUSTOMER_ID}" }</em>
+                                            <em>{intl d='comment.bo.default' l="Unknow customer %id" id="{$CUSTOMER_ID}" }</em>
                                         {/elseloop}
                                     </div>
                                     {/form_field}
@@ -143,7 +143,7 @@
 
                                 <div class="control-group">
                                     <div class="controls">
-                                        <p>{intl l='Comment created on %date_create. Last modification: %date_change' date_create="{format_date date=$CREATE_DATE}" date_change="{format_date date=$UPDATE_DATE}"}</p>
+                                        <p>{intl d='comment.bo.default' l='Comment created on %date_create. Last modification: %date_change' date_create="{format_date date=$CREATE_DATE}" date_change="{format_date date=$UPDATE_DATE}"}</p>
                                     </div>
                                 </div>
 
@@ -163,7 +163,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="alert alert-error">
-                    {intl l="Sorry, comment ID=%id was not found." id={$comment_id}}
+                    {intl d='comment.bo.default' l="Sorry, comment ID=%id was not found." id={$comment_id}}
                 </div>
             </div>
         </div>

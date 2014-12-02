@@ -265,7 +265,7 @@ class CommentController extends BaseFrontController
             // find the comment
             $comment = CommentQuery::create()->findPk($commentId);
 
-            if (null === $comment) {
+            if (null !== $comment) {
                 if ($comment->getCustomerId() === $customer->getId()) {
                     $event = new CommentDeleteEvent();
                     $event->setId($commentId);

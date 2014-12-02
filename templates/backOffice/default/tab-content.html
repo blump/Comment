@@ -7,7 +7,7 @@
     <div class="row">
 
         <div class="col-md-12 title title-without-tabs">
-            {intl l='Comments activation.'}
+            {intl d='comment.bo.default' l='Comments activation.'}
         </div>
 
         <div class="form-container">
@@ -17,16 +17,16 @@
 
                     <div class="form-group {if $error}has-error{/if}">
                         <label for="comment-status" class="control-label">
-                            {intl l="Status :" d="comment.ai"}
+                            {intl d='comment.bo.default' l="Status :" d="comment.ai"}
                         </label>
                         <select name="status" class="form-control" id="comment-status">
-                            <option {if $activated == "-1"}selected="selected"{/if} value="-1">{intl l="Use global configuration" d="comment.ai" }</option>
-                            <option {if $activated == "0"}selected="selected"{/if} value="0">{intl l="Deactivated for this element" d="comment.ai"}</option>
-                            <option {if $activated == "1"}selected="selected"{/if} value="1">{intl l="Activated for this element" d="comment.ai"}</option>
+                            <option {if $activated == "-1"}selected="selected"{/if} value="-1">{intl d='comment.bo.default' l="Use global configuration" d="comment.ai" }</option>
+                            <option {if $activated == "0"}selected="selected"{/if} value="0">{intl d='comment.bo.default' l="Deactivated for this element" d="comment.ai"}</option>
+                            <option {if $activated == "1"}selected="selected"{/if} value="1">{intl d='comment.bo.default' l="Activated for this element" d="comment.ai"}</option>
                         </select>
                     </div>
 
-                    <button type="button" id="comment-save" name="comment_save" value="save" class="form-submit-button btn btn-sm btn-default" title="{intl d="comment.ai" l='Save'}">{intl d="comment.ai" l='Save'}</button>
+                    <button type="button" id="comment-save" name="comment_save" value="save" class="form-submit-button btn btn-sm btn-default" title="{intl d='comment.bo.default' d="comment.ai" l='Save'}">{intl d='comment.bo.default' d="comment.ai" l='Save'}</button>
 
                 </form>
 
