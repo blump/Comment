@@ -48,6 +48,8 @@ class CommentController extends BaseFrontController
 {
     const DEFAULT_VISIBLE = 0;
 
+    protected $useFallbackTemplate = true;
+
     public function getAction()
     {
         // only ajax
