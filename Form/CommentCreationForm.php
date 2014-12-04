@@ -14,14 +14,11 @@
 namespace Comment\Form;
 
 use Comment\Comment;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Thelia\Core\HttpFoundation\Request;
 use Thelia\Form\BaseForm;
 
 /**
@@ -32,17 +29,10 @@ use Thelia\Form\BaseForm;
 class CommentCreationForm extends BaseForm
 {
 
-    public function __construct(
-        Request $request,
-        $type = "form",
-        $data = [],
-        $options = [],
-        ContainerInterface $container = null
-    ) {
-        $this->defaultDomain = Comment::getModuleCode();
-        parent::__construct($request, $type, $data, $options, $container);
+    protected function trans($id, array $parameters = [])
+    {
+        return $this->translator->trans($id, $parameters, Comment::getModuleCode());
     }
-
 
     protected function buildForm()
     {
@@ -165,8 +155,7 @@ class CommentCreationForm extends BaseForm
                         'for' => 'abuse'
                     ]
                 ]
-            )
-        ;
+            );
     }
 
     /**

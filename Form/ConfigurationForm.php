@@ -14,13 +14,8 @@
 namespace Comment\Form;
 
 use Comment\Comment;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Regex;
-use Thelia\Core\HttpFoundation\Request;
-use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
-use Thelia\Model\ConfigQuery;
 
 /**
  * Class ConfigurationForm
@@ -29,15 +24,9 @@ use Thelia\Model\ConfigQuery;
  */
 class ConfigurationForm extends BaseForm
 {
-    public function __construct(
-        Request $request,
-        $type = "form",
-        $data = [],
-        $options = [],
-        ContainerInterface $container = null
-    ) {
-        $this->defaultDomain = Comment::getModuleCode();
-        parent::__construct($request, $type, $data, $options, $container);
+    protected function trans($id, array $parameters = [])
+    {
+        return $this->translator->trans($id, $parameters, Comment::getModuleCode());
     }
 
     protected function buildForm()
@@ -54,7 +43,7 @@ class ConfigurationForm extends BaseForm
                     'data' => $config['activated'],
                     'label' => $this->trans("Activated"),
                     'label_attr' => [
-                        'for'  => "activated",
+                        'for' => "activated",
                         'help' => $this->trans(
                             "Global activation of comments. You can control activation by product, content."
                         )
@@ -68,7 +57,7 @@ class ConfigurationForm extends BaseForm
                     'data' => $config['moderate'],
                     'label' => $this->trans("Moderate"),
                     'label_attr' => [
-                        'for'  => "moderate",
+                        'for' => "moderate",
                         'help' => $this->trans("Comments are not validated automatically.")
                     ],
                 ]
@@ -95,7 +84,7 @@ class ConfigurationForm extends BaseForm
                     'data' => $config['only_customer'],
                     'label' => $this->trans("Only customer"),
                     'label_attr' => [
-                        'for'  => "only_customer",
+                        'for' => "only_customer",
                         'help' => $this->trans("Only registered customers can post comments.")
                     ],
                 ]
@@ -107,15 +96,13 @@ class ConfigurationForm extends BaseForm
                     'data' => $config['only_verified'],
                     'label' => $this->trans("Only verified"),
                     'label_attr' => [
-                        'for'  => "only_verified",
+                        'for' => "only_verified",
                         'help' => $this->trans(
                             "For product comments. Only customers that bought the product can post comments."
                         )
                     ],
                 ]
-            )
-        ;
-
+            );
     }
 
     /**

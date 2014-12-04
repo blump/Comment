@@ -22,16 +22,21 @@
 /*************************************************************************************/
 namespace Comment\Form;
 
+use Comment\Comment;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 
 class AddCommentForm extends BaseForm
 {
+    protected function trans($id, array $parameters = [])
+    {
+        return $this->translator->trans($id, $parameters, Comment::getModuleCode());
+    }
+
     protected function buildForm()
     {
         $this->formBuilder
@@ -39,7 +44,7 @@ class AddCommentForm extends BaseForm
                 'constraints' => [
                     new NotBlank(['groups' => ['anonymous']])
                 ],
-                'label' => Translator::getInstance()->trans('Username'),
+                'label' => $this->trans('Username'),
                 'label_attr' => [
                     'for' => 'comment_username'
                 ]
@@ -49,7 +54,7 @@ class AddCommentForm extends BaseForm
                     new NotBlank(['groups' => ['anonymous']]),
                     new Email(['groups' => ['anonymous']])
                 ],
-                'label' => Translator::getInstance()->trans('Email'),
+                'label' => $this->trans('Email'),
                 'label_attr' => [
                     'for' => 'comment_mail'
                 ]
@@ -58,7 +63,7 @@ class AddCommentForm extends BaseForm
                 'constraints' => [
                     new NotBlank()
                 ],
-                'label' => Translator::getInstance()->trans('Title'),
+                'label' => $this->trans('Title'),
                 'label_attr' => [
                     'for' => 'title'
                 ]
@@ -67,7 +72,7 @@ class AddCommentForm extends BaseForm
                 'constraints' => [
                     new NotBlank()
                 ],
-                'label' => Translator::getInstance()->trans('Content'),
+                'label' => $this->trans('Content'),
                 'label_attr' => [
                     'for' => 'content'
                 ]
@@ -76,7 +81,7 @@ class AddCommentForm extends BaseForm
                 'constraints' => [
                     new NotBlank()
                 ],
-                'label' => Translator::getInstance()->trans('Ref'),
+                'label' => $this->trans('Ref'),
                 'label_attr' => [
                     'for' => 'ref'
                 ]
@@ -85,7 +90,7 @@ class AddCommentForm extends BaseForm
                 'constraints' => [
                     new GreaterThan(['value' => 0])
                 ],
-                'label' => Translator::getInstance()->trans('Ref Id'),
+                'label' => $this->trans('Ref Id'),
                 'label_attr' => [
                     'for' => 'ref_id'
                 ]
@@ -95,15 +100,13 @@ class AddCommentForm extends BaseForm
                     new GreaterThanOrEqual(['value' => 0, 'groups' => ['rating']]),
                     new LessThanOrEqual(['value' => 5, 'groups' => ['rating']])
                 ],
-                'label' => Translator::getInstance()->trans('Rating'),
+                'label' => $this->trans('Rating'),
                 'label_attr' => [
                     'for' => 'rating'
                 ]
-            ])
-        ;
-
-
+            ]);
     }
+
     /*
     protected function getDefinition() {
         $this->form->get('success_url');

@@ -24,6 +24,11 @@ use Thelia\Form\BaseForm;
  */
 class CommentAbuseForm extends BaseForm
 {
+    protected function trans($id, array $parameters = [])
+    {
+        return $this->translator->trans($id, $parameters, Comment::getModuleCode());
+    }
+
     protected function buildForm()
     {
         $this

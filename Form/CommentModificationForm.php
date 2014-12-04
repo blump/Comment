@@ -13,9 +13,8 @@
 
 namespace Comment\Form;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Comment\Comment;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Thelia\Core\HttpFoundation\Request;
 
 /**
  * Class CommentModificationForm
@@ -24,14 +23,9 @@ use Thelia\Core\HttpFoundation\Request;
  */
 class CommentModificationForm extends CommentCreationForm
 {
-    public function __construct(
-        Request $request,
-        $type = "form",
-        $data = [],
-        $options = [],
-        ContainerInterface $container = null
-    ) {
-        parent::__construct($request, $type, $data, $options, $container);
+    protected function trans($id, array $parameters = [])
+    {
+        return $this->translator->trans($id, $parameters, Comment::getModuleCode());
     }
 
     protected function buildForm()
@@ -52,8 +46,7 @@ class CommentModificationForm extends CommentCreationForm
                         'for' => 'id'
                     ]
                 ]
-            )
-        ;
+            );
     }
 
 
