@@ -113,6 +113,3 @@ class ConfigurationForm extends BaseForm
         return "comment-configuration-form";
     }
 }
-
-
-
