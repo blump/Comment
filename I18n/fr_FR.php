@@ -28,6 +28,7 @@ return array(
     'Ref' => 'Réf',
     'Ref Id' => 'Réf id',
     'Reference %ref is not allowed' => 'La référence %ref n\'est pas autorisée',
+    'Reference not found' => 'Référence inconnue',
     'Sorry, an unknown error occurred. Please try again.' => 'Désolé, une erreur non gérée est apparue. Veuillez ré-essayer.',
     'Status' => 'Statut',
     'Thank you for submitting your comment.' => 'Merci pour votre commentaire.',
