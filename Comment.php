@@ -27,6 +27,7 @@ use Thelia\Module\BaseModule;
  */
 class Comment extends BaseModule
 {
+    const MESSAGE_DOMAIN = "comment";
 
     /**  Use comment */
     const CONFIG_ACTIVATED = 1;

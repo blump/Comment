@@ -271,7 +271,7 @@ class CommentAction implements EventSubscriberInterface
                 $this->translator->trans(
                     "Reference %ref is not allowed",
                     ['%ref' => $event->getRef()],
-                    CommentModule::getModuleCode()
+                    CommentModule::MESSAGE_DOMAIN
                 )
             );
         }
@@ -285,7 +285,7 @@ class CommentAction implements EventSubscriberInterface
                 $this->translator->trans(
                     "Only customer are allowed to publish comment",
                     [],
-                    CommentModule::getModuleCode()
+                    CommentModule::MESSAGE_DOMAIN
                 ),
                 false
             );
@@ -318,7 +318,7 @@ class CommentAction implements EventSubscriberInterface
                 $this->translator->trans(
                     "Product %id does not exist",
                     ['%ref' => $event->getRef()],
-                    CommentModule::getModuleCode()
+                    CommentModule::MESSAGE_DOMAIN
                 )
             );
         }
@@ -337,7 +337,7 @@ class CommentAction implements EventSubscriberInterface
                     $this->translator->trans(
                         "Comment not activated on this element.",
                         ['%ref' => $event->getRef()],
-                        CommentModule::getModuleCode()
+                        CommentModule::MESSAGE_DOMAIN
                     )
                 );
             }
@@ -360,7 +360,7 @@ class CommentAction implements EventSubscriberInterface
                         $this->translator->trans(
                             "Only customers who have bought this product can publish comment",
                             [],
-                            CommentModule::getModuleCode()
+                            CommentModule::MESSAGE_DOMAIN
                         ),
                         false
                     );
@@ -396,7 +396,7 @@ class CommentAction implements EventSubscriberInterface
                     $this->translator->trans(
                         "Comment not activated on this element.",
                         ['%ref' => $event->getRef()],
-                        CommentModule::getModuleCode()
+                        CommentModule::MESSAGE_DOMAIN
                     )
                 );
             }
