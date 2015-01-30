@@ -106,7 +106,7 @@ class CommentController extends BaseFrontController
             $messageData["message"] = $this->getTranslator()->trans(
                 "Your request has been registered. Thank you.",
                 [],
-                Comment::getModuleCode()
+                Comment::MESSAGE_DOMAIN
             );
 
         } catch (\Exception $ex) {
@@ -114,7 +114,7 @@ class CommentController extends BaseFrontController
             $messageData["message"] = $this->getTranslator()->trans(
                 "Your request could not be validated. Try it later",
                 [],
-                Comment::getModuleCode()
+                Comment::MESSAGE_DOMAIN
             );
         }
 
@@ -201,7 +201,7 @@ class CommentController extends BaseFrontController
                         $this->getTranslator()->trans(
                             "Thank you for submitting your comment.",
                             [],
-                            Comment::getModuleCode()
+                            Comment::MESSAGE_DOMAIN
                         ),
                     ]
                 ];
@@ -209,7 +209,7 @@ class CommentController extends BaseFrontController
                     $responseData['messages'][] = $this->getTranslator()->trans(
                         "Your comment will be put online once verified.",
                         [],
-                        Comment::getModuleCode()
+                        Comment::MESSAGE_DOMAIN
                     );
                 }
             } else {
@@ -219,7 +219,7 @@ class CommentController extends BaseFrontController
                         $this->getTranslator()->trans(
                             "Sorry, an unknown error occurred. Please try again.",
                             [],
-                            Comment::getModuleCode()
+                            Comment::MESSAGE_DOMAIN
                         )
                     ]
                 ];
@@ -279,7 +279,7 @@ class CommentController extends BaseFrontController
                         $messageData["message"] = $this->getTranslator()->trans(
                             "Your comment has been deleted.",
                             [],
-                            Comment::getModuleCode()
+                            Comment::MESSAGE_DOMAIN
                         );
                     }
                 }
@@ -293,7 +293,7 @@ class CommentController extends BaseFrontController
             $messageData["message"] = $this->getTranslator()->trans(
                 "Comment could not be removed. Please try later.",
                 [],
-                Comment::getModuleCode()
+                Comment::MESSAGE_DOMAIN
             );
         }
 

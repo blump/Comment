@@ -99,7 +99,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                     $this->translator->trans(
                         "If 'ref' argument is specified, 'ref_id' argument should be specified",
                         [],
-                        Comment::getModuleCode()
+                        Comment::MESSAGE_DOMAIN
                     )
                 );
             }

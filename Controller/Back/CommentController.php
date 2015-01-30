@@ -312,7 +312,7 @@ class CommentController extends AbstractCrudController
                 $message["error"] = $ex->getMessage();
             }
         } else {
-            $message["error"] = $this->getTranslator()->trans('Missing parameters', [], Comment::getModuleCode());
+            $message["error"] = $this->getTranslator()->trans('Missing parameters', [], Comment::MESSAGE_DOMAIN);
         }
 
         return $this->jsonResponse(json_encode($message));

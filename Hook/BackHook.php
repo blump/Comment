@@ -46,7 +46,7 @@ class BackHook extends BaseHook
                 'id' => 'tools_menu_comment',
                 'class' => '',
                 'url' => URL::getInstance()->absoluteUrl('/admin/module/comments'),
-                'title' => $this->trans('Comments', [], Comment::getModuleCode())
+                'title' => $this->trans('Comments', [], Comment::MESSAGE_DOMAIN)
             ]
         );
     }

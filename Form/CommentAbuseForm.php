@@ -26,7 +26,7 @@ class CommentAbuseForm extends BaseForm
 {
     protected function trans($id, array $parameters = [])
     {
-        return $this->translator->trans($id, $parameters, Comment::getModuleCode());
+        return $this->translator->trans($id, $parameters, Comment::MESSAGE_DOMAIN);
     }
 
     protected function buildForm()
