@@ -277,7 +277,7 @@ class CommentController extends AbstractCrudController
 
     public function changeStatusAction()
     {
-        if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['comment'], AccessManager::UPDATE)
+        if (null !== $response = $this->checkAuth([], ['comment'], AccessManager::UPDATE)
         ) {
             return $response;
         }
@@ -320,7 +320,7 @@ class CommentController extends AbstractCrudController
 
     public function activationAction($ref, $refId)
     {
-        if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['comment'], AccessManager::UPDATE)
+        if (null !== $response = $this->checkAuth([], ['comment'], AccessManager::UPDATE)
         ) {
             return $response;
         }
