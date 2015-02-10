@@ -14,8 +14,12 @@ namespace Comment;
 
 use Comment\Model\CommentQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
 use Thelia\Model\ConfigQuery;
+use Thelia\Model\LangQuery;
+use Thelia\Model\Message;
+use Thelia\Model\MessageQuery;
 use Thelia\Module\BaseModule;
 
 /**
@@ -44,6 +48,9 @@ class Comment extends BaseModule
     /** Allow only verified customer (for product, customers that have bought the product) */
     const CONFIG_ONLY_VERIFIED = 1;
 
+    /** request customer comment, x days after an order */
+    const CONFIG_REQUEST_CUSTOMMER_TTL = 15;
+
 
     public function postActivation(ConnectionInterface $con = null)
     {
@@ -68,12 +75,47 @@ class Comment extends BaseModule
             ConfigQuery::write('comment_only_verified', Comment::CONFIG_ONLY_VERIFIED);
         }
 
+        if (null === ConfigQuery::read('comment_request_customer_ttl')) {
+            ConfigQuery::write('comment_request_customer_ttl', Comment::CONFIG_REQUEST_CUSTOMMER_TTL);
+        }
+
         // Schema
         try {
             CommentQuery::create()->findOne();
         } catch (\Exception $ex) {
             $database = new Database($con->getWrappedConnection());
             $database->insertSql(null, [__DIR__ . DS . 'Config' . DS . 'thelia.sql']);
+        }
+
+        // create new message
+        if (null === MessageQuery::create()->findOneByName('comment_request_customer')) {
+
+            $message = new Message();
+            $message
+                ->setName('comment_request_customer')
+                ->setHtmlTemplateFileName('request-customer-comment.html')
+                ->setHtmlLayoutFileName('')
+                ->setTextTemplateFileName('request-customer-comment.txt')
+                ->setTextLayoutFileName('')
+                ->setSecured(0)
+            ;
+
+            $languages = LangQuery::create()->find();
+
+            foreach ($languages as $language) {
+                $locale = $language->getLocale();
+
+                $message->setLocale($locale);
+
+                $message->setTitle(
+                    Translator::getInstance()->trans('Request customer comment', [], self::MESSAGE_DOMAIN)
+                );
+                $message->setSubject(
+                    Translator::getInstance()->trans('', [], self::MESSAGE_DOMAIN)
+                );
+            }
+
+            $message->save();
         }
     }
 
@@ -95,6 +137,9 @@ class Comment extends BaseModule
             ),
             'only_verified' => (
                 intval(ConfigQuery::read('comment_only_verified', self::CONFIG_ONLY_VERIFIED)) === 1
+            ),
+            'request_customer_ttl' => (
+                intval(ConfigQuery::read('comment_request_customer_ttl', self::CONFIG_REQUEST_CUSTOMMER_TTL))
             )
         ];
 

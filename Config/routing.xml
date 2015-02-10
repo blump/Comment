@@ -62,4 +62,8 @@
         <requirement key="refId">\d+</requirement>
     </route>
 
+    <route id="admin.comment.comments.activation" path="/admin/module/comment/request-customer">
+        <default key="_controller">Comment\Controller\Back\CommentController::requestCustomerCommentAction</default>
+    </route>
+
 </routes>

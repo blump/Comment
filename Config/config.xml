@@ -23,8 +23,11 @@
 
     <services>
 
-        <service id="comment.action" class="Comment\Action\CommentAction">
+        <service id="comment.action" class="Comment\Action\CommentAction" scope="request">
             <argument type="service" id="thelia.translator" />
+            <argument type="service" id="thelia.parser" />
+            <argument type="service" id="mailer"/>
+
             <tag name="kernel.event_subscriber"/>
         </service>
 

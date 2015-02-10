@@ -25,6 +25,7 @@ namespace Comment\Controller\Back;
 
 use Comment\Comment;
 use Comment\EventListeners\CommentChangeStatusEvent;
+use Comment\EventListeners\CommentCheckOrderEvent;
 use Comment\EventListeners\CommentCreateEvent;
 use Comment\EventListeners\CommentDeleteEvent;
 use Comment\EventListeners\CommentEvent;
@@ -395,6 +396,10 @@ class CommentController extends AbstractCrudController
                 'comment_only_verified',
                 $data['only_verified'] ? '1' : '0'
             );
+            ConfigQuery::write(
+                'comment_request_customer_ttl',
+                $data['request_customer_ttl']
+            );
         } catch (\Exception $e) {
             $message = $e->getMessage();
         }
@@ -412,5 +417,21 @@ class CommentController extends AbstractCrudController
         return RedirectResponse::create(
             URL::getInstance()->absoluteUrl("/admin/module/" . Comment::getModuleCode())
         );
+    }
+
+    public function requestCustomerCommentAction()
+    {
+        // We do not check auth, as the related route may be invoked from a cron
+        try {
+            $this->dispatch(
+                CommentEvents::COMMENT_CUSTOMER_DEMAND,
+                new CommentCheckOrderEvent()
+            );
+        } catch (\Exception $ex) {
+            // Any error
+            return $this->errorPage($ex);
+        }
+
+        return $this->redirectToListTemplate();
     }
 }

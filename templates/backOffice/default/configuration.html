@@ -59,6 +59,14 @@
                 </div>
                 {/form_field}
 
+                {form_field form=$form field='request_customer_ttl'}
+                <div class="form-group {if $error}has-error{/if}">
+                    <label for="{$label_attr.for}" class="control-label">{$label} : </label>
+                    <input type="text" name="{$name}" id="{$label_attr.for}" value="{$value}" class="form-control" {$attr} />
+                    <span class="label-help-block">{$label_attr.help}</span>
+                </div>
+                {/form_field}
+
                 <button type="submit" id="comment-save" name="comment_save" value="save" class="form-submit-button btn btn-sm btn-default" title="{intl d='comment.bo.default' d='comment.ai' l='Save'}">{intl d='comment.bo.default' d='comment.ai' l='Save'}</button>
 
                 </form>

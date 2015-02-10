@@ -25,6 +25,7 @@ namespace Comment\Action;
 
 use Comment\EventListeners\CommentAbuseEvent;
 use Comment\EventListeners\CommentChangeStatusEvent;
+use Comment\EventListeners\CommentCheckOrderEvent;
 use Comment\EventListeners\CommentComputeRatingEvent;
 use Comment\EventListeners\CommentCreateEvent;
 use Comment\EventListeners\CommentDefinitionEvent;
@@ -37,14 +38,28 @@ use Comment\Exception\InvalidDefinitionException;
 use Comment\Model\Comment;
 use Comment\Comment as CommentModule;
 use Comment\Model\CommentQuery;
+use Comment\Model\Map\CommentTableMap;
+use DateInterval;
+use DateTime;
+use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\ActiveQuery\Join;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Thelia\Core\Template\ParserInterface;
 use Thelia\Exception\NotImplementedException;
+use Thelia\Log\Tlog;
+use Thelia\Mailer\MailerFactory;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\ContentQuery;
+use Thelia\Model\CustomerQuery;
+use Thelia\Model\Map\OrderProductTableMap;
+use Thelia\Model\Map\OrderTableMap;
+use Thelia\Model\Map\ProductSaleElementsTableMap;
+use Thelia\Model\MessageQuery;
 use Thelia\Model\MetaData;
 use Thelia\Model\MetaDataQuery;
 use Thelia\Model\OrderProductQuery;
+use Thelia\Model\OrderQuery;
 use Thelia\Model\ProductQuery;
 use Thelia\Tools\URL;
 
@@ -61,9 +76,17 @@ class CommentAction implements EventSubscriberInterface
     /** @var null|TranslatorInterface */
     protected $translator = null;
 
-    public function __construct(TranslatorInterface $translator)
+    /** @var null|ParserInterface */
+    protected $parser = null;
+
+    /** @var null|MailerFactory */
+    protected $mailer = null;
+
+    public function __construct(TranslatorInterface $translator, ParserInterface $parser, MailerFactory $mailer)
     {
         $this->translator = $translator;
+        $this->parser = $parser;
+        $this->mailer = $mailer;
     }
 
     public function create(CommentCreateEvent $event)
@@ -403,6 +426,170 @@ class CommentAction implements EventSubscriberInterface
         }
     }
 
+    public function requestCustomerDemand(CommentCheckOrderEvent $event)
+    {
+        $config = \Comment\Comment::getConfig();
+        $nbDays = $config["request_customer_ttl"];
+
+        if (0 !== $nbDays) {
+
+            $endDate = new DateTime('NOW');
+            $endDate->setTime(0, 0, 0);
+            $endDate->sub(new DateInterval('P' . $nbDays . 'D'));
+
+            $startDate = clone $endDate;
+            $startDate->sub(new DateInterval('P1D'));
+
+
+            $pseJoin = new Join(
+                OrderProductTableMap::PRODUCT_SALE_ELEMENTS_ID,
+                ProductSaleElementsTableMap::ID,
+                Criteria::INNER_JOIN
+            );
+
+            $products = OrderProductQuery::create()
+                ->useOrderQuery()
+                    ->filterByInvoiceDate($startDate, Criteria::GREATER_EQUAL)
+                    ->filterByInvoiceDate($endDate, Criteria::LESS_THAN)
+                    ->addAsColumn('customerId', OrderTableMap::CUSTOMER_ID)
+                    ->addAsColumn('orderId', OrderTableMap::ID)
+                ->endUse()
+                ->addJoinObject($pseJoin)
+                ->addAsColumn('pseId', OrderProductTableMap::PRODUCT_SALE_ELEMENTS_ID)
+                ->addAsColumn('productId', ProductSaleElementsTableMap::PRODUCT_ID)
+                ->select(
+                    [
+                        'customerId',
+                        'orderId',
+                        'pseId',
+                        'productId'
+                    ]
+                )
+                ->find()
+                ->toArray();
+
+            if (empty($products)) {
+                return;
+            }
+
+            $reduce = array_reduce(
+                $products,
+                function ($result, $item) {
+
+                    if (!array_key_exists($item['customerId'], $result)) {
+                        $result[$item['customerId']] = [];
+                    }
+                    if (! in_array($item['productId'], $result[$item['customerId']])) {
+                        $result[$item['customerId']][] = $item['productId'];
+                    }
+
+                    return $result;
+                },
+                []
+            );
+
+            $customerIds = array_keys($reduce);
+            // check if comments already exists
+            $comments = CommentQuery::create()
+                ->filterByCustomerId($customerIds)
+                ->filterByRef(MetaData::PRODUCT_KEY)
+                ->addAsColumn('customerId', CommentTableMap::CUSTOMER_ID)
+                ->addAsColumn('productId', CommentTableMap::REF_ID)
+                ->select(
+                    [
+                        'customerId',
+                        'productId'
+                    ]
+                )
+                ->find()
+                ->toArray()
+            ;
+
+            $commentReduce = array_reduce(
+                $comments,
+                function ($result, $item) {
+
+                    if (!array_key_exists($item['customerId'], $result)) {
+                        $result[$item['customerId']] = [];
+                    }
+                    $result[$item['customerId']][] = $item['productId'];
+
+                    return $result;
+                },
+                []
+            );
+
+            foreach ($customerIds as $customerId) {
+                $send = false;
+
+                if (!array_key_exists($customerId, $commentReduce)) {
+                    $send = true;
+                } else {
+                    if (empty(array_intersect($commentReduce[$customerId], $reduce[$customerId]))) {
+                        // No commments
+                        $send = true;
+                    }
+                }
+
+                if ($send) {
+                    try {
+                        $this->sendMail($customerId, $reduce[$customerId]);
+                    } catch (\Exception $ex) {
+                        Tlog::getInstance()->error($ex->getMessage());
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    protected function sendMail($customerId, array $productIds)
+    {
+        $contact_email = ConfigQuery::getStoreEmail();
+
+        if ($contact_email) {
+            $message = MessageQuery::create()
+                ->filterByName('comment_request_customer')
+                ->findOne();
+
+            if (null === $message) {
+                throw new \Exception("Failed to load message 'comment_request_customer'.");
+            }
+
+            $customer = CustomerQuery::create()->findPk($customerId);
+
+            if (null === $customer) {
+                throw new \Exception(
+                    sprintf("Failed to load customer '%s'.", $customerId)
+                );
+            }
+
+            $parser = $this->parser;
+
+            $locale = $customer->getCustomerLang()->getLocale();
+
+            $parser->assign('customer_id', $customer->getId());
+            $parser->assign('product_ids', $productIds);
+            $parser->assign('lang_id', $customer->getCustomerLang()->getId());
+
+            $message->setLocale($locale);
+
+            $instance = \Swift_Message::newInstance()
+                ->addTo($customer->getEmail(), $customer->getFirstname() . " " . $customer->getLastname())
+                ->addFrom($contact_email, ConfigQuery::getStoreName());
+
+            // Build subject and body
+            $message->buildMessage($parser, $instance);
+
+            $this->mailer->send($instance);
+
+            Tlog::getInstance()->debug(
+                "Message sent to customer " . $customer->getEmail()
+            );
+        }
+    }
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -434,6 +621,7 @@ class CommentAction implements EventSubscriberInterface
             CommentEvents::COMMENT_STATUS_UPDATE => ['statusChange', 128],
             CommentEvents::COMMENT_RATING_COMPUTE => ['productRatingCompute', 128],
             CommentEvents::COMMENT_REFERENCE_GETTER => ['getRefrence', 128],
+            CommentEvents::COMMENT_CUSTOMER_DEMAND => ['requestCustomerDemand', 128],
             CommentEvents::COMMENT_GET_DEFINITION => ['getDefinition', 128],
             CommentEvents::COMMENT_GET_DEFINITION_PRODUCT => ['getProductDefinition', 128],
             CommentEvents::COMMENT_GET_DEFINITION_CONTENT => ['getContentDefinition', 128],

@@ -102,6 +102,20 @@ class ConfigurationForm extends BaseForm
                         )
                     ],
                 ]
+            )
+            ->add(
+                "request_customer_ttl",
+                "number",
+                [
+                    'data' => $config['request_customer_ttl'],
+                    'label' => $this->trans("Request customer"),
+                    'label_attr' => [
+                        'for' => "request_customer_ttl",
+                        'help' => $this->trans(
+                            "Send an email to request customer comments, x days after a paid order (0 = no request sent)."
+                        )
+                    ],
+                ]
             );
     }
 
