@@ -11,11 +11,11 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Events;
 
 /**
  * Class CommentChangeStatusEvent
- * @package Comment\EventListeners
+ * @package Comment\Events
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
 class CommentChangeStatusEvent extends CommentEvent

@@ -11,13 +11,13 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Events;
 
 use Thelia\Core\Event\ActionEvent;
 
 /**
  * Class CommentComputeRatingEvent
- * @package Comment\EventListeners
+ * @package Comment\Events
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
 class CommentComputeRatingEvent extends ActionEvent

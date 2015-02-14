@@ -14,8 +14,8 @@
 namespace Comment\Hook;
 
 use Comment\Comment;
-use Comment\EventListeners\CommentDefinitionEvent;
-use Comment\EventListeners\CommentEvents;
+use Comment\Events\CommentDefinitionEvent;
+use Comment\Events\CommentEvents;
 use Comment\Exception\InvalidDefinitionException;
 use Thelia\Core\Event\Hook\BaseHookRenderEvent;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
@@ -71,8 +71,7 @@ class FrontHook extends BaseHook
             ->setRef($ref)
             ->setRefId($refId)
             ->setCustomer($this->getCustomer())
-            ->setConfig(Comment::getConfig())
-        ;
+            ->setConfig(Comment::getConfig());
         $message = '';
 
         try {
@@ -96,7 +95,7 @@ class FrontHook extends BaseHook
             "comment.html",
             [
                 'definition' => $eventDefinition,
-                'message'    => $message
+                'message' => $message
             ]
         );
     }
@@ -130,7 +129,6 @@ class FrontHook extends BaseHook
             $event->add(
                 $this->addJS('assets/js/comment.js')
             );
-
         }
     }
 

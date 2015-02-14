@@ -97,8 +97,7 @@ class Comment extends BaseModule
                 ->setHtmlLayoutFileName('')
                 ->setTextTemplateFileName('request-customer-comment.txt')
                 ->setTextLayoutFileName('')
-                ->setSecured(0)
-            ;
+                ->setSecured(0);
 
             $languages = LangQuery::create()->find();
 
@@ -139,7 +138,7 @@ class Comment extends BaseModule
                 intval(ConfigQuery::read('comment_only_verified', self::CONFIG_ONLY_VERIFIED)) === 1
             ),
             'request_customer_ttl' => (
-                intval(ConfigQuery::read('comment_request_customer_ttl', self::CONFIG_REQUEST_CUSTOMMER_TTL))
+            intval(ConfigQuery::read('comment_request_customer_ttl', self::CONFIG_REQUEST_CUSTOMMER_TTL))
             )
         ];
 

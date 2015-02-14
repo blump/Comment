@@ -11,13 +11,13 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Events;
 
 use Thelia\Core\Event\ActionEvent;
 
 /**
  * Class CommentReferenceGetterEvent
- * @package Comment\EventListeners
+ * @package Comment\Events
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  */
 class CommentReferenceGetterEvent extends ActionEvent

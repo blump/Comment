@@ -13,8 +13,6 @@
 
 namespace Comment\Form;
 
-use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Form\BaseForm;
 
 /**
@@ -36,10 +34,8 @@ class CommentAbuseForm extends BaseForm
             ->add(
                 'id',
                 'comment_id'
-            )
-        ;
+            );
     }
-
 
 
     /**

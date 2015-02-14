@@ -24,19 +24,15 @@
 namespace Comment\Controller\Front;
 
 use Comment\Comment;
-use Comment\EventListeners\CommentAbuseEvent;
-use Comment\EventListeners\CommentCreateEvent;
-use Comment\EventListeners\CommentDefinitionEvent;
-use Comment\EventListeners\CommentDeleteEvent;
-use Comment\EventListeners\CommentEvent;
-use Comment\EventListeners\CommentEvents;
+use Comment\Events\CommentAbuseEvent;
+use Comment\Events\CommentCreateEvent;
+use Comment\Events\CommentDefinitionEvent;
+use Comment\Events\CommentDeleteEvent;
+use Comment\Events\CommentEvents;
 use Comment\Exception\InvalidDefinitionException;
-use Comment\Form\AddCommentForm;
-use Comment\Form\CommentAbuseForm;
 use Comment\Model\CommentQuery;
 use Exception;
 use Thelia\Controller\Front\BaseFrontController;
-use Thelia\Form\Exception\FormValidationException;
 
 /**
  * Class CommentController
@@ -78,7 +74,6 @@ class CommentController extends BaseFrontController
                 'count' => $this->getRequest()->get('count', 10),
             ]
         );
-
     }
 
     public function abuseAction()
@@ -108,7 +103,6 @@ class CommentController extends BaseFrontController
                 [],
                 Comment::MESSAGE_DOMAIN
             );
-
         } catch (\Exception $ex) {
             // all errors
             $messageData["message"] = $this->getTranslator()->trans(
@@ -137,7 +131,6 @@ class CommentController extends BaseFrontController
                 $params['ref'],
                 $params['ref_id']
             );
-
         } catch (InvalidDefinitionException $ex) {
             if ($ex->isSilent()) {
                 // Comment not authorized on this resource
@@ -241,8 +234,7 @@ class CommentController extends BaseFrontController
             ->setRef($ref)
             ->setRefId($refId)
             ->setCustomer($this->getSecurityContext()->getCustomerUser())
-            ->setConfig(Comment::getConfig())
-        ;
+            ->setConfig(Comment::getConfig());
 
         $this->dispatch(
             CommentEvents::COMMENT_GET_DEFINITION,
@@ -284,7 +276,6 @@ class CommentController extends BaseFrontController
                     }
                 }
             }
-
         } catch (\Exception $ex) {
             ;
         }

@@ -21,7 +21,7 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace Comment\EventListeners;
+namespace Comment\Events;
 
 use Comment\Model\Comment;
 use Thelia\Core\Event\ActionEvent;

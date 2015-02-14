@@ -23,20 +23,19 @@
 
 namespace Comment\Action;
 
-use Comment\EventListeners\CommentAbuseEvent;
-use Comment\EventListeners\CommentChangeStatusEvent;
-use Comment\EventListeners\CommentCheckOrderEvent;
-use Comment\EventListeners\CommentComputeRatingEvent;
-use Comment\EventListeners\CommentCreateEvent;
-use Comment\EventListeners\CommentDefinitionEvent;
-use Comment\EventListeners\CommentDeleteEvent;
-use Comment\EventListeners\CommentEvent;
-use Comment\EventListeners\CommentEvents;
-use Comment\EventListeners\CommentReferenceGetterEvent;
-use Comment\EventListeners\CommentUpdateEvent;
+use Comment\Comment as CommentModule;
+use Comment\Events\CommentAbuseEvent;
+use Comment\Events\CommentChangeStatusEvent;
+use Comment\Events\CommentCheckOrderEvent;
+use Comment\Events\CommentComputeRatingEvent;
+use Comment\Events\CommentCreateEvent;
+use Comment\Events\CommentDefinitionEvent;
+use Comment\Events\CommentDeleteEvent;
+use Comment\Events\CommentEvents;
+use Comment\Events\CommentReferenceGetterEvent;
+use Comment\Events\CommentUpdateEvent;
 use Comment\Exception\InvalidDefinitionException;
 use Comment\Model\Comment;
-use Comment\Comment as CommentModule;
 use Comment\Model\CommentQuery;
 use Comment\Model\Map\CommentTableMap;
 use DateInterval;
@@ -46,7 +45,6 @@ use Propel\Runtime\ActiveQuery\Join;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Thelia\Core\Template\ParserInterface;
-use Thelia\Exception\NotImplementedException;
 use Thelia\Log\Tlog;
 use Thelia\Mailer\MailerFactory;
 use Thelia\Model\ConfigQuery;
@@ -59,7 +57,6 @@ use Thelia\Model\MessageQuery;
 use Thelia\Model\MetaData;
 use Thelia\Model\MetaDataQuery;
 use Thelia\Model\OrderProductQuery;
-use Thelia\Model\OrderQuery;
 use Thelia\Model\ProductQuery;
 use Thelia\Tools\URL;
 
@@ -106,9 +103,8 @@ class CommentAction implements EventSubscriberInterface
             ->setVerified($event->isVerified())
             ->setRating($event->getRating())
             ->setAbuse($event->getAbuse())
-            ->save()
-        ;
-        
+            ->save();
+
         $event->setComment($comment);
 
         if (Comment::ACCEPTED === $comment->getStatus()) {
@@ -118,7 +114,6 @@ class CommentAction implements EventSubscriberInterface
                 $comment->getRefId()
             );
         }
-
     }
 
     public function update(CommentUpdateEvent $event)
@@ -137,8 +132,7 @@ class CommentAction implements EventSubscriberInterface
                 ->setVerified($event->isVerified())
                 ->setRating($event->getRating())
                 ->setAbuse($event->getAbuse())
-                ->save()
-            ;
+                ->save();
             $event->setComment($comment);
 
             $this->dispatchRatingCompute(
@@ -146,7 +140,6 @@ class CommentAction implements EventSubscriberInterface
                 $comment->getRef(),
                 $comment->getRefId()
             );
-
         }
     }
 
@@ -209,8 +202,7 @@ class CommentAction implements EventSubscriberInterface
                     ->filterByRefId($product->getId())
                     ->filterByStatus(Comment::ACCEPTED)
                     ->withColumn("AVG(RATING)", 'AVG_RATING')
-                    ->select('AVG_RATING')
-                ;
+                    ->select('AVG_RATING');
 
                 $rating = $query->findOne();
 
@@ -226,11 +218,8 @@ class CommentAction implements EventSubscriberInterface
                         $rating
                     );
                 }
-
             }
-
         }
-
     }
 
     /**
@@ -245,8 +234,7 @@ class CommentAction implements EventSubscriberInterface
 
         $ratingEvent
             ->setRef($ref)
-            ->setRefId($refId)
-        ;
+            ->setRefId($refId);
 
         $dispatcher->dispatch(
             CommentEvents::COMMENT_RATING_COMPUTE,
@@ -449,10 +437,10 @@ class CommentAction implements EventSubscriberInterface
 
             $products = OrderProductQuery::create()
                 ->useOrderQuery()
-                    ->filterByInvoiceDate($startDate, Criteria::GREATER_EQUAL)
-                    ->filterByInvoiceDate($endDate, Criteria::LESS_THAN)
-                    ->addAsColumn('customerId', OrderTableMap::CUSTOMER_ID)
-                    ->addAsColumn('orderId', OrderTableMap::ID)
+                ->filterByInvoiceDate($startDate, Criteria::GREATER_EQUAL)
+                ->filterByInvoiceDate($endDate, Criteria::LESS_THAN)
+                ->addAsColumn('customerId', OrderTableMap::CUSTOMER_ID)
+                ->addAsColumn('orderId', OrderTableMap::ID)
                 ->endUse()
                 ->addJoinObject($pseJoin)
                 ->addAsColumn('pseId', OrderProductTableMap::PRODUCT_SALE_ELEMENTS_ID)
@@ -479,7 +467,7 @@ class CommentAction implements EventSubscriberInterface
                     if (!array_key_exists($item['customerId'], $result)) {
                         $result[$item['customerId']] = [];
                     }
-                    if (! in_array($item['productId'], $result[$item['customerId']])) {
+                    if (!in_array($item['productId'], $result[$item['customerId']])) {
                         $result[$item['customerId']][] = $item['productId'];
                     }
 
@@ -502,8 +490,7 @@ class CommentAction implements EventSubscriberInterface
                     ]
                 )
                 ->find()
-                ->toArray()
-            ;
+                ->toArray();
 
             $commentReduce = array_reduce(
                 $comments,
@@ -538,11 +525,8 @@ class CommentAction implements EventSubscriberInterface
                         Tlog::getInstance()->error($ex->getMessage());
                     }
                 }
-
             }
-
         }
-
     }
 
     protected function sendMail($customerId, array $productIds)

@@ -11,11 +11,11 @@
 /*************************************************************************************/
 
 
-namespace Comment\EventListeners;
+namespace Comment\Events;
 
 /**
  * Class CommentCreateEvent
- * @package Comment\EventListeners
+ * @package Comment\Events
  * @author Julien Chanséaume <jchanseaume@openstudio.fr>
  *
  *

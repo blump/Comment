@@ -24,13 +24,13 @@
 namespace Comment\Controller\Back;
 
 use Comment\Comment;
-use Comment\EventListeners\CommentChangeStatusEvent;
-use Comment\EventListeners\CommentCheckOrderEvent;
-use Comment\EventListeners\CommentCreateEvent;
-use Comment\EventListeners\CommentDeleteEvent;
-use Comment\EventListeners\CommentEvent;
-use Comment\EventListeners\CommentEvents;
-use Comment\EventListeners\CommentUpdateEvent;
+use Comment\Events\CommentChangeStatusEvent;
+use Comment\Events\CommentCheckOrderEvent;
+use Comment\Events\CommentCreateEvent;
+use Comment\Events\CommentDeleteEvent;
+use Comment\Events\CommentEvent;
+use Comment\Events\CommentEvents;
+use Comment\Events\CommentUpdateEvent;
 use Comment\Form\CommentCreationForm;
 use Comment\Form\CommentModificationForm;
 use Comment\Model\CommentQuery;
@@ -40,7 +40,6 @@ use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\ConfigQuery;
-use Thelia\Model\MetaData;
 use Thelia\Model\MetaDataQuery;
 use Thelia\Tools\URL;
 
@@ -343,8 +342,7 @@ class CommentController extends AbstractCrudController
                     ->filterByMetaKey(\Comment\Model\Comment::META_KEY_ACTIVATED)
                     ->filterByElementKey($ref)
                     ->filterByElementId($refId)
-                    ->delete()
-                ;
+                    ->delete();
                 if ($deleted === 1) {
                     $message['success'] = true;
                 }

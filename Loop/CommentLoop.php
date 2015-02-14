@@ -14,8 +14,8 @@
 namespace Comment\Loop;
 
 use Comment\Comment;
-use Comment\EventListeners\CommentEvents;
-use Comment\EventListeners\CommentReferenceGetterEvent;
+use Comment\Events\CommentEvents;
+use Comment\Events\CommentReferenceGetterEvent;
 use Comment\Model\CommentQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseLoop;
@@ -37,6 +37,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
     protected $timestampable = true;
 
     protected $cacheRef = [];
+
     /**
      * Definition of loop arguments
      *
@@ -58,12 +59,18 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                 new Type\TypeCollection(
                     new Type\EnumListType(
                         [
-                            'id', 'id_reverse',
-                            'status', 'status_reverse',
-                            'verified', 'verified_reverse',
-                            'abuse', 'abuse_reverse',
-                            'created', 'created_reverse',
-                            'updated', 'updated_reverse'
+                            'id',
+                            'id_reverse',
+                            'status',
+                            'status_reverse',
+                            'verified',
+                            'verified_reverse',
+                            'abuse',
+                            'abuse_reverse',
+                            'created',
+                            'created_reverse',
+                            'updated',
+                            'updated_reverse'
                         ]
                     )
                 ),
@@ -123,7 +130,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
             $search->filterByLocale($locale);
         }
 
-        $orders  = $this->getOrder();
+        $orders = $this->getOrder();
         if (null !== $orders) {
             foreach ($orders as $order) {
                 switch ($order) {
@@ -199,8 +206,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('RATING', $comment->getRating())
                 ->set('STATUS', $comment->getStatus())
                 ->set('VERIFIED', $comment->getVerified())
-                ->set('ABUSE', $comment->getAbuse())
-            ;
+                ->set('ABUSE', $comment->getAbuse());
 
             if (1 == $this->getLoadRef()) {
                 // dispatch event to get the reference element
