@@ -428,7 +428,6 @@ class CommentAction implements EventSubscriberInterface
             $startDate = clone $endDate;
             $startDate->sub(new DateInterval('P1D'));
 
-
             $pseJoin = new Join(
                 OrderProductTableMap::PRODUCT_SALE_ELEMENTS_ID,
                 ProductSaleElementsTableMap::ID,
@@ -460,7 +459,7 @@ class CommentAction implements EventSubscriberInterface
                 return;
             }
 
-            $reduce = array_reduce(
+            $customerProducts = array_reduce(
                 $products,
                 function ($result, $item) {
 
@@ -476,7 +475,8 @@ class CommentAction implements EventSubscriberInterface
                 []
             );
 
-            $customerIds = array_keys($reduce);
+            $customerIds = array_keys($customerProducts);
+
             // check if comments already exists
             $comments = CommentQuery::create()
                 ->filterByCustomerId($customerIds)
@@ -492,7 +492,7 @@ class CommentAction implements EventSubscriberInterface
                 ->find()
                 ->toArray();
 
-            $commentReduce = array_reduce(
+            $customerComments = array_reduce(
                 $comments,
                 function ($result, $item) {
 
@@ -509,18 +509,22 @@ class CommentAction implements EventSubscriberInterface
             foreach ($customerIds as $customerId) {
                 $send = false;
 
-                if (!array_key_exists($customerId, $commentReduce)) {
+                if (!array_key_exists($customerId, $customerComments)) {
                     $send = true;
                 } else {
-                    if (empty(array_intersect($commentReduce[$customerId], $reduce[$customerId]))) {
-                        // No commments
+                    $noCommentsPosted = array_intersect(
+                        $customerComments[$customerId],
+                        $customerProducts[$customerId]
+                    );
+
+                    if (empty($noCommentsPosted)) {
                         $send = true;
                     }
                 }
 
                 if ($send) {
                     try {
-                        $this->sendMail($customerId, $reduce[$customerId]);
+                        $this->sendMail($customerId, $customerProducts[$customerId]);
                     } catch (\Exception $ex) {
                         Tlog::getInstance()->error($ex->getMessage());
                     }
