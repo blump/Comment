@@ -37,7 +37,7 @@ return array(
     'Posted: ' => 'Posté :',
     'Previous' => 'Précédent',
     'Reference' => 'Référence',
-    'Refused' => 'Refiusé',
+    'Refused' => 'Refusé',
     'Save' => 'Enregistrer',
     'Sorry, comment ID=%id was not found.' => 'Désolé, le commentaire ID=%id n\'a pas été trouvé.',
     'Status' => 'Statut',
