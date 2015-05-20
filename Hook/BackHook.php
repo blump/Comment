@@ -51,6 +51,16 @@ class BackHook extends BaseHook
         );
     }
 
+    /**
+     * Add module-wide javascript.
+     *
+     * @param HookRenderEvent $event
+     */
+    public function onMainFooterJs(HookRenderEvent $event)
+    {
+        $event->add($this->addJS('assets/js/comment.js'));
+    }
+
     public function onProductTabContent(HookRenderEvent $event)
     {
         $this->onTabContent($event, 'product');
