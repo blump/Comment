@@ -53,14 +53,15 @@ The module provides a new loop : **comment**
 
 |Argument |Description |
 |---      |--- |
-|**id**       | the comment id                                        |   
-|**customer** | the customer id                                       |          
-|**ref**      | the reference key. eg : product                       |                      
-|**ref_id**   | the reference id. (the product id)                    |                           
-|**status**   | the status of the comment : 0 = pending, 1 = accepted |                                             
-|**verified** | the customer has bought the product                   |                               
-|**locale**   | the locale of the comment : fr_FR                     |                          
-|**load_ref** | load or not the reference object. default = 0         |                                        
+|**id**        | the comment id                                                     |
+|**customer**  | the customer id                                                    |
+|**ref**       | the reference key. eg : product                                    |
+|**ref_id**    | the reference id. (the product id)                                 |
+|**status**    | the status of the comment : 0 = pending, 1 = accepted              |
+|**verified**  | the customer has bought the product                                |
+|**locale**    | the locale of the comment : fr_FR                                  |
+|**load_ref**  | load or not the reference object. default = 0                      |
+|**ref_locale**| locale of the reference object fields. default: the request locale |
 
 ### Output arguments
 
