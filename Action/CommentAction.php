@@ -247,6 +247,7 @@ class CommentAction implements EventSubscriberInterface
         if ('product' === $event->getRef()) {
             $product = ProductQuery::create()->findPk($event->getRefId());
             if (null !== $product) {
+                $event->setTypeTitle($this->translator->trans('Product', [], 'core', $event->getLocale()));
                 $event->setTitle($product->getTitle());
                 $event->setViewUrl($product->getUrl($event->getLocale()));
                 $event->setEditUrl(
@@ -260,6 +261,7 @@ class CommentAction implements EventSubscriberInterface
         } elseif ('content' === $event->getRef()) {
             $content = ContentQuery::create()->findPk($event->getRefId());
             if (null !== $content) {
+                $event->setTypeTitle($this->translator->trans('Content', [], 'core', $event->getLocale()));
                 $event->setTitle($content->getTitle());
                 $event->setViewUrl($content->getUrl($event->getLocale()));
                 $event->setEditUrl(

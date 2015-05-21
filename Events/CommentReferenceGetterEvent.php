@@ -31,6 +31,8 @@ class CommentReferenceGetterEvent extends ActionEvent
     /** @var mixed */
     protected $object;
     /** @var string */
+    protected $typeTitle;
+    /** @var string */
     protected $title;
     /** @var string */
     protected $viewUrl;
@@ -130,6 +132,25 @@ class CommentReferenceGetterEvent extends ActionEvent
     public function setRefId($refId)
     {
         $this->refId = $refId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeTitle()
+    {
+        return $this->typeTitle;
+    }
+
+    /**
+     * @param string $typeTitle
+     * @return CommentReferenceGetterEvent
+     */
+    public function setTypeTitle($typeTitle)
+    {
+        $this->typeTitle = $typeTitle;
 
         return $this;
     }
