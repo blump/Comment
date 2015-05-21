@@ -398,6 +398,10 @@ class CommentController extends AbstractCrudController
                 'comment_request_customer_ttl',
                 $data['request_customer_ttl']
             );
+            ConfigQuery::write(
+                'comment_notify_admin_new_comment',
+                $data['notify_admin_new_comment']
+            );
         } catch (\Exception $e) {
             $message = $e->getMessage();
         }

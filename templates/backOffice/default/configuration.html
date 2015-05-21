@@ -67,6 +67,15 @@
                 </div>
                 {/form_field}
 
+                {form_field form=$form field='notify_admin_new_comment'}
+                    <div class="checkbox">
+                        <label for="{$label_attr.for}">
+                            <input type="checkbox" name="{$name}" id="{$label_attr.for}" value="{$value}" {$attr} {if $checked}checked="checked"{/if}/> {$label}
+                        </label>
+                        <span class="label-help-block">{$label_attr.help}</span>
+                    </div>
+                {/form_field}
+
                 <button type="submit" id="comment-save" name="comment_save" value="save" class="form-submit-button btn btn-sm btn-default" title="{intl d='comment.bo.default' d='comment.ai' l='Save'}">{intl d='comment.bo.default' d='comment.ai' l='Save'}</button>
 
                 </form>

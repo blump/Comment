@@ -589,6 +589,11 @@ class CommentAction implements EventSubscriberInterface
      */
     public function notifyAdminOfNewComment(CommentCreateEvent $event)
     {
+        $config = \Comment\Comment::getConfig();
+        if (!$config["notify_admin_new_comment"]) {
+            return;
+        }
+
         $comment = $event->getComment();
         if ($comment === null) {
             return;

@@ -53,6 +53,9 @@ class Comment extends BaseModule
     /** request customer comment, x days after an order */
     const CONFIG_REQUEST_CUSTOMMER_TTL = 15;
 
+    /** Send an email notification to the store admins when a new comment is posted */
+    const CONFIG_NOTIFY_ADMIN_NEW_COMMENT = true;
+
 
     public function postActivation(ConnectionInterface $con = null)
     {
@@ -79,6 +82,10 @@ class Comment extends BaseModule
 
         if (null === ConfigQuery::read('comment_request_customer_ttl')) {
             ConfigQuery::write('comment_request_customer_ttl', Comment::CONFIG_REQUEST_CUSTOMMER_TTL);
+        }
+
+        if (null === ConfigQuery::read('comment_notify_admin_new_comment')) {
+            ConfigQuery::write('comment_notify_admin_new_comment', Comment::CONFIG_NOTIFY_ADMIN_NEW_COMMENT);
         }
 
         // Schema
@@ -189,8 +196,12 @@ class Comment extends BaseModule
                 intval(ConfigQuery::read('comment_only_verified', self::CONFIG_ONLY_VERIFIED)) === 1
             ),
             'request_customer_ttl' => (
-            intval(ConfigQuery::read('comment_request_customer_ttl', self::CONFIG_REQUEST_CUSTOMMER_TTL))
-            )
+                intval(ConfigQuery::read('comment_request_customer_ttl', self::CONFIG_REQUEST_CUSTOMMER_TTL))
+            ),
+            'notify_admin_new_comment' => (
+                intval(ConfigQuery::read('comment_notify_admin_new_comment', self::CONFIG_NOTIFY_ADMIN_NEW_COMMENT))
+                    === 1
+            ),
         ];
 
         return $config;
