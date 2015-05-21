@@ -45,11 +45,13 @@ use Propel\Runtime\ActiveQuery\Join;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Thelia\Core\Template\ParserInterface;
+use Thelia\Core\Translation\Translator;
 use Thelia\Log\Tlog;
 use Thelia\Mailer\MailerFactory;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\ContentQuery;
 use Thelia\Model\CustomerQuery;
+use Thelia\Model\LangQuery;
 use Thelia\Model\Map\OrderProductTableMap;
 use Thelia\Model\Map\OrderTableMap;
 use Thelia\Model\Map\ProductSaleElementsTableMap;
@@ -526,7 +528,7 @@ class CommentAction implements EventSubscriberInterface
 
                 if ($send) {
                     try {
-                        $this->sendMail($customerId, $customerProducts[$customerId]);
+                        $this->sendCommentRequestCustomerMail($customerId, $customerProducts[$customerId]);
                     } catch (\Exception $ex) {
                         Tlog::getInstance()->error($ex->getMessage());
                     }
@@ -535,7 +537,7 @@ class CommentAction implements EventSubscriberInterface
         }
     }
 
-    protected function sendMail($customerId, array $productIds)
+    protected function sendCommentRequestCustomerMail($customerId, array $productIds)
     {
         $contact_email = ConfigQuery::getStoreEmail();
 
@@ -576,9 +578,45 @@ class CommentAction implements EventSubscriberInterface
             $this->mailer->send($instance);
 
             Tlog::getInstance()->debug(
-                "Message sent to customer " . $customer->getEmail()
+                "Message sent to customer " . $customer->getEmail() . " to ask for comments"
             );
         }
+    }
+
+    /**
+     * Notify shop managers of a new comment.
+     * @param CommentCreateEvent $event
+     */
+    public function notifyAdminOfNewComment(CommentCreateEvent $event)
+    {
+        $comment = $event->getComment();
+        if ($comment === null) {
+            return;
+        }
+
+        // get the default shop locale
+        $shopLang = LangQuery::create()->findOneByByDefault(true);
+        if ($shopLang !== null) {
+            $shopLocale = $shopLang->getLocale();
+        } else {
+            $shopLocale = null;
+        }
+
+        $getCommentRefEvent = new CommentReferenceGetterEvent(
+            $comment->getRef(),
+            $comment->getRefId(),
+            $shopLocale
+        );
+        $event->getDispatcher()->dispatch(CommentEvents::COMMENT_REFERENCE_GETTER, $getCommentRefEvent);
+
+        $this->mailer->sendEmailToShopManagers(
+            'new_comment_notification_admin',
+            [
+                'comment_id' => $comment->getId(),
+                'ref_title' => $getCommentRefEvent->getTitle(),
+                'ref_type_title' => $getCommentRefEvent->getTypeTitle(),
+            ]
+        );
     }
 
     /**
@@ -604,7 +642,10 @@ class CommentAction implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CommentEvents::COMMENT_CREATE => ['create', 128],
+            CommentEvents::COMMENT_CREATE => [
+                ['create', 128],
+                ['notifyAdminOfNewComment', 64],
+            ],
             CommentEvents::COMMENT_DELETE => ['delete', 128],
             CommentEvents::COMMENT_UPDATE => ['update', 128],
             CommentEvents::COMMENT_ABUSE => ['abuse', 128],
