@@ -1,4 +1,3 @@
-{default_translation_domain domain='comment.fo.default'}
 {function name=comment_stars empty=1}
     {$star='<span class="glyphicon glyphicon-star"></span>'}
     {$star_empty='<span class="glyphicon glyphicon-star-empty"></span>'}
@@ -17,7 +16,7 @@
     <div id="comment-top">
 
         <div class="well well-sm">
-            {intl l="Add your comment"}
+            {intl d="comment.fo.default" l="Add your comment"}
         </div>
 
         <div id="comment-top-message" class="alert hidden"></div>
@@ -102,7 +101,7 @@
             {/if}
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">{intl l="Send"}</button>
+                <button type="submit" class="btn btn-primary">{intl d="comment.fo.default" l="Send"}</button>
             </div>
         </form>
         {/form}
@@ -113,7 +112,7 @@
 
     <div id="comment-body" class="comment-body">
         <div class="well well-sm">
-            {intl l="Comments"}
+            {intl d="comment.fo.default" l="Comments"}
             {if $definition->hasRating()}
                 {$rating={meta meta="COMMENT_RATING" key="{$definition->getRef()}" id="{$definition->getRefId()}"}}
                 {if $rating}

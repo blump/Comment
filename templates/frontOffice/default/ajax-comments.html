@@ -1,4 +1,3 @@
-{default_translation_domain domain='comment.fo.default'}
 {$locale={lang attr="locale"}}
 {$customer_id={customer attr="id"}}
 
@@ -27,7 +26,7 @@
             {$image="http://www.gravatar.com/avatar/{$EMAIL|trim|strtolower|md5}?d=mm&s=64"}
         {/loop}
         {elseloop rel="customer"}
-            {$username={intl l="Anonymous"} }
+            {$username={intl d="comment.fo.default" l="Anonymous"} }
             {$image={image file='assets/img/avatar.png'}}
         {/elseloop}
     {else}
@@ -39,7 +38,7 @@
         <img src="{$image}" alt="" class="pull-left" />
         <div class="media-body">
             <p>
-                {intl l="By <strong>%username</strong>" username={$username}}
+                {intl d="comment.fo.default" l="By <strong>%username</strong>" username={$username}}
                 {if $RATING}<span class="text-primary">{comment_stars value=$RATING}</span>{/if}
             </p>
             <h3 class="comment-title media-heading">{$TITLE}</h3>
@@ -49,12 +48,12 @@
             <ul class="comment-extra list-inline">
                 <li class="comment-date">{format_date date="{$CREATED}" output="date"}</li>
                 {if $VERIFIED}
-                <li class="comment-verified comment--is-verified">{intl l="Verified"}</li>
+                <li class="comment-verified comment--is-verified">{intl d="comment.fo.default" l="Verified"}</li>
                 {else}
-                <li class="comment-verified">{intl l="Verified"}</li>
+                <li class="comment-verified">{intl d="comment.fo.default" l="Verified"}</li>
                 {/if}
                 {if $customer_id && $customer_id == $CUSTOMER_ID}
-                <li><a href="{url path="/comment/delete/{$ID}"}" class="delete-trigger" data-id="{$ID}" data-message="{intl l="Are you sure ?"}">{intl l="Delete"}</a></li>
+                <li><a href="{url path="/comment/delete/{$ID}"}" class="delete-trigger" data-id="{$ID}" data-message="{intl d="comment.fo.default" l="Are you sure ?"}">{intl d="comment.fo.default" l="Delete"}</a></li>
                 {else}
                 <li class="comment-abuse">
                     {form name="comment.abuse.form"}
@@ -62,7 +61,7 @@
                     {form_hidden_fields form=$form}
                     {form_field form=$form field="id"}
                     <input type="hidden" name="{$name}" value="{$ID}" />
-                    <a href="#" class="abuse-trigger">{intl l="Mark as inappropriate"}</a>
+                    <a href="#" class="abuse-trigger">{intl d="comment.fo.default" l="Mark as inappropriate"}</a>
                     {/form_field}
                     </form>
                     {/form}
@@ -76,16 +75,16 @@
 
     {if {count type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" } > $start + $count }
     <div class="comments-more">
-        <a href="#" class="comments-more-link">{intl l="Load more comments..."}</a>
+        <a href="#" class="comments-more-link">{intl d="comment.fo.default" l="Load more comments..."}</a>
     </div>
     {/if}
 {/ifloop}
 {elseloop rel="comments"}
     <div class="alert alert-info">
         {if $start == 0 }
-        {intl l="There are no comments yet"}
+        {intl d="comment.fo.default" l="There are no comments yet"}
         {else}
-        {intl l="No more comments"}
+        {intl d="comment.fo.default" l="No more comments"}
         {/if}
     </div>
 {/elseloop}
