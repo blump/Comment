@@ -75,7 +75,8 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                     )
                 ),
                 'manual'
-            )
+            ),
+            Argument::createAnyTypeArgument('ref_locale')
         );
     }
 
@@ -236,12 +237,18 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
         $data = [
             'REF_OBJECT' => null,
             'REF_TITLE' => null,
+            'REF_TYPE_TITLE' => null,
             'REF_EDIT_URL' => null,
             'REF_VIEW_URL' => null
         ];
 
+        $refLocale = $this->getRefLocale();
+        if ($refLocale === null) {
+            $refLocale = $this->request->getLocale();
+        }
+
         if (!array_key_exists($key, $this->cacheRef)) {
-            $event = new CommentReferenceGetterEvent($ref, $refId, $this->request->getLocale());
+            $event = new CommentReferenceGetterEvent($ref, $refId, $refLocale);
 
             $this->dispatcher->dispatch(
                 CommentEvents::COMMENT_REFERENCE_GETTER,
@@ -250,6 +257,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
 
             $data['REF_OBJECT'] = $event->getObject();
             $data['REF_TITLE'] = $event->getTitle();
+            $data['REF_TYPE_TITLE'] = $event->getTypeTitle();
             $data['REF_EDIT_URL'] = $event->getEditUrl();
             $data['REF_VIEW_URL'] = $event->getViewUrl();
         } else {

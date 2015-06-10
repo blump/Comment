@@ -17,6 +17,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
 use Thelia\Model\ConfigQuery;
+use Thelia\Model\Lang;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
@@ -32,6 +33,7 @@ use Thelia\Module\BaseModule;
 class Comment extends BaseModule
 {
     const MESSAGE_DOMAIN = "comment";
+    const MESSAGE_DOMAIN_EMAIL = "comment.email.default";
 
     /**  Use comment */
     const CONFIG_ACTIVATED = 1;
@@ -50,6 +52,9 @@ class Comment extends BaseModule
 
     /** request customer comment, x days after an order */
     const CONFIG_REQUEST_CUSTOMMER_TTL = 15;
+
+    /** Send an email notification to the store admins when a new comment is posted */
+    const CONFIG_NOTIFY_ADMIN_NEW_COMMENT = true;
 
 
     public function postActivation(ConnectionInterface $con = null)
@@ -79,6 +84,10 @@ class Comment extends BaseModule
             ConfigQuery::write('comment_request_customer_ttl', Comment::CONFIG_REQUEST_CUSTOMMER_TTL);
         }
 
+        if (null === ConfigQuery::read('comment_notify_admin_new_comment')) {
+            ConfigQuery::write('comment_notify_admin_new_comment', Comment::CONFIG_NOTIFY_ADMIN_NEW_COMMENT);
+        }
+
         // Schema
         try {
             CommentQuery::create()->findOne();
@@ -87,9 +96,21 @@ class Comment extends BaseModule
             $database->insertSql(null, [__DIR__ . DS . 'Config' . DS . 'thelia.sql']);
         }
 
-        // create new message
-        if (null === MessageQuery::create()->findOneByName('comment_request_customer')) {
+        // Messages
+        // load the email localization files (the module was just loaded so they are not loaded yet)
+        $languages = LangQuery::create()->find();
+        /** @var Lang $language */
+        foreach ($languages as $language) {
+            Translator::getInstance()->addResource(
+                "php",
+                __DIR__ . "/I18n/email/default/" . $language->getLocale() . ".php",
+                $language->getLocale(),
+                self::MESSAGE_DOMAIN_EMAIL
+            );
+        }
 
+        // Request comment from customer
+        if (null === MessageQuery::create()->findOneByName('comment_request_customer')) {
             $message = new Message();
             $message
                 ->setName('comment_request_customer')
@@ -98,8 +119,6 @@ class Comment extends BaseModule
                 ->setTextTemplateFileName('request-customer-comment.txt')
                 ->setTextLayoutFileName('')
                 ->setSecured(0);
-
-            $languages = LangQuery::create()->find();
 
             foreach ($languages as $language) {
                 $locale = $language->getLocale();
@@ -112,6 +131,45 @@ class Comment extends BaseModule
                 $message->setSubject(
                     Translator::getInstance()->trans('', [], self::MESSAGE_DOMAIN)
                 );
+            }
+
+            $message->save();
+        }
+
+        // Notify admin of new comment
+        if (null === MessageQuery::create()->findOneByName('new_comment_notification_admin')) {
+            $message = new Message();
+            $message
+                ->setName('new_comment_notification_admin')
+                ->setHtmlTemplateFileName('new-comment-notification-admin.html')
+                ->setHtmlLayoutFileName('')
+                ->setTextTemplateFileName('new-comment-notification-admin.txt')
+                ->setTextLayoutFileName('')
+                ->setSecured(0);
+
+            foreach ($languages as $language) {
+                $locale = $language->getLocale();
+
+                $message->setLocale($locale);
+
+                $message->setTitle(
+                    Translator::getInstance()->trans(
+                        'Notify store admin of new comment',
+                        [],
+                        self::MESSAGE_DOMAIN_EMAIL,
+                        $locale
+                    )
+                );
+
+                $subject = Translator::getInstance()->trans(
+                    'New comment on %ref_type_title "%ref_title"',
+                    [],
+                    self::MESSAGE_DOMAIN_EMAIL,
+                    $locale
+                );
+                $subject = str_replace('%ref_type_title', '{$ref_type_title|lower}', $subject);
+                $subject = str_replace('%ref_title', '{$ref_title}', $subject);
+                $message->setSubject($subject);
             }
 
             $message->save();
@@ -138,8 +196,12 @@ class Comment extends BaseModule
                 intval(ConfigQuery::read('comment_only_verified', self::CONFIG_ONLY_VERIFIED)) === 1
             ),
             'request_customer_ttl' => (
-            intval(ConfigQuery::read('comment_request_customer_ttl', self::CONFIG_REQUEST_CUSTOMMER_TTL))
-            )
+                intval(ConfigQuery::read('comment_request_customer_ttl', self::CONFIG_REQUEST_CUSTOMMER_TTL))
+            ),
+            'notify_admin_new_comment' => (
+                intval(ConfigQuery::read('comment_notify_admin_new_comment', self::CONFIG_NOTIFY_ADMIN_NEW_COMMENT))
+                    === 1
+            ),
         ];
 
         return $config;

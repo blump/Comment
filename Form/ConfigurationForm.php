@@ -116,6 +116,20 @@ class ConfigurationForm extends BaseForm
                         )
                     ],
                 ]
+            )
+            ->add(
+                "notify_admin_new_comment",
+                "checkbox",
+                [
+                    'data' => $config['notify_admin_new_comment'],
+                    'label' => $this->trans("Notify store managers on new comment"),
+                    'label_attr' => [
+                        'for' => "notify_admin_new_comment",
+                        'help' => $this->trans(
+                            "Send an email to the store managers when a new comment is posted."
+                        )
+                    ],
+                ]
             );
     }
 
