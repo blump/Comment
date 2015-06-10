@@ -35,7 +35,7 @@
         {$image="http://www.gravatar.com/avatar/{$EMAIL|trim|strtolower|md5}?d=mm&s=64"}
     {/if}
 
-    <div id="comment-customer" class="comment-item media">
+    <div id="comment-customer-{counter}" class="comment-item media">
         <img src="{$image}" alt="" class="pull-left" />
         <div class="media-body">
             <p>
@@ -58,7 +58,7 @@
                 {else}
                 <li class="comment-abuse">
                     {form name="comment.abuse.form"}
-                    <form id="form-add-comment" action="{url path="/comment/abuse"}" method="post" novalidate>
+                    <form id="form-add-comment-{$ID}" action="{url path="/comment/abuse"}" method="post" novalidate>
                     {form_hidden_fields form=$form}
                     {form_field form=$form field="id"}
                     <input type="hidden" name="{$name}" value="{$ID}" />
