@@ -1,7 +1,7 @@
 {
-  "name": "thelia/comment-module",
+  "name": "blump/comment-module",
   "license": "LGPL-3.0+",
-  "type": "thelia-module",
+  "type": "blump-module",
   "require": {
     "thelia/installer": "~1.2"
   },
